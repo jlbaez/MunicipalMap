@@ -2222,6 +2222,7 @@ function f_deviceCheck() {
 		newlink.setAttribute("type", "text/css");
 		newlink.setAttribute("href", "css/erisv3_mobile.css");
 		document.getElementsByTagName("head").item(0).replaceChild(newlink, oldlink);
+		document.getElementsByClassName("header-container")[0].style.display = "block";
 	}
 }
 function f_startup() {
