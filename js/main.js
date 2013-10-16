@@ -1,4 +1,4 @@
-/*global document, require, alert, setTimeout, sessionStorage, window, navigator, location*/
+/*global document, require, setTimeout, sessionStorage, window, navigator, location, XMLHttpRequest, Recaptcha*/
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
@@ -152,7 +152,7 @@ var legend_children_json = [{"name": "Environmental", "id": "environ", "children
 	 
 require(["dojo/request/xhr"], function (xhr) {
 	"use strict";
-	xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
+	xhr("/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
 		map_legend = content;
 	});
 });
@@ -1335,9 +1335,7 @@ function f_multi_parcel_buffer_exec(distance) {
 		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
 			multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
 		}
-		if (isNaN(bufferDistanceTxt) || (bufferDistanceTxt === "")) {
-			alert("Buffer Tool Error:\n\nYou must enter a numeric distance for the buffer tool.");
-		} else {
+		if (!isNaN(bufferDistanceTxt) || (bufferDistanceTxt !== "")) {
 			QT_parcel_selection_buffer = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
 			Q_parcel_selection_buffer = new Query();
 			bufferDistance = bufferDistanceTxt * 1.35;
@@ -1370,6 +1368,11 @@ window.onresize = function (event) {
 		document.getElementById("map").removeAttribute("style");
 	}
 };
+function e_goBack() {
+	"use strict";
+	document.getElementById("form_submit").style.display = "block";
+	document.getElementById("for_form").remove();
+}
 function e_load_tools() {
 	"use strict";
 	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/NodeList-traverse"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr) {
@@ -1512,6 +1515,62 @@ function e_load_tools() {
 						location.reload();
 					}
 				});
+			}),
+			forgot_pass_handler = new On(document.getElementById("account_link"), "click", function (e) {
+				document.getElementById("form_submit").style.display = "none";
+				var li_form = document.getElementById("li_form"),
+					forgot_form = document.createElement("form"),
+					lbl_email = document.createElement("label"),
+					input_email = document.createElement("input"),
+					goback_link = document.createElement("a"),
+					response;
+				forgot_form.id = "for_form";
+				forgot_form.action = "";
+				lbl_email.setAttribute("for", "input_email");
+				lbl_email.innerHTML = "Email: ";
+				goback_link.href = "#";
+				goback_link.innerHTML = "&larr;Go Back";
+				goback_link.style.color = "#09D";
+				goback_link.style.padding = "0";
+				input_email.id = "input_email";
+				input_email.type = "email";
+				input_email.className = "input";
+				input_email.required = true;
+				input_email.autofocus = true;
+				goback_link.onclick = function (e) {
+					return false;
+				};
+				forgot_form.onsubmit = function (e) {
+					var xmlhttp = new XMLHttpRequest();
+					xmlhttp.open("POST", "./php/functions.php", false);
+					xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+					xmlhttp.send("function=capthca&email=" + document.getElementById("input_email").value + "&recaptcha_response_field=" + Recaptcha.get_response() + "&recaptcha_challenge_field=" + Recaptcha.get_challenge());
+					if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+						if (parseInt(xmlhttp.responseText, 10) === 1) {
+							document.getElementById("response").innerHTML = "Password has been sent.";
+							Recaptcha.destroy();
+						} else if (parseInt(xmlhttp.responseText, 10) === 2) {
+							document.getElementById("response").innerHTML = "Email not found in Data.";
+							Recaptcha.destroy();
+						} else if (parseInt(xmlhttp.responseText, 10) === 3) {
+							document.getElementById("response").innerHTML = "Error while sending email.";
+							Recaptcha.destroy();
+						} else {
+							document.getElementById("response").innerHTML = "Your captcha was incorrect!";
+							Recaptcha.create("6LeJT-MSAAAAAAGLpYb9ho-XHXUbA7VxHixYbzF-", "captcha", {theme: "white"});
+						}
+					}
+					return false;
+				};
+				forgot_form.innerHTML += "Password Retrivial<br>";
+				forgot_form.appendChild(lbl_email);
+				forgot_form.appendChild(input_email);
+				forgot_form.innerHTML += '<label for="captcha">Capthca: </label><div id="captcha"></div>';
+				forgot_form.innerHTML += '<div id="response" style="color:#B72727"></div>';
+				forgot_form.innerHTML += '<a href="#" style="color: rgb(0, 153, 221); padding: 0px;" onclick="e_goBack();return false;">Go Back</a>';
+				forgot_form.innerHTML += '<input type="submit" class="small button">';
+				li_form.appendChild(forgot_form);
+				Recaptcha.create("6LeJT-MSAAAAAAGLpYb9ho-XHXUbA7VxHixYbzF-", "captcha", {theme: "white"});
 			});
 	});
 }
@@ -1564,7 +1623,7 @@ function f_layer_list_build() {
 						} else {
 							legend_text = layer.name;
 						}
-						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": '<img src=' + DynamicLayerHost + '/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/' + layer_legend.url + ' class="legend_img" alt="error" /> ' + legend_text}, e_ul_ltitle, "last");
+						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": "<img src=\"/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/" + layer_legend.url + "\"class=\"legend_img\" alt=\"error\" /> " + legend_text}, e_ul_ltitle, "last");
 						if (layer.vis !== 1) {
 							domAttr.set(e_legend, "style", "display:none");
 						}
@@ -1614,60 +1673,6 @@ function f_search_landuse_build() {
 				e_chk_landuse = domConstruct.create("input", {type: "checkbox", "id": "chk_landuse_" + landuse.code, "class": "s_landuse_chk_item", "name": "s_landuse_chk_item", "value": landuse.code}, e_li_landuse),
 				e_lbl_landuse = domConstruct.create("label", {"for": "chk_landuse_" + landuse.code, "class": "search_landuse_label", "innerHTML": landuse.name}, e_li_landuse);
 		});
-	});
-}
-function f_startup() {
-	"use strict";
-	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup) {
-		config.defaults.io.alwaysUseProxy = false;
-		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
-		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
-		// set dynamic layer for MunicipalMap_live
-		LD_button = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer", {opacity: 0.8});
-		LD_flooding = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer", {opacity: 0.65});
-		GL_parcel_selection = new GraphicsLayer({opacity: 0.60});
-		GL_buffer_parcel = new GraphicsLayer({opacity: 0.60});
-		GL_buffer_buffer = new GraphicsLayer({opacity: 0.60});
-		GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60});
-		var e_info = document.createElement("div");
-		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-			infowindow = new PopupMobile(null, e_info);
-		} else {
-			infowindow = new Popup({
-				hightlight: false,
-				titleInBody: true
-			}, e_info);
-		}
-		M_meri = new Map("map", {basemap: "satellite",
-										 center: [-74.08456781356876, 40.78364440736023],
-										 zoom: 12,
-										 sliderStyle: "small",
-										 navigationMode: "css-transforms",
-										 fadeOnZoom: true,
-										 logo: false,
-										 minZoom: 12,
-										 infoWindow: infowindow});
-		on(M_meri, "click", function (e) {
-			f_map_click_handler(e);
-		});
-		on(M_meri, "load", function (e) {
-			navToolbar = new Navigation(M_meri);
-			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
-			measurementDijit.startup();
-			e_load_tools();
-		});
-		on(LD_button, "load", function (e) {
-			f_base_imagery_list_build();
-			f_layer_list_build();
-			f_search_munis_build();
-			f_search_qual_build();
-			f_search_landuse_build();
-		});
-		M_meri.addLayers([LD_button, LD_flooding]);
-		M_meri.addLayer(GL_parcel_selection);
-		M_meri.addLayer(GL_buffer_selected_parcels);
-		M_meri.addLayer(GL_buffer_parcel);
-		M_meri.addLayer(GL_buffer_buffer);
 	});
 }
 function f_image_layer_toggle(sel) {
@@ -1785,8 +1790,6 @@ function f_query_owner_int_exec(ownerid) {
 						});
 						Q_parcel_selection.where = "";
 					});
-				} else {
-					alert("No owner records were found.");
 				}
 			});
 			findparcels.innerHTML = "Hide Owner Parcels";
@@ -2043,9 +2046,7 @@ function f_multi_parcel_buffer_exec(distance) {
 		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
 			multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
 		}
-		if (isNaN(bufferDistanceTxt) || (bufferDistanceTxt === "")) {
-			alert("Buffer Tool Error:\n\nYou must enter a numeric distance for the buffer tool.");
-		} else {
+		if (!isNaN(bufferDistanceTxt) || (bufferDistanceTxt !== "")) {
 			QT_parcel_selection_buffer = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
 			Q_parcel_selection_buffer = new Query();
 			bufferDistance = bufferDistanceTxt * 1.35;
@@ -2070,4 +2071,77 @@ function f_multi_parcel_buffer_exec(distance) {
 		}
 	});
 }
+function f_deviceCheck() {
+	"use strict";
+	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+		var oldlink = document.getElementsByTagName("link").item(3),
+			newlink = document.createElement("link");
+		newlink.setAttribute("rel", "stylesheet");
+		newlink.setAttribute("type", "text/css");
+		newlink.setAttribute("href", "css/main_mobile.css");
+		document.getElementsByTagName("head").item(0).replaceChild(newlink, oldlink);
+	}
+	window.mobilecheck = function () {
+		var check = false;
+		/*jslint */
+		(function (a) { if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4)))check = true})(navigator.userAgent||navigator.vendor||window.opera);
+		
+return check; }
+	/*regexp: true*/
+}
+function f_startup() {
+	"use strict";
+	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup) {
+		config.defaults.io.alwaysUseProxy = false;
+		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
+		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
+		// set dynamic layer for MunicipalMap_live
+		LD_button = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer", {opacity: 0.8});
+		LD_flooding = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer", {opacity: 0.65});
+		GL_parcel_selection = new GraphicsLayer({opacity: 0.60});
+		GL_buffer_parcel = new GraphicsLayer({opacity: 0.60});
+		GL_buffer_buffer = new GraphicsLayer({opacity: 0.60});
+		GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60});
+		var e_info = document.createElement("div");
+		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+			infowindow = new PopupMobile(null, e_info);
+		} else {
+			infowindow = new Popup({
+				hightlight: false,
+				titleInBody: true
+			}, e_info);
+		}
+		M_meri = new Map("map", {basemap: "satellite",
+										 center: [-74.08456781356876, 40.78364440736023],
+										 zoom: 12,
+										 sliderStyle: "small",
+										 navigationMode: "css-transforms",
+										 fadeOnZoom: true,
+										 logo: false,
+										 minZoom: 12,
+										 infoWindow: infowindow});
+		on(M_meri, "click", function (e) {
+			f_map_click_handler(e);
+		});
+		on(M_meri, "load", function (e) {
+			navToolbar = new Navigation(M_meri);
+			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
+			measurementDijit.startup();
+			e_load_tools();
+		});
+		on(LD_button, "load", function (e) {
+			f_base_imagery_list_build();
+			f_layer_list_build();
+			f_search_munis_build();
+			f_search_qual_build();
+			f_search_landuse_build();
+		});
+		M_meri.addLayers([LD_button, LD_flooding]);
+		M_meri.addLayer(GL_parcel_selection);
+		M_meri.addLayer(GL_buffer_selected_parcels);
+		M_meri.addLayer(GL_buffer_parcel);
+		M_meri.addLayer(GL_buffer_buffer);
+	});
+}
+f_deviceCheck();
 f_startup();

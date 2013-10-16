@@ -1,4 +1,4 @@
-/*global document, require, alert, setTimeout, sessionStorage, window, navigator, location*/
+/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location*/
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
@@ -816,6 +816,13 @@ function inArray(array, value) {
 	}
 	return false;
 }
+function f_urlExists(url) {
+	"use strict";
+	var http = new XMLHttpRequest();
+	http.open('HEAD', url, false);
+	http.send();
+	return http.status !== 404;
+}
 function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 	"use strict";
 	require(["dojo/dom-construct"], function (domConstruct) {
@@ -826,16 +833,21 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			MAIN_RTK = ["CAS_NUMBER", "LOCATION"],
 			FLDS_IGNORE_RTK = ["SUBSTANCE_NAME", "RTK_SUBSTANCE_NUMBER"],
 			featureAttributes,
+			ERIS_LINK = 'http://apps.njmeadowlands.gov/eris/?b=' + bid + '&a=planning',
 			RTK_OUTPUT,
 			Once_Output,
 			Current_Once,
 			Prev_Once_Output,
+			substance = [],
 			substance_no,
 			substance_name,
 			record_header,
 			record_main,
-			index,
+			index = 0,
+			index2,
+			old_index = 0,
 			length,
+			exclude = [],
 			att,
 			featureSet,
 			el_popup_content = domConstruct.create("div", {"class": "esriViewPopup"}),
@@ -843,64 +855,70 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 			e_tr,
 			e_tbody = domConstruct.create("tbody", null, e_table);
+		e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
+		domConstruct.create("td", {"class": "attrValue", "innerHTML": '<a href="' + ERIS_LINK + '" target="_blank">View Building Info</a>'}, e_tr);
 		for (featureSet in featureSets) {
 			if (featureSets.hasOwnProperty(featureSet)) {
 				RTK_OUTPUT = '';
 				Once_Output = '';
 				Current_Once = '';
 				Prev_Once_Output = '';
-				substance_no = '';
-				substance_name = '';
+				substance_no = [];
+				substance_name = [];
 				record_header = '';
 				record_main = [];
 				for (index = 0, length = featureSets[featureSet].features.length; index < length; index += 1) {
-					console.log("here");
 					featureAttributes = featureSets[featureSet].features[index].attributes;
 					RTK_OUTPUT += '<div class="RTK_RECORD">';
 					for (att in featureAttributes) {
 						if (featureAttributes.hasOwnProperty(att)) {
-							console.log(att);
 							if (att === 'SUBSTANCE_NAME') {
-								substance_name = featureAttributes[att];
+								substance_name.push({"SUBSTANCE_NAME": featureAttributes[att]});
 							}
 							if (att === 'RTK_SUBSTANCE_NUMBER') {
-								substance_no = featureAttributes[att];
+								substance_no.push({"SUBSTANCE_NO": featureAttributes[att]});
 							}
-							if (inArray(ONCE_FLDS_RTK, att) && featureAttributes[att] !== null) {
+							if (inArray(ONCE_FLDS_RTK, att) && featureAttributes[att] !== null && !inArray(exclude, att)) {
 								e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
-								domConstruct.create("td", {"class": "attrName", "innerHTML": att + ":"}, e_tr);
+								exclude.push(att);
+								domConstruct.create("td", {"class": "attrName", "innerHTML": aliases.fieldNames[att] + ":"}, e_tr);
 								domConstruct.create("td", {"class": "attrValue", "innerHTML": featureAttributes[att]}, e_tr);
 								Current_Once += formatResult(att, featureAttributes[att], 'RTK');
 							}
 							if (!inArray(ONCE_FLDS_RTK, att)) {
 								if (inArray(MAIN_RTK, att)) {
-									
-									record_main += formatResult(att, featureAttributes[att], 'RTK');
+									record_main.push(featureAttributes[att]);
 								}
 							}
 						}
 					}
-					record_header = '<a href="ERIS/factsheets/' + substance_no + '.pdf" target="_blank"><strong>' + substance_name + '</stronng></a>';
-					/*console.log(record_main);
-					record_main = '<div class="RTK_Main">' + record_main + '</div>';
-					if (Current_Once !== Prev_Once_Output) {
-						Prev_Once_Output = Current_Once;
-						Once_Output = '<div class="RTK_Contact">' + Current_Once + '</div>';
+				}
+				for (index = 0; index < substance_name.length; index += 1) {
+					e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
+					if (f_urlExists('http://webmaps.njmeadowlands.gov/municipal/new/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
+						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
 					} else {
-						Once_Output = '';
+						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
 					}
-					RTK_OUTPUT += Once_Output + record_header + record_main + '</div>';
-					Current_Once = substance_no = substance_name = record_header = record_main = '';*/
+					for (index2 = old_index; index2 < old_index + 1; index2 += 2) {
+						if (record_main[index2] !== "") {
+							e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
+							domConstruct.create("td", {"class": "attrName", "innerHTML": 'CAS Number:'}, e_tr);
+							domConstruct.create("td", {"class": "attrValue", "innerHTML": record_main[index2]}, e_tr);
+						}
+						if (record_main[index2 + 1] !== "") {
+							e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
+							domConstruct.create("td", {"class": "attrName", "innerHTML": 'Location:'}, e_tr);
+							domConstruct.create("td", {"class": "attrValue", "innerHTML": record_main[index2 + 1]}, e_tr);
+						}
+						
+					}
+					old_index = index2;
 				}
 			}
 		}
-		console.log(el_popup_content);
-		console.log(M_meri.infoWindow);
 		M_meri.infoWindow.setContent(el_popup_content);
-		console.log(map_event);
 		M_meri.infoWindow.show(map_event.mapPoint);
-		console.log(e_table);
-		//nsole.log(RTK_OUTPUT);
 	});
 }
 function f_ERIS_selection_exec(map_event) {
@@ -921,7 +939,7 @@ function f_ERIS_selection_exec(map_event) {
 		Q_RTK_IDS.returnGeometry = true;
 		Q_RTK_IDS.relationshipId = 4;
 		Q_RTK_IDS.outFields = ["*"];
-		M_meri.infoWindow.setTitle("ERIS Selections");
+		M_meri.infoWindow.setTitle("ERIS Selection");
 		QT_ERIS_selection.execute(Q_ERIS_selection, function (results) {
 			var bid = results.features[0].attributes.BID;
 			Q_ERIS_BIDtoINTERMEDIATE.text = bid;
@@ -930,16 +948,14 @@ function f_ERIS_selection_exec(map_event) {
 					var ERIS_LINK = 'http://apps.njmeadowlands.gov/eris/?b=' + bid + '&a=planning';
 					ERIS_LINK = '<span class="ERIS_LINK"><a href="' + ERIS_LINK + '" target="_blank">View Building Info</a></span>';
 					if (results.length === 0) {
-						console.log(ERIS_LINK);
 						M_meri.infoWindow.setContent(ERIS_LINK);
+						M_meri.infoWindow.show(map_event.mapPoint);
 					} else {
-						//dojo.byId('Links_ERIS').innerHTML = ERIS_LINK;
 						Q_RTK_IDS.objectIds = [results];
 						QT_Q_RTK_IDS.executeRelationshipQuery(Q_RTK_IDS, function (results) {
 							f_query_RTK_IDS_results(results, bid, map_event);
 						});
 					}
-					M_meri.infoWindow.show(map_event.mapPoint);
 				}
 			});
 		});
@@ -1436,9 +1452,7 @@ function f_multi_parcel_buffer_exec(distance) {
 		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
 			multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
 		}
-		if (isNaN(bufferDistanceTxt) || (bufferDistanceTxt === "")) {
-			alert("Buffer Tool Error:\n\nYou must enter a numeric distance for the buffer tool.");
-		} else {
+		if (!isNaN(bufferDistanceTxt) || (bufferDistanceTxt !== "")) {
 			QT_parcel_selection_buffer = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
 			Q_parcel_selection_buffer = new Query();
 			bufferDistance = bufferDistanceTxt * 1.35;
@@ -1658,10 +1672,14 @@ function f_ERIS_list_build() {
 															{"id": "2", "name": "Boat Launches", "vis": 1, "ident": 1, "desc": "Boat Launches"},
 															{"id": "3", "name": "Building RTK", "vis": 1, "ident": 0, "desc": "Building RTK"}]
 											},
-			e_li_title = domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "ERIS Layers:"}, "dropdown1");
+			e_li_title = domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "ERIS Layers:"}, "dropdown1"),
+			e_li_legend = domConstruct.create("li", null, "dropdown4"),
+			e_legend_ul = domConstruct.create("ul", {"class": "legend_group_title"}, e_li_legend),
+			e_legend_title = domConstruct.create("li", {"class": "legend_title", "innerHTML": "ERIS"}, e_legend_ul);
 		array.forEach(map_layers_ERIS_json.layers, function (layer, index) {
 			var e_li = domConstruct.create("li", {"class": "toc_layer_li"}, "dropdown1", "last"),
 				e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check ERIS_layer", "id": "ERIS_layer_" + layer.id}, e_li),
+				e_legend = domConstruct.create("li", {"class": "legend_li legend_ERIS_li_" + layer.id, "innerHTML": layer.desc}, e_legend_ul),
 				e_lbl;
 			e_chk.onclick = function () {
 				f_ESRI_list_update();
@@ -1805,64 +1823,6 @@ function f_search_landuse_build() {
 		});
 	});
 }
-function f_startup() {
-	"use strict";
-	document.getElementById("useraccount").innerHTML = sessionStorage.username;
-	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup) {
-		config.defaults.io.alwaysUseProxy = false;
-		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
-		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
-		// set dynamic layer for MunicipalMap_live
-		LD_button = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer", {opacity: 0.8});
-		LD_flooding = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer", {opacity: 0.65});
-		ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1});
-		GL_parcel_selection = new GraphicsLayer({opacity: 0.60});
-		GL_buffer_parcel = new GraphicsLayer({opacity: 0.60});
-		GL_buffer_buffer = new GraphicsLayer({opacity: 0.60});
-		GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60});
-		var e_info = document.createElement("div"),
-			infowindow;
-		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-			infowindow = new PopupMobile(null, e_info);
-		} else {
-			infowindow = new Popup({
-				hightlight: false,
-				titleInBody: true
-			}, e_info);
-		}
-		M_meri = new Map("map", {basemap: "satellite",
-										 center: [-74.08456781356876, 40.78364440736023],
-										 zoom: 12,
-										 sliderStyle: "small",
-										 navigationMode: "css-transforms",
-										 fadeOnZoom: true,
-										 logo: false,
-										 minZoom: 12,
-										 infoWindow: infowindow});
-		on(M_meri, "click", function (e) {
-			f_map_click_handler(e);
-		});
-		on(M_meri, "load", function (e) {
-			navToolbar = new Navigation(M_meri);
-			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
-			measurementDijit.startup();
-			e_load_tools();
-		});
-		on(LD_button, "load", function (e) {
-			f_base_imagery_list_build();
-			f_ERIS_list_build();
-			f_layer_list_build();
-			f_search_munis_build();
-			f_search_qual_build();
-			f_search_landuse_build();
-		});
-		M_meri.addLayers([LD_button, ERIS_base, LD_flooding]);
-		M_meri.addLayer(GL_parcel_selection);
-		M_meri.addLayer(GL_buffer_selected_parcels);
-		M_meri.addLayer(GL_buffer_parcel);
-		M_meri.addLayer(GL_buffer_buffer);
-	});
-}
 function f_image_layer_toggle(sel) {
 	"use strict";
 	var img_layer = sel.options[sel.selectedIndex].value;
@@ -1972,8 +1932,6 @@ function f_query_owner_int_exec(ownerid) {
 						});
 						Q_parcel_selection.where = "";
 					});
-				} else {
-					alert("No owner records were found.");
 				}
 			});
 			findparcels.innerHTML = "Hide Owner Parcels";
@@ -2230,9 +2188,7 @@ function f_multi_parcel_buffer_exec(distance) {
 		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
 			multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
 		}
-		if (isNaN(bufferDistanceTxt) || (bufferDistanceTxt === "")) {
-			alert("Buffer Tool Error:\n\nYou must enter a numeric distance for the buffer tool.");
-		} else {
+		if (!isNaN(bufferDistanceTxt) || (bufferDistanceTxt !== "")) {
 			QT_parcel_selection_buffer = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
 			Q_parcel_selection_buffer = new Query();
 			bufferDistance = bufferDistanceTxt * 1.35;
@@ -2257,4 +2213,74 @@ function f_multi_parcel_buffer_exec(distance) {
 		}
 	});
 }
+function f_deviceCheck() {
+	"use strict";
+	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+		var oldlink = document.getElementsByTagName("link").item(3),
+			newlink = document.createElement("link");
+		newlink.setAttribute("rel", "stylesheet");
+		newlink.setAttribute("type", "text/css");
+		newlink.setAttribute("href", "css/erisv3_mobile.css");
+		document.getElementsByTagName("head").item(0).replaceChild(newlink, oldlink);
+	}
+}
+function f_startup() {
+	"use strict";
+	document.getElementById("useraccount").innerHTML = sessionStorage.username;
+	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup) {
+		config.defaults.io.alwaysUseProxy = false;
+		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
+		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
+		// set dynamic layer for MunicipalMap_live
+		LD_button = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer", {opacity: 0.8});
+		LD_flooding = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer", {opacity: 0.65});
+		ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1});
+		GL_parcel_selection = new GraphicsLayer({opacity: 0.60});
+		GL_buffer_parcel = new GraphicsLayer({opacity: 0.60});
+		GL_buffer_buffer = new GraphicsLayer({opacity: 0.60});
+		GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60});
+		var e_info = document.createElement("div"),
+			infowindow;
+		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+			infowindow = new PopupMobile(null, e_info);
+		} else {
+			infowindow = new Popup({
+				hightlight: false,
+				titleInBody: true
+			}, e_info);
+		}
+		M_meri = new Map("map", {basemap: "satellite",
+										 center: [-74.08456781356876, 40.78364440736023],
+										 zoom: 12,
+										 sliderStyle: "small",
+										 navigationMode: "css-transforms",
+										 fadeOnZoom: true,
+										 logo: false,
+										 minZoom: 12,
+										 infoWindow: infowindow});
+		on(M_meri, "click", function (e) {
+			f_map_click_handler(e);
+		});
+		on(M_meri, "load", function (e) {
+			navToolbar = new Navigation(M_meri);
+			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
+			measurementDijit.startup();
+			e_load_tools();
+		});
+		on(LD_button, "load", function (e) {
+			f_base_imagery_list_build();
+			f_ERIS_list_build();
+			f_layer_list_build();
+			f_search_munis_build();
+			f_search_qual_build();
+			f_search_landuse_build();
+		});
+		M_meri.addLayers([LD_button, ERIS_base, LD_flooding]);
+		M_meri.addLayer(GL_parcel_selection);
+		M_meri.addLayer(GL_buffer_selected_parcels);
+		M_meri.addLayer(GL_buffer_parcel);
+		M_meri.addLayer(GL_buffer_buffer);
+	});
+}
+f_deviceCheck();
 f_startup();

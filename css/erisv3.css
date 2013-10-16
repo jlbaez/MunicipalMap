@@ -35,7 +35,7 @@ nav a
 	color: #777;
 	display: block;
 	margin-bottom: 10px;
-	padding: 15px 0px;
+	padding: 15px 0;
 	text-align: center;
 	text-decoration: none;
 	text-shadow: 0 1px 0 #FFF;
@@ -362,7 +362,7 @@ nav ul li ul.fallback
 .button_row
 {
 	margin-right: 5px;
-	padding: 9px 0px 8px;
+	padding: 9px 0 8px;
 }
 #zoomin
 {
@@ -566,193 +566,152 @@ input[type="text"][disabled],input[type="password"][disabled]
 {
   	background-color: #dddddd; 
 }
+.dropdown
+{
+	max-height:75%;
+}
+.input_adj
+{
+	width: 50px !important;
+	display: inline-block !important;
+}
+#nav_tabs
+{
+	width:45%;
+}
+.header-container, .main aside
+{
+	box-shadow: 0 5px 10px #2C2C2C;
+	-webkit-user-select: none;
+	-moz-user-select: none;   
+	-ms-user-select: none;    
+}
+.tab
+{
+	margin-bottom: 0;
+	padding: 17px 5px;
+	width: 100%;
+}
+.main article
+{
+	float: left;
+	width: 57%;
+}
+.main aside
+{
+	float: right;
+	width: 28%;
+}
+#button
+{
+	padding-right: 0;
+}
+#tabs>li
+{
+	display: inline-block;
+	margin-right: 2%;
+}
+button, .button
+{
+	display: inline-block;
+}
+.wrapper
+{
+	margin: 0 auto;
+	width: auto;
+}
+.ResultList 
+{
+	margin: 0;
+	top: 0
+}
+.titleButton.maximize
+{
+	display: none;
+}
 /* ==========================================================================
    Media Queries
    ========================================================================== */
 @media only screen and (max-width : 980px)
 {
-	nav
-	{
-		border-bottom: 0
-	}
-	nav a
-	{
-		margin-bottom: 0
-	}
-	ul
-	{
-		list-style-type: none
-	}
-	#pull
-	{
-		background: url('img/nav-icon.png') no-repeat;
-		background-position:center; 
-		display: block;
-		height: 20px;
-		left:5px;
-		padding: 5px;
-		width: 20px;
-		z-index: 1;
-	}
-	#body
-	{
-		overflow: hidden;
-	}
-	#close
-	{
-		height: 20px;
-		width: 20px;
-		left:0
-	}
-	#buttons
-	{
-		float:none;
-		width:100%;
-	}
-	.button_row
-	{
-		left: 25%;
-		padding: 0;
-		position: relative;
-		width: 210px
-	}
-	.tab
-	{
-		padding: 20px 0;
-	}
-	.print_a
-	{
-		display: none;
-	}
 	#logo
 	{
+		display:block;
 		float: none;
-		left: 35%;
-		position: relative;
-		width: 35%;
+		margin: auto;
+		width: 25%;
+	}
+	#nav_tabs
+	{
+		display: block;
+		width: auto;
 	}
 	#tabs
 	{
-		height: 100%;
+		margin:auto;
+		width:55%;		
 	}
-	.dropdown
+	#buttons
 	{
-		padding: 5px;
+		display: block;
+		float: none;
+		width: auto;
 	}
-	.dropdown
+	#ul_buttons
 	{
-		position:relative;
+		margin: auto;
+		width: 41%;
 	}
-	.esriSimpleSliderTL
-	{
-		display:none;
-	}
-	#nav_tabs
-	{
-		background-color: #FAFAFA;
-		background-image: linear-gradient(to bottom, #FFF, #F2F2F2);
-		background-repeat: repeat-x;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-		width: 0;
-		overflow-x: hidden;
-		position: fixed;
-		top: 0;
-		left: 0px;
-		height: 100%;
-	}
-	#zoomin
-	{
-		display: none;
-	}
-	#zoomout
-	{
-		display: none;
-	}
-	#pan
-	{
-		display: none;
-	}
-	.esriMobileNavigationBar
-	{
-		background-color: #777;
-		background-image: none;	
-	}
-	.ResultList
-	{
-		top: 0;
-		margin: 0;
-	}
-	.parcel_content 
-	{
-		padding: 10px;
-	}
-}  
-@media only screen and (min-width: 981px)
-{
-	.dropdown
-	{
-		max-height:75%;
-	}
-	.input_adj
-	{
-		width: 50px !important;
-		display: inline-block !important;
-	}
-	#nav_tabs
-	{
-		width:45%;
-	}
-	.header-container, .main aside
-	{
-		box-shadow: 0 5px 10px #2C2C2C;
-		-webkit-user-select: none;
-  		-moz-user-select: none;   
-  		-ms-user-select: none;    
-	}
-	.tab
-	{
-		margin-bottom: 0;
-		padding: 17px 5px;
-		width: 100%;
-	}
-	.main article
-	{
-		float: left;
-		width: 57%;
-	}
-	.main aside
-	{
-		float: right;
-		width: 28%;
-	}
-	#button
-	{
-		padding-right: 0;
-	}
-	#tabs>li
-	{
-		display: inline-block;
-		margin-right: 2%;
-	}
-	button, .button
-	{
-		display: inline-block;
-	}
-	.wrapper
-	{
-		margin: 0 auto;
-		width: 1026px;
-	}
-	.ResultList 
+	.button_row
 	{
 		margin: 0;
-		top: 0
+		padding: 0;
 	}
-	.titleButton.maximize
+	button.tiny, .button.tiny
 	{
-		display: none;
-	}
+		margin: 0;
+	}		
 }
+@media only screen and (max-width : 769px)
+{
+	#logo
+	{
+		display:block;
+		float: none;
+		margin: auto;
+		width: 25%;
+	}
+	#nav_tabs
+	{
+		display: block;
+		width: auto;
+	}
+	#tabs
+	{
+		margin:auto;
+		width:70%;		
+	}
+	#buttons
+	{
+		display: block;
+		float: none;
+		width: auto;
+	}
+	#ul_buttons
+	{
+		margin: auto;
+		width: 55%;
+	}
+	.button_row
+	{
+		margin: 0;
+		padding: 0;
+	}
+	button.tiny, .button.tiny
+	{
+		margin: 0;
+	}
+}	
 /* ==========================================================================
    Print styles
    ========================================================================== */
@@ -802,14 +761,17 @@ input[type="text"][disabled],input[type="password"][disabled]
 	{
 		margin: 0.5cm;
 	}
-	p,h2,h3
+	h2,h3
 	{
 		orphans: 3;
 		widows: 3;
-	}
-	h2,h3
-	{
 		page-break-after: avoid;
+
+	}
+	p
+	{
+		orphans: 3;
+		widows: 3;
 	}
 	}
 }
