@@ -152,7 +152,7 @@ var legend_children_json = [{"name": "Environmental", "id": "environ", "children
 	 
 require(["dojo/request/xhr"], function (xhr) {
 	"use strict";
-	xhr("/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
+	xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
 		map_legend = content;
 	});
 });
@@ -1564,7 +1564,7 @@ function f_layer_list_build() {
 						} else {
 							legend_text = layer.name;
 						}
-						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": "<img src=\"/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/" + layer_legend.url + "\"class=\"legend_img\" alt=\"error\" /> " + legend_text}, e_ul_ltitle, "last");
+						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": '<img src=' + DynamicLayerHost + '/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/' + layer_legend.url + ' class="legend_img" alt="error" /> ' + legend_text}, e_ul_ltitle, "last");
 						if (layer.vis !== 1) {
 							domAttr.set(e_legend, "style", "display:none");
 						}
@@ -1663,7 +1663,6 @@ function f_startup() {
 			f_search_qual_build();
 			f_search_landuse_build();
 		});
-		console.log(infowindow);
 		M_meri.addLayers([LD_button, LD_flooding]);
 		M_meri.addLayer(GL_parcel_selection);
 		M_meri.addLayer(GL_buffer_selected_parcels);
