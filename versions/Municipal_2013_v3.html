@@ -68,12 +68,12 @@
 									</li>
 									<li class="property_li">
 										<label for="address">Address:</label>
-										<li class="property_li"><input type="text" id="address"></li>
+										<li class="property_li"><input type="text" id="address" class="input"></li>
 									<li class="property_li">
 										<label class="label_adj" for="block">Block:</label>
-										<input class="input_adj" type="text" id="block">
+										<input class="input_adj input" type="text" id="block">
 										<label class="label_adj" for="lot">Lot:</label>
-										<input class="input_adj" type="text" id="lot">
+										<input class="input_adj input" type="text" id="lot">
 									</li>
 									<li class="property_li">
 										<a href="javascript:void(0);" id="filter" class="search_toggle">Search Options & Filters (+)</a>
@@ -103,7 +103,7 @@
 									</li>
 									<li class="owner_li">
 										<label for="txtQueryOwner">Owner Name:</label>
-										<input type="text" id="txtQueryOwner" title="Owner Search" value="">
+										<input type="text" id="txtQueryOwner" title="Owner Search" value="" class="input">
 									</li>
 									<li>
 										<button id="search_add" class="small button property_li">Search for Property</button>
@@ -123,7 +123,7 @@
 								<ul id="dropdown3" class=" dropdown main" style="display:none">
 									<li class="buffer">
 										<label for="buffer_distance">Buffer Distance(Feet)</label>
-										<input type="text" id="buffer_distance" value="200">
+										<input type="text" id="buffer_distance" value="200" class="input">
 									</li>
 									<li class="buffer">
 										<a href="javascript:void(0);" id="buffer_exe" class="selection_a">Execute Buffer</a>
@@ -141,12 +141,13 @@
 							<li>
 								<a href="javascript:void(0);" id="account" class="tab">Account</a>
 								<ul id="dropdown5" class=" dropdown main" style="display:none">
-									<li>
-										<form id="form_submit" action="" onsubmit="return false;" method="post">
+									<li id="li_form">
+										<form id="form_submit" action="null" onsubmit="return false;" method="post">
 											<label for="username">User Name:</label>
-											<input type="text" id="username" required>
+											<input type="text" id="username" class="input" required>
 											<label for="username">Password:</label>
-											<input type="password" id="password" required>
+											<input type="password" id="password" class="input" required>
+											<a href="javascript:void(0);" id="account_link" class="account_link">Forgot Password?</a>
 											<input type="submit" class="small button" value="LogIn"> 
 										</form>
 									</li>
@@ -247,6 +248,7 @@
 			<div id="map"></div>
 		</div>
 		<script src="http://js.arcgis.com/3.6/"></script>
+		<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 		<script src="js/main.js"></script>
 	</body>
 </html>
