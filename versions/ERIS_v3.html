@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html class="no-js">
+	<head>
+		<meta charset="utf-8">
+		<title>New Jersey Meadowlands Commission &raquo; Municipal Map v.3</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="http://js.arcgis.com/3.6/js/dojo/dijit/themes/tundra/tundra.css">
+		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.6/js/esri/css/esri.css">
+		<link rel="stylesheet" href="css/normalize.min.css">
+		<link rel="stylesheet" href="css/erisv3.css">
+	</head>
+	<body>
+		<div id = "body">
+			<div class="header-container">
+				<header class="wrapper clearfix">
+					<a href="javascript:void(0);" id="pull"></a>
+					<img id="logo" src="css/img/logo_ERIS.png" alt="Municipal Map">
+					<nav id="buttons">
+						<ul id="ul_buttons">
+							<li class="button_row">
+								<button id="zoomin"  title="Zoom In" class="tiny secondary toolbutton"></button>
+								<button id="zoomout" title="Zoom Out" class="tiny secondary toolbutton"></button>
+								<button id="extent" title="Zoom Full extent" class="tiny secondary toolbutton"></button>
+								<button id="previous" title="Zoom Previous extent" class="tiny secondary toolbutton"></button>
+								<button id="next" title="Zoom Next extent" class="tiny secondary toolbutton"></button>
+								<button id="pan" title="Pan Map" class="tiny secondary button_clicked toolbutton"></button>
+								<button id="identify" title="Identify" class="tiny secondary toolbutton"></button>
+								<button id="parcel" title="Parcel Select" class="tiny secondary toolbutton"></button>
+								<button id="measure" title="Measure" class="tiny secondary toolbutton"></button>
+								<button id="ERIS" title="ERIS" class="tiny secondary toolbutton">E</button>
+								<button id="clear" title="Clear Map" class="tiny secondary toolbutton"></button>
+							</li>
+						</ul>
+					</nav>
+					<nav id="nav_tabs">
+						<ul id="tabs">
+							<li>
+								<a href="javascript:void(0);" id="layers" class="tab">Layers</a>
+								<ul id="dropdown1" class=" dropdown main" style="display:none">
+									<li class="layer_title">Basemap Imagery</li>
+									<li class="layer_group_title">BaseMap:</li>
+									<li>
+										<select class="image_layer_div" onchange="f_base_map_toggle(this)">
+											<option value="satellite">Default</option>
+											<option value="streets">Streets</option>
+											<option value="hybrid">Hybrid</option>
+											<option value="topo">Topo</option>
+											<option value="gray">Gray</option>
+											<option value="national-geographic">National-geographic</option>
+											<option value="osm">Osm</option>
+										</select>
+									</li>
+									<li id="map_layers"></li>
+									<li id="flood_layers"></li>
+								</ul>
+								<ul id="dropdown0" style="display:none">
+									<li>
+										<div id="dMeasureTool"></div>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<a href="javascript:void(0);" id="search" class="tab">Search</a>
+								<ul id="dropdown2" class=" dropdown main" style="display:none">
+									<li>Search:</li>
+									<li>
+										<a href="javascript:void(0);" id="property_toggle" class="search_toggle">Property</a>
+										<a href="javascript:void(0);" id="owner_toggle" class="search_toggle">Owner</a>
+									</li>
+									<li class="property_li">
+										<label for="address">Address:</label>
+										<li class="property_li"><input type="text" id="address"></li>
+									<li class="property_li">
+										<label class="label_adj" for="block">Block:</label>
+										<input class="input_adj" type="text" id="block">
+										<label class="label_adj" for="lot">Lot:</label>
+										<input class="input_adj" type="text" id="lot">
+									</li>
+									<li class="property_li">
+										<a href="javascript:void(0);" id="filter" class="search_toggle">Search Options & Filters (+)</a>
+										<ul class=" dropdown filters" style="display:none;">
+											<li class="li_filter">
+												<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchAll" value="no" checked="checked" />
+												<label for="rdo_muni_searchAll">All Municipalities</label>
+												<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchSelect" value="yes">
+												<label for="rdo_muni_searchSelect">Selected Municipalities</label>
+												<ul id="search_munis" class=" dropdown filters search_item" style="display:none;"></ul>
+											</li>
+											<li class="li_filter">
+												<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchAll" value="no" checked="checked" />
+												<label for="rdo_qual_searchAll">All Parcels</label>
+												<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchSelect" value="yes">
+												<label for="rdo_qual_searchSelect">Designated Parcels</label>
+												<ul id="search_qual" class=" dropdown filters" style="display:none;"></ul>
+											</li>
+											<li class="li_filter">
+												<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchAll" value="no" checked="checked" />
+												<label for="rdo_landuse_searchAll">All Land Uses</label>
+												<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchSelect" value="yes">
+												<label for="rdo_landuse_searchSelect">Selected Land Uses</label>
+												<ul id="search_landuse" class=" dropdown filters" style="display:none;"></ul>
+											</li>
+										</ul>
+									</li>
+									<li class="owner_li">
+										<label for="txtQueryOwner">Owner Name:</label>
+										<input type="text" id="txtQueryOwner" title="Owner Search" value="">
+									</li>
+									<li>
+										<button id="search_add" class="small button property_li">Search for Property</button>
+									</li>
+									<li class ="owner_li">
+										<button id="search_own" class="small button">Search for Owners</button>
+									</li>
+									<li id="search_tally"></li>
+									<li id="search_export"></li>
+									<li>
+										<progress value="0" id="search_progress" max="1"></progress>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<a href="javascript:void(0);" id="selections" class="tab">Selections</a>
+								<ul id="dropdown3" class=" dropdown main" style="display:none">
+									<li class="buffer">
+										<label for="buffer_distance">Buffer Distance(Feet)</label>
+										<input type="text" id="buffer_distance" value="200">
+									</li>
+									<li class="buffer">
+										<a href="javascript:void(0);" id="buffer_exe" class="selection_a">Execute Buffer</a>
+									</li>
+									<li>
+										<a id="export" class="selection_a" target="_blank"></a>
+									</li>
+									<li>Parcel Selections:</li>
+								</ul>
+							</li>
+							<li>
+								<a href="javascript:void(0);" id="legend" class="tab">Legend</a>
+								<ul id="dropdown4" class=" dropdown main" style="display:none"></ul>
+							</li>
+							<li>
+								<a href="javascript:void(0);" id="account" class="tab">Account</a>
+								<ul id="dropdown5" class=" dropdown main" style="display:none">
+									<li>
+										<form id="form_submit" action="" onsubmit="return false;" method="post">
+											<div>Hi there,</div><div id="useraccount"></div>
+											<div>Would you like to logoff?</div>
+											<input type="submit" class="small button" value="Log Off"> 
+										</form>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<a href="javascript:void(0);" id="about" class="tab">About</a>
+								<ul id="dropdown6" class=" dropdown main" style="display:none">
+									<li>
+										<a href="javascript:void(0);" class="about_a">About</a>
+										<ul class="about_ul">
+											<li>
+												<p>
+													This version of NJMCís Municipal Map encompasses 8 years of 
+													data collected about its 14-constituent towns, including 
+													historical to present geographic information. Municipalities 
+													can gain access to these layers and records about properties 
+													that falls within their respective municipalities and identify 
+													pertinent information about each property in question. The 
+													layers include: parcels, land use, zoning, wetlands, riparian, 
+													encumbrance, FEMA and much more. In addition, MERI-GIS has 
+													been compiling utility data from stormwater manholes to 
+													sanitary lines so towns can visualize and further make decision 
+													on existing infrastructure and conditions. Imagery accessible 
+													on this application ranges from the 1930's to 2012. New data 
+													will become available once they are complete. Visit MERI's 
+													webmaps periodically for timely updates.
+												</p>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="about_a">Disclaimer</a>
+										<ul class="about_ul"  style="display:none;">
+											<li>
+												<p>
+													The information contained in this site is the best available according 
+													to the procedures and standards of the New Jersey Meadowlands Commission 
+													(NJMC)/Meadowlands Environmental Research Institute Geographic Information 
+													Systems group (MERI-GIS) In order to maintain the quality and timeliness 
+													of the data, MERI-GIS regularly maintains the information in their 
+													databases and GIS layers. However, unintentional inaccuracies may occur. 
+													MERI-GIS has made every effort to present the information in a clear and 
+													understandable way for a variety of users. However, we cannot be responsible 
+													for the misuse or misinterpretation of the information presented by this 
+													system. Therefore, under no circumstances shall the NJMC/MERI-GIS be liable 
+													for any actions taken or omissions made from reliance on any information 
+													contained herein from whatever source nor shall the NJMC/MERI-GIS be liable 
+													for any other consequences from any such reliance. All data request shall be 
+													made directly to the GIS Department. Processing fees may apply and NJMC's 
+													data distribution agreement is required on all requests. The GIS Department 
+													can be contacted at <a href="mailto:merigis@njmeadowlands.gov" class="about_link">merigis@njmeadowlands.gov</a>
+												</p>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="about_a">Help</a>
+										<ul class="about_ul"  style="display:none;">
+											<li>
+												<p>
+													Need help using this application?<br>
+													A full guide covering everything from the basics all the way up to advanced features is provided
+													<a href="http://meri.njmeadowlands.gov/help/municipal-map/" class="about_link" target="_blank">here</a>.
+												</p>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="about_a">Metadata</a>
+										<ul class="about_ul"  style="display:none;">
+											<li>
+												<p>
+													Need the Metadata?<br>
+													A complete listing of all the GIS data is provided
+													<a href="http://apps.njmeadowlands.gov/mapping/metadata/?c=municipal" class="about_link" target="_blank">here</a>.
+												</p>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="about_a">Contact</a>
+										<ul class="about_ul"  style="display:none;">
+											<li>
+												<p>
+													We appreciate your feedback, please let us know what you think about the application.<br>
+													You can contact the MERI GIS Department at 201-460-4612 and at <a href="mailto:merigis@njmeadowlands.gov" class="about_link">merigis@njmeadowlands.gov</a>
+												</p>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</nav>
+				</header>
+			</div>
+			<div id="map"></div>
+		</div>
+		<script src="http://js.arcgis.com/3.6/"></script>
+		<script src="js/eris.js"></script>
+	</body>
+</html>

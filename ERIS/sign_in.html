@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.6.1/dojo/dojo.xd.js"></script>
+		<script>
+			// Function that refreshes a node's content
+			function sendForm() {
+				// Get the result node
+				var signInResultNode = dojo.byId("signInResultNode");
+				var signInForm = dojo.byId("signInForm");
+				// Using dojo.xhrGet, as very little information is being sent
+				dojo.xhrPost({
+					// The URL of the request
+					url: "authenticate.php",
+					// Form to send
+					form: dojo.byId("signInFormNode"),
+					// The success callback with result from server
+					load: function(loginResponse) {
+						dojo.style(signInResultNode,"display","block");
+						
+						if(loginResponse == "true"){
+							//hide login buttons if login was successful
+							dojo.style(signInForm,'display','none');
+							signInResultNode.innerHTML = "You are now logged in";
+						}
+						else{
+							signInResultNode.innerHTML = "Your password or username did not match.";
+						}
+					},
+					// The error handler
+					error: function() {
+						signInResultNode.innerHTML = "There was an error with your request.";
+					}
+				});
+			}
+
+		</script>
+	</head>
+	<body>
+		<h1>ERIS Login</h1>
+
+		<div id="signInForm">
+		<form id="signInFormNode">
+
+			<label>Username: </label><input type="text" name="userName" /><br />
+            <label>Password: </label><input type="password" name="password" />
+
+		</form>
+
+			<button id="sendForm" onClick="sendForm();">Send Form</button>
+		</div>
+		<pre id="signInResultNode"></pre>
+
+
+	</body>
+</html>
