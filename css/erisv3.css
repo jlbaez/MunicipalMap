@@ -416,6 +416,10 @@ nav ul li ul.fallback
 {
     background-image: url("img/toolbar-icons-clear.png");	
 }
+#ERIS
+{
+    background-image: url("img/toolbar-icons-eris.png");	
+}
 button, .button
 {
 	background-color: #b72727;
