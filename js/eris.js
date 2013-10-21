@@ -1477,14 +1477,6 @@ function f_multi_parcel_buffer_exec(distance) {
 		}
 	});
 }
-window.onresize = function (event) {
-	"use strict";
-	if (document.getElementById("nav_tabs").style.width === "80%" || document.getElementById("nav_tabs").style.width === "0px") {
-		document.getElementById("nav_tabs").removeAttribute("style");
-		document.getElementsByClassName("header-container")[0].removeAttribute("style");
-		document.getElementById("map").removeAttribute("style");
-	}
-};
 function e_load_tools() {
 	"use strict";
 	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/NodeList-traverse"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr) {
