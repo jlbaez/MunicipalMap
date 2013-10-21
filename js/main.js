@@ -1372,15 +1372,24 @@ function e_load_tools() {
 			header = document.getElementsByClassName("header-container")[0],
 			map = document.getElementById("map"),
 			nav_tabs = document.getElementById("nav_tabs"),
+			buttons = document.getElementById("buttons"),
+			logo = document.getElementById("logo"),
 			pull_handeler = new On(document.getElementById("pull"), "click", function (e) {
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
 					header.style.left = "80%";
-					header.style.position = "relative";
+					header.style.position = "absolute";
+					header.style.overflow = "hidden";
+					header.style.width = "20%";
 					nav_tabs.style.width = "80%";
 					map.style.left = "80%";
+					buttons.style.visibility = "hidden";
+					logo.style.width = "135%";
+					logo.style.visibility = "hidden";
 				} else {
 					header.removeAttribute("style");
+					logo.removeAttribute("style");
 					map.removeAttribute("style");
+					buttons.removeAttribute("style");
 					nav_tabs.style.width = "0";
 				}
 			}),
