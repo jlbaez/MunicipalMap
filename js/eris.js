@@ -773,7 +773,8 @@ function f_map_identify_exec(click_evt) {
 		var IP_Map_All = new IdentifyParameters(),
 			el_popup_content = domConstruct.create("div", {"class": "esriViewPopup"}),
 			el_popup_view = domConstruct.create("div", {"class": "mainSection"}, el_popup_content),
-			IT_Map_All = new IdentifyTask(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer");
+			IT_Map_All = new IdentifyTask(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer"),
+			next_arrow = document.getElementsByClassName("titleButton arrow")[0];
 		IP_Map_All.tolerance = 3;
 		IP_Map_All.returnGeometry = true;
 		IP_Map_All.layerIds = [14, 25, 27, 26, 31, 30, 29];
@@ -798,6 +799,7 @@ function f_map_identify_exec(click_evt) {
 			});
 			M_meri.infoWindow.setContent(el_popup_content);
 			M_meri.infoWindow.show(click_evt.mapPoint);
+			next_arrow.style.display = "block";
 			document.getElementById("map_container").style.cursor = "default";
 		});
 	});
