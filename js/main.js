@@ -1517,6 +1517,8 @@ function e_load_tools() {
 				}).then(function (data) {
 					if (data === "true") {
 						location.reload();
+					} else {
+						document.getElementById("login_response").innerHTML = "Wrong login Credentials";
 					}
 				});
 			}),
