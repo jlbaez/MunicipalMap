@@ -809,13 +809,12 @@ function f_parcel_selection_exec(map_event) {
 }
 function f_map_identify_exec(click_evt) {
 	"use strict";
-	require(["dojo/_base/array", "dojo/dom-construct", "esri/tasks/IdentifyParameters", "esri/tasks/IdentifyTask", "esri/dijit/PopupTemplate"], function (array, domConstruct, IdentifyParameters, IdentifyTask, PopupTemplate) {
+	require(["dojo/_base/array", "dojo/dom-construct", "esri/tasks/IdentifyParameters", "esri/tasks/IdentifyTask"], function (array, domConstruct, IdentifyParameters, IdentifyTask) {
 		document.getElementById("map_container").style.cursor = "progress";
 		var IP_Map_All = new IdentifyParameters(),
 			el_popup_content = domConstruct.create("div", {"class": "esriViewPopup"}),
 			el_popup_view = domConstruct.create("div", {"class": "mainSection"}, el_popup_content),
-			IT_Map_All = new IdentifyTask(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer"),
-			next_arrow = document.getElementsByClassName("titleButton arrow")[0];
+			IT_Map_All = new IdentifyTask(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer");
 		IP_Map_All.tolerance = 3;
 		IP_Map_All.returnGeometry = true;
 		IP_Map_All.layerIds = [14, 25, 27, 26, 31, 30, 29];
@@ -839,8 +838,8 @@ function f_map_identify_exec(click_evt) {
 				});
 			});
 			infowindow.setContent(el_popup_content);
+			//infowindow.resize(350, 300);
 			infowindow.show(click_evt.mapPoint);
-			next_arrow.style.display = "block";
 			document.getElementById("map_container").style.cursor = "default";
 		});
 	});
