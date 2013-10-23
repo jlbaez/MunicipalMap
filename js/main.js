@@ -1587,7 +1587,7 @@ function f_base_imagery_list_build() {
 	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, Array) {
 		var e_li_title = domConstruct.create("li", {"id": "image_overlay", "class": "layer_group_title", "innerHTML": "Image Overlay"}, "dropdown1"),
 			e_li = domConstruct.create("li", {"class": "image_layer_li"}, "dropdown1"),
-			e_sel = domConstruct.create("select", {"onChange": "f_image_layer_toggle(this)"}, e_li),
+			e_sel = domConstruct.create("select", {"onChange": "f_image_layer_toggle(this)", "class": "select_option"}, e_li),
 			e_opt = domConstruct.create("option", {"innerHTML": "Default"}, e_sel);
 		Array.forEach(imageryLayersJSON, function (img_lyr, index) {
 			var e_opt = domConstruct.create("option", {value: img_lyr.id, innerHTML: img_lyr.title}, e_sel);
@@ -1642,7 +1642,7 @@ function f_layer_list_build() {
 				domAttr.set(e_ul_ltitle, "style", "display:none");
 			}
 		});
-		e_sel_flood = domConstruct.create("select", {"onChange": "f_layer_list_flood_update(this)"}, e_li);
+		e_sel_flood = domConstruct.create("select", {"onChange": "f_layer_list_flood_update(this)", "class": "select_option"}, e_li);
 		e_opt_flood = domConstruct.create("option", {"innerHTML": "No tidal sruge"}, e_sel_flood);
 		array.forEach(map_layers_flooding_json.scenarios, function (scenario, index) {
 			var e_opt_flood = domConstruct.create("option", {"id": "m_layer_flood_" + scenario.lyr, "innerHTML": scenario.group + " Foot Tidal Surge"}, e_sel_flood);
