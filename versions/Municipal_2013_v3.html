@@ -10,32 +10,33 @@
 		<link rel="stylesheet" href="css/main.css">
 	</head>
 	<body>
+		<noscript>Sorry, but in order to use Municipal Map you need Javscript ena</noscript>
 		<div id = "body">
 			<div class="header-container">
 				<header class="wrapper clearfix">
-					<a href="javascript:void(0);" id="pull"></a>
-					<img id="logo" src="css/img/logo_municipal_map.png" alt="Municipal Map">
-					<nav id="buttons">
-						<ul id="ul_buttons">
+					<a href="javascript:void(0);" id="pull" class="pull"></a>
+					<img class="logo" id="logo" src="css/img/logo_municipal_map.png" alt="Municipal Map">
+					<nav id="buttons" class="navbar buttons">
+						<ul class="ul_buttons">
 							<li class="button_row">
-								<button id="zoomin"  title="Zoom In" class="tiny secondary toolbutton"></button>
-								<button id="zoomout" title="Zoom Out" class="tiny secondary toolbutton"></button>
-								<button id="extent" title="Zoom Full extent" class="tiny secondary toolbutton"></button>
-								<button id="previous" title="Zoom Previous extent" class="tiny secondary toolbutton"></button>
-								<button id="next" title="Zoom Next extent" class="tiny secondary toolbutton"></button>
-								<button id="pan" title="Pan Map" class="tiny secondary button_clicked toolbutton"></button>
-								<button id="identify" title="Identify" class="tiny secondary toolbutton"></button>
-								<button id="parcel" title="Parcel Select" class="tiny secondary toolbutton"></button>
-								<button id="measure" title="Measure" class="tiny secondary toolbutton"></button>
-								<button id="clear" title="Clear Map" class="tiny secondary toolbutton"></button>
+								<button id="zoomin"  title="Zoom In" class="zoomin tiny secondary toolbutton"></button>
+								<button id="zoomout" title="Zoom Out" class="zoomout tiny secondary toolbutton"></button>
+								<button id="extent" title="Zoom Full extent" class="extent tiny secondary toolbutton"></button>
+								<button id="previous" title="Zoom Previous extent" class="previous tiny secondary toolbutton"></button>
+								<button id="next" title="Zoom Next extent" class="next tiny secondary toolbutton"></button>
+								<button id="pan" title="Pan Map" class="pan tiny secondary button_clicked toolbutton"></button>
+								<button id="identify" title="Identify" class="identify tiny secondary toolbutton"></button>
+								<button id="parcel" title="Parcel Select" class="parcel tiny secondary toolbutton"></button>
+								<button id="measure" title="Measure" class="measure tiny secondary toolbutton"></button>
+								<button id="clear" title="Clear Map" class="clear tiny secondary toolbutton"></button>
 							</li>
 						</ul>
 					</nav>
-					<nav id="nav_tabs">
-						<ul id="tabs">
+					<nav id="nav_tabs" class="nav_tabs navbar">
+						<ul class="tabs">
 							<li>
 								<a href="javascript:void(0);" id="layers" class="tab">Layers</a>
-								<ul id="dropdown1" class=" dropdown main" style="display:none">
+								<ul id="dropdown1" class=" dropdown main dropdown1" style="display:none">
 									<li class="layer_title">Basemap Imagery</li>
 									<li class="layer_group_title">BaseMap:</li>
 									<li>
@@ -49,8 +50,6 @@
 											<option value="osm">Osm</option>
 										</select>
 									</li>
-									<li id="map_layers"></li>
-									<li id="flood_layers"></li>
 								</ul>
 								<ul id="dropdown0" style="display:none">
 									<li>
@@ -63,7 +62,7 @@
 								<ul id="dropdown2" class=" dropdown main" style="display:none">
 									<li>Search:</li>
 									<li>
-										<a href="javascript:void(0);" id="property_toggle" class="search_toggle">Property</a>
+										<a href="javascript:void(0);" id="property_toggle" class="search_toggle property_toggle">Property</a>
 										<a href="javascript:void(0);" id="owner_toggle" class="search_toggle">Owner</a>
 									</li>
 									<li class="property_li">
@@ -71,12 +70,12 @@
 										<li class="property_li"><input type="text" id="address" class="input"></li>
 									<li class="property_li">
 										<label class="label_adj" for="block">Block:</label>
-										<input class="input_adj input" type="text" id="block">
+										<input class="input_adj" type="text" id="block">
 										<label class="label_adj" for="lot">Lot:</label>
-										<input class="input_adj input" type="text" id="lot">
+										<input class="input_adj" type="text" id="lot">
 									</li>
 									<li class="property_li">
-										<a href="javascript:void(0);" id="filter" class="search_toggle">Search Options & Filters (+)</a>
+										<a href="javascript:void(0);" id="filter" class="search_toggle filter">Search Options & Filters (+)</a>
 										<ul class=" dropdown filters" style="display:none;">
 											<li class="li_filter">
 												<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchAll" value="no" checked="checked" />
@@ -114,7 +113,7 @@
 									<li id="search_tally"></li>
 									<li id="search_export"></li>
 									<li>
-										<progress value="0" id="search_progress" max="1"></progress>
+										<progress value="0" id="search_progress" class="search_progress" max="1"></progress>
 									</li>
 								</ul>
 							</li>
@@ -126,10 +125,10 @@
 										<input type="text" id="buffer_distance" value="200" class="input">
 									</li>
 									<li class="buffer">
-										<a href="javascript:void(0);" id="buffer_exe" class="selection_a">Execute Buffer</a>
+										<a href="javascript:void(0);" id="buffer_exe" class="selection_a buffer_exe">Execute Buffer</a>
 									</li>
 									<li>
-										<a id="export" class="selection_a" target="_blank"></a>
+										<a id="export" class="selection_a export" target="_blank"></a>
 									</li>
 									<li>Parcel Selections:</li>
 								</ul>
@@ -246,7 +245,7 @@
 					</nav>
 				</header>
 			</div>
-			<div id="map"></div>
+			<div id="map" class="map"></div>
 		</div>
 		<script src="http://js.arcgis.com/3.6/"></script>
 		<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>

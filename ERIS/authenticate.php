@@ -31,7 +31,7 @@ function authenticate($user, $pass){
 		mysql_query($sql)	or die();
 		
 		//build the authentication cookie
-		setcookie("NJMC_MERI_ERIS", $cookieKey, (date('U') + 31556926)); //31 556 926 = 1 year
+		setcookie("NJMC_MERI_ERIS", $cookieKey, (date('U') + 31556926), '/',".njmeadowlands.gov"); //31 556 926 = 1 year
 		return true;
 	}
 }

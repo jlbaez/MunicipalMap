@@ -866,12 +866,14 @@ function f_map_click_handler(evt_click) {
 }
 function f_button_clicked(id) {
 	"use strict";
+	document.getElementsByClassName("button_clicked")[0].removeAttribute("style");
 	require(["dojo/dom-class"], function (domClass) {
 		if (G_button_clicked !== "") {
 			domClass.remove(G_button_clicked, "button_clicked");
 			domClass.add(id, "button_clicked");
 		}
 	});
+	document.getElementById(id).style.backgroundColor = "#d0d0d0";
 	G_button_clicked = id;
 }
 function f_measure_map() {

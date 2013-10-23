@@ -984,12 +984,14 @@ function f_map_click_handler(evt_click) {
 }
 function f_button_clicked(id) {
 	"use strict";
+	document.getElementsByClassName("button_clicked")[0].removeAttribute("style");
 	require(["dojo/dom-class"], function (domClass) {
 		if (G_button_clicked !== "") {
 			domClass.remove(G_button_clicked, "button_clicked");
 			domClass.add(id, "button_clicked");
 		}
 	});
+	document.getElementById(id).style.backgroundColor = "#d0d0d0";
 	G_button_clicked = id;
 }
 function f_measure_map() {
@@ -2227,8 +2229,8 @@ function f_deviceCheck() {
 		newlink.setAttribute("type", "text/css");
 		newlink.setAttribute("href", "css/erisv3_mobile.css");
 		document.getElementsByTagName("head").item(0).replaceChild(newlink, oldlink);
-		document.getElementsByClassName("header-container")[0].style.display = "block";
 	}
+	document.getElementsByClassName("header-container")[0].style.display = "block";
 }
 function f_startup() {
 	"use strict";
