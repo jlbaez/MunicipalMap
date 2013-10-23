@@ -120,6 +120,8 @@ nav a:hover
 .ul_buttons
 {
 	list-style-type: none;
+	margin: auto;
+	width: 374px;
 }
 .ResultList 
 {
@@ -306,7 +308,6 @@ nav ul li ul li a
 }
 .button_row
 {
-	margin-right: 5px;
 	padding: 9px 0 8px;
 }
 .zoomin

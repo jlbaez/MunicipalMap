@@ -454,7 +454,7 @@ input[type="text"],input[type="password"]
 	font-family: inherit;
 	font-size: 0.875em;	
 	margin: 0 0 1em 0;
-	padding-right: .5em;
+	padding-left: .5em;
 	transition: box-shadow 0.45s, border-color 0.45s ease-in-out;
 }
 .input_adj
