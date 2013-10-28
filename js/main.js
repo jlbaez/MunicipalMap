@@ -136,12 +136,10 @@ var map_layers_flooding_json = {"title": "Flooding Scenarios",
 										  "title_tgf": "Predicted Flooding in absence of tidegates",
 										  "title_surge": "Storm Surge",
 										  "scenarios": [{"group": 8, "lyr": 1, "vis": 0},
-														  {"group": 7, "lyr": 4, "vis": 0},
-														  {"group": 6, "lyr": 7, "vis": 0},
-														  {"group": 5, "lyr": 10, "vis": 0},
-														  {"group": 4, "lyr": 13, "vis": 0},
-														  {"group": 3, "lyr": 16, "vis": 0},
-														  {"group": 2, "lyr": 19, "vis": 0}]};
+															 {"group": 7, "lyr": 2, "vis": 0},
+															 {"group": 6, "lyr": 3, "vis": 0},
+															 {"group": 5, "lyr": 4, "vis": 0},
+															 {"group": 4, "lyr": 5, "vis": 0}]};
 
 var legend_children_json = [{"name": "Environmental", "id": "environ", "children": 0},
 									 {"name": "Hydro", "id": "hydro", "children": 0},
@@ -647,6 +645,8 @@ function f_export_excel(export_PID) {
 	form.action = "./php/export_parcel_owners.php";
 	form.target = "_blank";
 	form.method = "POST";
+	form.style.display = "none";
+	console.log(export_PID);
 	for (index = 0; index < export_PID.length; index += 1) {
 		hidden = document.createElement("input");
 		hidden.type = "hidden";
@@ -654,7 +654,13 @@ function f_export_excel(export_PID) {
 		hidden.value = export_PID[index];
 		form.appendChild(hidden);
 	}
+	form.onsubmit = function (e) {
+		console.log(e);
+	};
+	console.log(form);
+	document.body.appendChild(form);
 	form.submit();
+	form.remove();
 }
 function f_process_results_parcel(results, event) {
 	"use strict";
@@ -2099,7 +2105,7 @@ function f_startup() {
 		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
 		// set dynamic layer for MunicipalMap_live
 		LD_button = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer", {opacity: 0.8});
-		LD_flooding = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer", {opacity: 0.65});
+		LD_flooding = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer", {opacity: 0.65});
 		GL_parcel_selection = new GraphicsLayer({opacity: 0.60});
 		GL_buffer_parcel = new GraphicsLayer({opacity: 0.60});
 		GL_buffer_buffer = new GraphicsLayer({opacity: 0.60});
