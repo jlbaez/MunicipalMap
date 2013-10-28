@@ -1,4 +1,4 @@
-/*global document, require, setTimeout, sessionStorage, window, navigator, location, XMLHttpRequest, Recaptcha*/
+/*global document, require, setTimeout, sessionStorage, window, navigator, location, XMLHttpRequest, Recaptcha, alert*/
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
@@ -470,6 +470,15 @@ function e_printMap(pid) {
 	sessionStorage.setItem('printPID', pid);
 	window.open("print/parcel_info.html", "_blank");
 }
+function f_getLocation(position) {
+	"use strict";
+	var y = position.coords.latitude,
+		x = position.coords.longitude;
+	require(["esri/geometry/Point", "esri/SpatialReference", "dojo/on"], function (Point, SpatialReference, on) {
+		var point = new Point(x, y, new SpatialReference({ wkid: 4326 }));
+		M_meri.centerAndZoom(point, 19);
+	});
+}
 function f_printMap() {
 	"use strict";
 	sessionStorage.setItem('printPID', document.getElementById("popup_pid").innerHTML);
@@ -646,7 +655,6 @@ function f_export_excel(export_PID) {
 	form.target = "_blank";
 	form.method = "POST";
 	form.style.display = "none";
-	console.log(export_PID);
 	for (index = 0; index < export_PID.length; index += 1) {
 		hidden = document.createElement("input");
 		hidden.type = "hidden";
@@ -654,17 +662,12 @@ function f_export_excel(export_PID) {
 		hidden.value = export_PID[index];
 		form.appendChild(hidden);
 	}
-	form.onsubmit = function (e) {
-		console.log(e);
-	};
-	console.log(form);
 	document.body.appendChild(form);
 	form.submit();
 	form.remove();
 }
 function f_process_results_parcel(results, event) {
 	"use strict";
-	var event_array = event.split("_");
 	require(["dojo/dom-construct", "dojo/_base/array", "dojo/query", "dojo/on"], function (domConstruct, array, query, on) {
 		var feature_div = "selParcel_",
 			GL_container = GL_parcel_selection,
@@ -716,10 +719,14 @@ function f_process_results_parcel(results, event) {
 																	 {"class": "search_parcel_container",
 																	  "id":  "parcelinfo_" + featureAttributes[object_attr]},
 																	 "dropdown3");
-			} else {
+			} else if (event === "search") {
 				el_featureAttribs = domConstruct.create("li",
 																	 {"class": "search_parcel_container",
 																	  "id": "parcel_ser_info_" + featureAttributes[object_attr]}, "dropdown2");
+			} else {
+				el_featureAttribs = domConstruct.create("li",
+																	 {"class": "search_parcel_container owner_parcels_" + event.split("_")[1],
+																	  "id": "parcel_ser_info_" + featureAttributes[object_attr]}, "findownerparcel_" + event.split("_")[1]);
 			}
 			output = domConstruct.create("ul",
 												  {"class": "ResultList SelectionResult",
@@ -730,7 +737,7 @@ function f_process_results_parcel(results, event) {
 						output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
 					}
 				}
-			} else if (event === "search") {
+			} else {
 				for (attr in featureAttributes) {
 					if (featureAttributes.hasOwnProperty(attr) && ["PROPERTY_ADDRESS", "BLOCK", "LOT"].indexOf(attr) !== -1) {
 						output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
@@ -1404,6 +1411,13 @@ function e_load_tools() {
 					nav_tabs.style.width = "0";
 				}
 			}),
+			location_handler = new On(document.getElementById("locate"), "click", function (e) {
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(f_getLocation);
+				} else {
+					alert("Can't get Location");
+				}
+			}),
 			zoomin_handler = new On(document.getElementById("zoomin"), "click", function (e) {
 				navToolbar.activate(Navigation.ZOOM_IN);
 				f_button_clicked("zoomin");
@@ -1451,7 +1465,8 @@ function e_load_tools() {
 				f_search_owner(document.getElementById("txtQueryOwner").value);
 			}),
 			search_toggle_handler = new On(new Query(".search_toggle"), "click", function (e) {
-				if (e.toElement.id === "filter") {
+				var toElem = e.originalTarget || e.toElement || e.srcElement;
+				if (toElem.id === "filter") {
 					if (this.style.color !== "rgb(0, 153, 221)") {
 						this.innerHTML = "Search Options & Filters (-)";
 					} else {
@@ -1758,6 +1773,14 @@ function f_legend_toggle(layer) {
 		});
 	});
 }
+function f_hide_owner_parcels(ownerid) {
+	"use strict";
+	var elem = document.getElementsByClassName("owner_parcels_" + ownerid),
+		index = 0;
+	for (index = 0; index < elem.length; index += 1) {
+		elem[index].remove();
+	}
+}
 function f_query_owner_int_exec(ownerid) {
 	"use strict";
 	require(["esri/tasks/QueryTask", "esri/tasks/RelationshipQuery", "esri/tasks/query"], function (QueryTask, RelationshipQuery, Query) {
@@ -1806,6 +1829,17 @@ function f_query_owner_int_exec(ownerid) {
 					});
 				}
 			});
+			findparcels.onclick = function (e) {
+				var toElem = e.originalTarget || e.toElement || e.srcElement;
+				toElem.innerHTML = "Find Owner Parcels";
+				toElem.onclick = null;
+				toElem.onclick = function () {
+					f_query_owner_int_exec(ownerid);
+					return false;
+				};
+				f_hide_owner_parcels(ownerid);
+				
+			};
 			findparcels.innerHTML = "Hide Owner Parcels";
 		}
 	});
@@ -2127,6 +2161,7 @@ function f_startup() {
 										 fadeOnZoom: true,
 										 logo: false,
 										 minZoom: 12,
+										 maxZoom: 22,
 										 infoWindow: infowindow});
 		on(M_meri, "click", function (e) {
 			f_map_click_handler(e);

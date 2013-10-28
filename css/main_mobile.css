@@ -130,7 +130,7 @@ nav a:hover
 {
 	list-style-type: none;
 	margin: auto;
-	width: 266px;
+	width: 315px;
 }
 .toc_layer_li
 {
@@ -363,6 +363,10 @@ nav ul li ul li a
 .measure
 {
     background-image: url("img/toolbar-icons-measure.png");	
+}
+.locate
+{
+    background-image: url("img/toolbar-icons-locate.png");	
 }
 .clear
 {

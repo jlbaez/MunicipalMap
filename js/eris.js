@@ -1,4 +1,4 @@
-/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location*/
+/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location, alert*/
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
@@ -617,7 +617,6 @@ function f_export_excel(export_PID) {
 }
 function f_process_results_parcel(results, event) {
 	"use strict";
-	var event_array = event.split("_");
 	require(["dojo/dom-construct", "dojo/_base/array", "dojo/query", "dojo/on"], function (domConstruct, array, query, on) {
 		var feature_div = "selParcel_",
 			GL_container = GL_parcel_selection,
@@ -669,10 +668,14 @@ function f_process_results_parcel(results, event) {
 																	 {"class": "search_parcel_container",
 																	  "id":  "parcelinfo_" + featureAttributes[object_attr]},
 																	 "dropdown3");
-			} else {
+			} else if (event === "search") {
 				el_featureAttribs = domConstruct.create("li",
 																	 {"class": "search_parcel_container",
 																	  "id": "parcel_ser_info_" + featureAttributes[object_attr]}, "dropdown2");
+			} else {
+				el_featureAttribs = domConstruct.create("li",
+																	 {"class": "search_parcel_container owner_parcels_" + event.split("_")[1],
+																	  "id": "parcel_ser_info_" + featureAttributes[object_attr]}, "findownerparcel_" + event.split("_")[1]);
 			}
 			output = domConstruct.create("ul",
 												  {"class": "ResultList SelectionResult",
@@ -683,7 +686,7 @@ function f_process_results_parcel(results, event) {
 						output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
 					}
 				}
-			} else if (event === "search") {
+			} else {
 				for (attr in featureAttributes) {
 					if (featureAttributes.hasOwnProperty(attr) && ["PROPERTY_ADDRESS", "BLOCK", "LOT"].indexOf(attr) !== -1) {
 						output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
@@ -734,7 +737,7 @@ function f_process_results_parcel(results, event) {
 			a_export = document.createElement("a");
 			a_export.className = "selection_a";
 			a_export.href = "#";
-			a_export.style.color = "#DE0A0A";
+			a_export.style.color = "#09D";
 			a_export.onclick = function () {
 				f_export_excel(export_PID);
 				return false;
@@ -899,8 +902,8 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 				}
 				for (index = 0; index < substance_name.length; index += 1) {
 					e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
-					if (f_urlExists('http://webmaps.njmeadowlands.gov/municipal/new/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
-						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
+					if (f_urlExists('http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
+						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="ERIS/factsheets//' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
 					} else {
 						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
 					}
@@ -1483,6 +1486,15 @@ function f_multi_parcel_buffer_exec(distance) {
 		}
 	});
 }
+function f_getLocation(position) {
+	"use strict";
+	var y = position.coords.latitude,
+		x = position.coords.longitude;
+	require(["esri/geometry/Point", "esri/SpatialReference", "dojo/on"], function (Point, SpatialReference, on) {
+		var point = new Point(x, y, new SpatialReference({ wkid: 4326 }));
+		M_meri.centerAndZoom(point, 19);
+	});
+}
 function e_load_tools() {
 	"use strict";
 	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/NodeList-traverse"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr) {
@@ -1514,6 +1526,13 @@ function e_load_tools() {
 			zoomin_handler = new On(document.getElementById("zoomin"), "click", function (e) {
 				navToolbar.activate(Navigation.ZOOM_IN);
 				f_button_clicked("zoomin");
+			}),
+			location_handler = new On(document.getElementById("locate"), "click", function (e) {
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(f_getLocation);
+				} else {
+					alert("Can't get Location");
+				}
 			}),
 			zoomout_handler = new On(document.getElementById("zoomout"), "click", function (e) {
 				navToolbar.activate(Navigation.ZOOM_OUT);
@@ -1893,6 +1912,14 @@ function f_legend_toggle(layer) {
 		});
 	});
 }
+function f_hide_owner_parcels(ownerid) {
+	"use strict";
+	var elem = document.getElementsByClassName("owner_parcels_" + ownerid),
+		index = 0;
+	for (index = 0; index < elem.length; index += 1) {
+		elem[index].remove();
+	}
+}
 function f_query_owner_int_exec(ownerid) {
 	"use strict";
 	require(["esri/tasks/QueryTask", "esri/tasks/RelationshipQuery", "esri/tasks/query"], function (QueryTask, RelationshipQuery, Query) {
@@ -1941,6 +1968,17 @@ function f_query_owner_int_exec(ownerid) {
 					});
 				}
 			});
+			findparcels.onclick = function (e) {
+				var toElem = e.originalTarget || e.toElement || e.srcElement;
+				toElem.innerHTML = "Find Owner Parcels";
+				toElem.onclick = null;
+				toElem.onclick = function () {
+					f_query_owner_int_exec(ownerid);
+					return false;
+				};
+				f_hide_owner_parcels(ownerid);
+				
+			};
 			findparcels.innerHTML = "Hide Owner Parcels";
 		}
 	});

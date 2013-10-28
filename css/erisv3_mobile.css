@@ -125,7 +125,7 @@ nav a:hover
 {
 	list-style-type: none;
 	margin: auto;
-	width: 266px;
+	width: 324px;
 }
 .ResultList 
 {
@@ -359,6 +359,10 @@ nav ul li ul li a
 .measure
 {
     background-image: url("img/toolbar-icons-measure.png");	
+}
+.locate
+{
+    background-image: url("img/toolbar-icons-locate.png");	
 }
 .clear
 {
