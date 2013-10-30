@@ -474,6 +474,7 @@ function f_getLocation(position) {
 	"use strict";
 	var y = position.coords.latitude,
 		x = position.coords.longitude;
+	console.log(M_meri.extent);
 	require(["esri/geometry/Point", "esri/SpatialReference", "dojo/on"], function (Point, SpatialReference, on) {
 		var point = new Point(x, y, new SpatialReference({ wkid: 4326 }));
 		M_meri.centerAndZoom(point, 19);

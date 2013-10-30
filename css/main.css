@@ -316,6 +316,7 @@ nav ul li ul li a
 .toolbutton
 {
    background-position: 50% 50%;
+	background-size: 70%;
 	background-repeat: no-repeat;
 	width: 25px;
 	height: 25px;	
