@@ -356,7 +356,8 @@ nav ul li ul li a
 }
 .locate
 {
-    background-image: url("img/toolbar-icons-locate.png");	
+	display: none;
+	background-image: url("img/toolbar-icons-locate.png");	
 }
 .clear
 {
@@ -600,7 +601,7 @@ button, .button
 	{
 		margin: auto;
 		margin-bottom: 5px;
-		width: 315px;
+		width: 284px;
 	}
 	.button_row
 	{

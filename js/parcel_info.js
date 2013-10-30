@@ -28,7 +28,6 @@ var map,
 	graphic;
 // Output Fields for Queries of Parcel, Zoning, Land Use, Owners, Building
 var QT_OutFields = {parcel: ["PID",
-									  "PAMS_PIN",
 									  "BLOCK",
 									  "LOT",
 									  "OLD_BLOCK",
@@ -43,20 +42,7 @@ var QT_OutFields = {parcel: ["PID",
 									  "MAP_ACRES"],
 						  owner: ["*"],
 						  building: ["FACILITY_NAME",
-										 "BUILDING_LOCATION"],
-						  census: ["BLOCKCE10",
-									  "HOUNSING_UNITS",
-									  "OWNER_OCC_HH",
-									  "POPULATION",
-									  "RENTER_OCC_HH",
-									  "M_UNDER_5",
-									  "MALE_POPULATION",
-									  "FEMALE_POPULATION",
-									  "F_UNDER_5",
-									  "MEDIAN_AGE_M",
-									  "MEDIAN_AGE_M_AND_F",
-									  "HH_CHLDRN_UNDER_18",
-									  "AVG_FAM_SIZE"]};
+										 "BUILDING_LOCATION"]};
 var DisplayFields = {parcel: {"PID": "PID",
 										"PAMS_PIN": "PAMS",
 										"BLOCK": "Block",
@@ -64,68 +50,22 @@ var DisplayFields = {parcel: {"PID": "PID",
 										"OLD_BLOCK": "Old Block",
 										"OLD_LOT": "Old Lot",
 										"FACILITYNAME": "Facility Name",
-										"PROPERTY_ADDRESS": "Addr",
+										"PROPERTY_ADDRESS": "Parcel Address",
 										"MAP_ACRES": "Acres"},
 							land_use: {"LANDUSE_CODE": "Landuse Code",
 										  "QUALIFIER": "Qualifier",
 										  "MAP_ACRES": "Acres"},
-							zoning: {"ZONE_CODE": "Zoning",
-										"MAP_ACRES": "Acres"},
+							zoning: {"ZONE_CODE": "Zoning"},
 							owner: {"OBJECTID": "OID",
 									  "OWNID": "Owner ID",
-									  "NAME": "Name",
-									  "ADDRESS": "Addr",
-									  "CITY_STATE": "City, ST",
-									  "ZIPCODE": "Zip"},
+									  "NAME": "Owner Name",
+									  "ADDRESS": "Owner Address",
+									  "CITY_STATE": "Owner City, ST",
+									  "ZIPCODE": "Owner Zip"},
 							building: {"FACILITY_NAME": "Facility Name",
-										  "BUILDING_LOCATION": "Location"},
-							census: {"BLOCKCE10": "Census Block 2010",
-										"HOUNSING_UNITS": "Housing Units",
-										"OWNER_OCC_HH": "Owner Occupied Households",
-										"POPULATION": "Population",
-										"RENTER_OCC_HH": "Renter Occupied Household",
-										"M_UNDER_5": "Male Under 5",
-										"MALE_POPULATION": "Male Population",
-										"FEMALE_POPULATION": "Female Population",
-										"F_UNDER_5": "Female Under 5",
-										"MEDIAN_AGE_M": "Median Age Male",
-										"MEDIAN_AGE_M_AND_F": "Median Age Male and Female",
-										"HH_CHLDRN_UNDER_18": "Household Children Under 18",
-										"AVG_FAM_SIZE": "Average Family Size"}};
+										  "BUILDING_LOCATION": "Location"}};
 
-var aliases = {"munCodes":
-					{"205": "Carlstadt",
-					 "212": "East Rutherford",
-					 "230": "Little Ferry",
-					 "232": "Lyndhurst",
-					 "237": "Moonachie",
-					 "239": "North Arlington",
-					 "249": "Ridgefield",
-					 "256": "Rutherford",
-					 "259": "South Hackensack",
-					 "262": "Teterboro",
-					 "906": "Jersey City",
-					 "907": "Kearny",
-					 "908": "North bergen",
-					 "909": "Secaucus"},
-					"landUseCodes" :
-					{"000": "Unclassified",
-					 "AL": "Altered Lands",
-					 "CO": "Commercial Office",
-					 "CR": "Commercial Retail",
-					 "CU": "Communication Utility",
-					 "HM": "Hotels and Motels",
-					 "ICC": "Ind. Comm. Complex",
-					 "IND": "Industrial",
-					 "PQP": "Public Services",
-					 "RES": "Residential",
-					 "RL": "Recreational Land",
-					 "TRS": "Transportation",
-					 "VAC": "Open Land",
-					 "TL": "Transitional Lands",
-					 "WAT": "Water",
-					 "WET": "Wetlands"},
-					"zoneCodes":
+var aliases = {"zoneCodes":
 					{"AV": "Aviation facilities",
 					 "CP": "Commercial Park",
 					 "EC": "Environmental Conservation",
@@ -353,8 +293,9 @@ function f_query_parcel_results(results) {
 	"use strict";
 	var resultFeatures = results.features,
 		i,
-		il;
-	require(["dojo/dom-construct", "esri/geometry/Geometry", "esri/SpatialReference"], function (domConstruct, Geometry, SpatialReference) {
+		il,
+		array = [];
+	require(["dojo/dom-construct", "esri/geometry/Geometry", "esri/SpatialReference", "dojo/on"], function (domConstruct, Geometry, SpatialReference, on) {
 		for (i = 0, il = resultFeatures.length; i < il; i += 1) {
 			var featureAttributes,
 				att,
@@ -371,17 +312,26 @@ function f_query_parcel_results(results) {
 			for (att in featureAttributes) {
 				if (featureAttributes.hasOwnProperty(att)) {
 					if (featureAttributes[att] !== null && featureAttributes[att] !== "") {
+						if (att === "BLOCK") {
+							array.block = att;
+						} else if (att === "LOT") {
+							array.LOT = att;
+						}						
 						parcel_li = domConstruct.create("li", {"innerHTML": ": " + featureAttributes[att], "class": "feature_li"}, "uParcel");
 						feature_name = domConstruct.create("strong", {"innerHTML": DisplayFields.parcel[att]}, parcel_li, "first");
 					}
-					if (att === 'PAMS_PIN') {
-						imageExists(parcel_id, 'photo');
+					if (att === 'PID') {
+						imageExists(att, 'photo');
 					}
 				}
 			}
+			console.log(array);
 			map.setExtent(graphic.geometry.getExtent().expand(3), true);
 			map.graphics.add(graphic);
 		}
+		on(map, "extent-change", function (e) {
+			document.getElementById("map").style.visibility = "visible";
+		});
 	});
 }
 function zoningAlias(a) {
@@ -498,135 +448,93 @@ function f_query_building_results(results) {
 		}
 	});
 }
-function f_query_census_results(results) {
+function f_startup() {
 	"use strict";
-	require(["dojo/dom-construct"], function (domConstruct) {
-		Q_Census.geometry = IdentGeometry;
-		QT_Census.execute(Q_Census, function (results) {
-			var resultFeatures = results.features,
-				i,
-				il,
-				featureAttributes,
-				att,
-				parcel_ul,
-				parcel_li,
-				parcel_li_block,
-				feature_name,
-				feature_name_block;
-			for (i = 0, il = resultFeatures.length; i < il; i += 1) {
-				featureAttributes = resultFeatures[i].attributes;
-				parcel_li_block = domConstruct.create("li", {"innerHTML": ": " + featureAttributes.BLOCKCE10, "class": "feature_li"}, "uCensus");
-				feature_name_block = domConstruct.create("strong", {"innerHTML": "Census Block 2010"}, parcel_li_block, "first");
-				parcel_ul = domConstruct.create("ul", {"class": "parcel_ul"}, parcel_li_block);
-				for (att in featureAttributes) {
-					if (featureAttributes.hasOwnProperty(att)) {
-						if (att !== "BLOCKCE10" && featureAttributes[att] !== 0) {
-							parcel_li = domConstruct.create("li", {"innerHTML": ": " + featureAttributes[att], "class": "feature_li"}, parcel_ul);
-							feature_name = domConstruct.create("strong", {"innerHTML": DisplayFields.census[att]}, parcel_li, "first");
-						}
-					}
-				}
-			}
+	require(["esri/map", "esri/symbols/SimpleMarkerSymbol", "dojo/_base/Color", "esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/RelationshipQuery", "esri/layers/ArcGISDynamicMapServiceLayer", "dojo/on"], function (Map, SimpleMarkerSymbol, Color, QueryTask, Query, RelationshipQuery, ArcGISDynamicMapServiceLayer, on) {
+		map = new Map("map", {nav: false, logo: false});
+		map.disablePan();
+		on(map, "load", function () {
+			map.disableMapNavigation();
+		});
+		// Graphic Symbol
+		G_symbol = new SimpleMarkerSymbol();
+		G_symbol.setStyle(SimpleMarkerSymbol.STYLE_SQUARE);
+		G_symbol.setSize(10);
+		G_symbol.setColor(new Color([255, 255, 0, 0.5]));
+		/*
+		** QUERY TASKS AND QUERIES
+		*/
+		/*
+		** PARCEL
+		*/
+		// QUERY ON THE PARCEL LAYER - OUTPUT FIELDS ARE DEFINED IN JSON OBJECT (QT_OutFields)
+		QT_Parcel = new QueryTask("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/0");
+		Q_Parcel = new Query();
+		Q_Parcel.returnGeometry = true;
+		Q_Parcel.outFields = QT_OutFields.parcel;
+		Q_Parcel.where = "PID = " + parcel_id;
+		/*
+		** PARCEL OWNERS 
+		*/
+		QT_OwnerInt = new QueryTask("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/8");
+		Q_OwnerInt = new Query();
+		Q_OwnerInt.returnGeometry = true;
+		Q_OwnerInt.outFields = QT_OutFields.parcel;
+		Q_OwnerInt.where = "PID = " + parcel_id;
+		// QUERY ON THE INTERMEDIATE USING OIDS - LAYER 8
+		QT_Owners = new QueryTask("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/8");
+		QR_Owners = new RelationshipQuery();
+		QR_Owners.returnGeometry = true;
+		QR_Owners.relationshipId = 10;
+		QR_Owners.outFields = QT_OutFields.owner;
+		/*
+		** LAND USE
+		*/
+		QT_LandUse = new QueryTask("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/9");
+		Q_LandUse = new Query();
+		Q_LandUse.returnGeometry = false;
+		Q_LandUse.outFields = QT_OutFields.landuse;
+		Q_LandUse.where = "PID = " + parcel_id;
+		/*			
+		** ZONING
+		*/
+		QT_Zoning = new QueryTask("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/7");
+		Q_Zoning = new Query();
+		Q_Zoning.returnGeometry = false;
+		Q_Zoning.outFields = QT_OutFields.zoning;
+		Q_Zoning.where = "PID = " + parcel_id;
+		/*			
+		** Buildings
+		*/
+		QT_Building = new QueryTask("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/1");
+		Q_Building = new Query();
+		Q_Building.returnGeometry = false;
+		Q_Building.outFields = QT_OutFields.building;
+		Q_Building.where = "PID = " + parcel_id;
+		// municipal map mxd layer.. 
+		dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Municipal/Municipal/MapServer");
+		map.addLayer(dynamicMapServiceLayer);
+		QT_OwnerInt.executeForIds(Q_OwnerInt, function (featureIds) {
+			QR_Owners.objectIds = featureIds;
+			QT_Owners.executeRelationshipQuery(QR_Owners, f_query_owner_results);
+		});
+		QT_Parcel.execute(Q_Parcel, f_query_parcel_results);
+		QT_LandUse.execute(Q_LandUse, f_query_landuse_results);
+		QT_Zoning.execute(Q_Zoning, f_query_zoning_results);
+		QT_Building.execute(Q_Building, f_query_building_results);
+		on(document.getElementById("toggle_aerial"), "click", function () {
+			map.removeAllLayers();
+			var dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/CityView/Aerials_2009/MapServer");
+			map.addLayer(dynamicMapServiceLayer);
+		});
+		on(document.getElementById("toggle_large"), "click", function () {
+			document.getElementById("map").style.width = "800px";
+			document.getElementById("map").style.height = "1000px";
+			map.resize();
+		});
+		on(map, "resize", function () {
+			map.centerAndZoom(graphic.geometry.getExtent().getCenter(), 12);
 		});
 	});
 }
-require(["esri/map", "esri/symbols/SimpleMarkerSymbol", "dojo/_base/Color", "esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/RelationshipQuery", "esri/layers/ArcGISDynamicMapServiceLayer", "dojo/on"], function (Map, SimpleMarkerSymbol, Color, QueryTask, Query, RelationshipQuery, ArcGISDynamicMapServiceLayer, on) {
-	"use strict";
-	map = new Map("map", {nav: false, logo: false});
-	map.disablePan();
-	on(map, "load", function () {
-		map.disableMapNavigation();
-	});
-	// Graphic Symbol
-	G_symbol = new SimpleMarkerSymbol();
-	G_symbol.setStyle(SimpleMarkerSymbol.STYLE_SQUARE);
-	G_symbol.setSize(10);
-	G_symbol.setColor(new Color([255, 255, 0, 0.5]));
-	/*
-	** QUERY TASKS AND QUERIES
-	*/
-	/*
-	** PARCEL
-	*/
-	// QUERY ON THE PARCEL LAYER - OUTPUT FIELDS ARE DEFINED IN JSON OBJECT (QT_OutFields)
-	QT_Parcel = new QueryTask("/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/0");
-	Q_Parcel = new Query();
-	Q_Parcel.returnGeometry = true;
-	Q_Parcel.outFields = QT_OutFields.parcel;
-	Q_Parcel.where = "PID = " + parcel_id;
-	/*
-	** PARCEL OWNERS 
-	*/
-	QT_OwnerInt = new QueryTask("/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/8");
-	Q_OwnerInt = new Query();
-	Q_OwnerInt.returnGeometry = true;
-	Q_OwnerInt.outFields = QT_OutFields.parcel;
-	Q_OwnerInt.where = "PID = " + parcel_id;
-	// QUERY ON THE INTERMEDIATE USING OIDS - LAYER 8
-	QT_Owners = new QueryTask("/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/8");
-	QR_Owners = new RelationshipQuery();
-	QR_Owners.returnGeometry = true;
-	QR_Owners.relationshipId = 10;
-	QR_Owners.outFields = QT_OutFields.owner;
-	/*
-	** LAND USE
-	*/
-	QT_LandUse = new QueryTask("/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/9");
-	Q_LandUse = new Query();
-	Q_LandUse.returnGeometry = false;
-	Q_LandUse.outFields = QT_OutFields.landuse;
-	Q_LandUse.where = "PID = " + parcel_id;
-	/*			
-	** ZONING
-	*/
-	QT_Zoning = new QueryTask("/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/7");
-	Q_Zoning = new Query();
-	Q_Zoning.returnGeometry = false;
-	Q_Zoning.outFields = QT_OutFields.zoning;
-	Q_Zoning.where = "PID = " + parcel_id;
-	/*			
-	** Buildings
-	*/
-	QT_Building = new QueryTask("/ArcGIS/rest/services/Parcels/NJMC_Cadastral/MapServer/1");
-	Q_Building = new Query();
-	Q_Building.returnGeometry = false;
-	Q_Building.outFields = QT_OutFields.building;
-	Q_Building.where = "PID = " + parcel_id;
-	/*
-	** 2010 CENSUS
-	*/
-	QT_Census = new QueryTask("/ArcGIS/rest/services/Municipal/Municipal/MapServer/30");
-	Q_Census = new Query();
-	Q_Census.returnGeometry = true;
-	Q_Census.outFields = QT_OutFields.census;
-	Q_Census.where = "";
-	Q_Census.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
-	// municipal map mxd layer.. 
-	dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer("/ArcGIS/rest/services/Municipal/Municipal/MapServer");
-	map.addLayer(dynamicMapServiceLayer);
-	QT_OwnerInt.executeForIds(Q_OwnerInt, function (featureIds) {
-		QR_Owners.objectIds = featureIds;
-		QT_Owners.executeRelationshipQuery(QR_Owners, f_query_owner_results);
-	});
-	QT_Parcel.execute(Q_Parcel, f_query_parcel_results);
-	QT_LandUse.execute(Q_LandUse, f_query_landuse_results);
-	QT_Zoning.execute(Q_Zoning, f_query_zoning_results);
-	QT_Building.execute(Q_Building, f_query_building_results);
-	on(QT_Building, "complete", function () {
-		Q_Census.geometry = IdentGeometry;
-		QT_Census.execute(Q_Census, f_query_census_results);
-	});
-	on(document.getElementById("toggle_aerial"), "click", function () {
-		map.removeAllLayers();
-		var dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer("/ArcGIS/rest/services/CityView/Aerials_2009/MapServer");
-		map.addLayer(dynamicMapServiceLayer);
-	});
-	on(document.getElementById("toggle_large"), "click", function () {
-		document.getElementById("map").style.width = "800px";
-		document.getElementById("map").style.height = "1000px";
-		map.resize();
-	});
-	on(map, "resize", function () {
-		map.centerAndZoom(graphic.geometry.getExtent().getCenter(), 12);
-	});
-});
+f_startup();

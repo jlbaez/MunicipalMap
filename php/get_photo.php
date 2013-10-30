@@ -9,11 +9,11 @@ if(isset($_GET['id']))
 	}
 	else
 	{
-		echo "http://webmaps.njmeadowlands.gov/municipal/MunicipalPhotos/Photos/no_property_photo360.jpg";
+		echo "http://webmaps.njmeadowlands.gov/municipal/v2/MunicipalPhotos/Photos/no_property_photo360.jpg";
 	}
 }
 else
 {
-	echo "http://webmaps.njmeadowlands.gov/municipal/MunicipalPhotos/Photos/no_property_photo360.jpg";	
+	echo "http://webmaps.njmeadowlands.gov/municipal/v2/MunicipalPhotos/Photos/no_property_photo360.jpg";	
 }
 ?>

@@ -1,8 +1,8 @@
-#map
+.map
 {
 	background: #fff;
-	bottom: 0;
-	border:1px solid #000;
+	bottom: 0;	
+	visibility:hidden;
 	height:360px; 
 	left: 300px; /* True value of left frame*/
 	overflow: hidden;
@@ -10,18 +10,7 @@
 	top: 0; 
 	width:360px; 
 }
-#framecontent 
-{
-    bottom: 0;
-    color: #000000;
-    left: 0;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    width: 300px;
-}
-#photo
+.photo
 {
 	top: 370px; 
 	left: 300px; /* True value of left frame*/
@@ -30,10 +19,17 @@
 	overflow: hidden;
 	background: #fff;
 	width:360px; 
-	height:360px; 
+	height:360px; 	
+}
+.map
+{
 	border:1px solid #000;
 }
-#footer
+.photo
+{
+	border:1px solid #000;
+}
+.footer
 {
 	bottom: 5px;
 }
@@ -51,14 +47,18 @@ ul
 	list-style-type: none;
 	list-style-position:inside;
 }
-#left, #right
+.left, .right
 {
-	display:block;
-	float: left;
+	display:inline-block;
 }
-#left
+.left
 {
-	margin-right: 5px;	
+	width:49%;	
+}
+.right
+{
+	float: right;
+	width: 50%;
 }
 .dataGroupHeader{
 	font-weight: bold;
@@ -71,18 +71,28 @@ ul
 .dataGroup{
 	border-bottom: 1px dashed #999999;	
 }
-
-#footer{
+.header
+{
+	text-align:center;
+	width: 1200px;	
+}
+.content
+{
+	height: 730px;
+	width: 1200px;
+}
+.footer{
 	height:40px;
-	width:600px;
-	margin: -50px 0;
+	width:1200px;
 	vertical-align:bottom;
 	overflow:hidden;
 	font-family:Verdana, Arial, Helvetica, sans-serif;
 	font-size:10px;
 }
-#toggle{
+.toggle{
 	font-size:14px;
+	margin:auto;
+	width:340px;
 }
 .feature_li
 {
@@ -98,17 +108,13 @@ ul
 {
 	@page
 	{
-		margin-left: 0px;
-		margin-right: 0px;
-		margin-top: 0px;
-		margin-bottom: 0px;
+		margin-left: 0;
+		margin-right: 0;
+		margin-top: 0;
+		margin-bottom: 0;
 	}
-	#toggle
+	.toggle
 	{
 		display : none;
-	}
-	#SHAPE_Area
-	{
-		color:#FF0000;
 	}
 }

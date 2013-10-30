@@ -130,7 +130,7 @@ nav a:hover
 {
 	list-style-type: none;
 	margin: auto;
-	width: 315px;
+	width: 270px;
 }
 .toc_layer_li
 {
@@ -327,7 +327,7 @@ nav ul li ul li a
 .toolbutton
 {
 	background-position: 50% 50%;
-	background-size: 30% auto;
+	background-size: 65% auto;
 	background-repeat: no-repeat;
 	width: 35px;
 	height: 35px;
@@ -362,7 +362,8 @@ nav ul li ul li a
 }
 .measure
 {
-    background-image: url("img/toolbar-icons-measure.png");	
+	display: none;
+	background-image: url("img/toolbar-icons-measure.png");	
 }
 .locate
 {
