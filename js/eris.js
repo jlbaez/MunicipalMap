@@ -1921,7 +1921,11 @@ function f_layer_list_update() {
 		require(["dojo/_base/array"], function (array) {
 			array.forEach(inputs, function (input) {
 				if (input.checked) {
-					LD_visible.push(input.id.replace("m_layer_", ""));
+					if (input.id.indexOf("m_layer_") === 0) {
+						LD_visible.push(input.id.replace("m_layer_", ""));
+					} else {
+						LD_visible.push(input.id.replace("ERIS_layer_", ""));
+					}
 				}
 			});
 		});
