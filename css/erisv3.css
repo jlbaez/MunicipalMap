@@ -625,12 +625,7 @@ button, .button
 	.nav_tabs
 	{
 		display: block;
-		width: auto;
-	}
-	.tabs
-	{
-		margin:auto;
-		width:70%;		
+		margin: auto;
 	}
 	.buttons
 	{
@@ -641,8 +636,7 @@ button, .button
 	.ul_buttons
 	{
 		margin: auto;
-		margin-bottom: 96%;
-		width: 55%;		
+		display: block;
 	}
 	.button_row
 	{

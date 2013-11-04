@@ -58,6 +58,7 @@ var S_buffer_selected_parcels;
 var S_feature_buffer_selection;
 var S_feature_selection;
 var tool_selected;
+var locateButton;
 require(["dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Color, SimpleFillSymbol, SimpleLineSymbol) {
 	"use strict";
 	S_feature_selection = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
@@ -469,16 +470,6 @@ function e_printMap(pid) {
 	"use strict";
 	sessionStorage.setItem('printPID', pid);
 	window.open("print/parcel_info.html", "_blank");
-}
-function f_getLocation(position) {
-	"use strict";
-	var y = position.coords.latitude,
-		x = position.coords.longitude;
-	console.log(M_meri.extent);
-	require(["esri/geometry/Point", "esri/SpatialReference", "dojo/on"], function (Point, SpatialReference, on) {
-		var point = new Point(x, y, new SpatialReference({ wkid: 4326 }));
-		M_meri.centerAndZoom(point, 19);
-	});
 }
 function f_printMap() {
 	"use strict";
@@ -898,6 +889,9 @@ function f_measure_map() {
 }
 function f_map_clear() {
 	"use strict";
+	if (locateButton !== undefined) {
+		locateButton.clear();
+	}
 	var dropdown0 = document.getElementById("dropdown0");
 	document.getElementById("export").innerHTML = "";
 	document.getElementById("search_progress").value = "0";
@@ -1412,13 +1406,6 @@ function e_load_tools() {
 					nav_tabs.style.width = "0";
 					logo.style.visibility = "visible";
 					logo.style.width = "35%";
-				}
-			}),
-			location_handler = new On(document.getElementById("locate"), "click", function (e) {
-				if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition(f_getLocation);
-				} else {
-					alert("Can't get Location");
 				}
 			}),
 			zoomin_handler = new On(document.getElementById("zoomin"), "click", function (e) {
@@ -2136,7 +2123,7 @@ function f_deviceCheck() {
 }
 function f_startup() {
 	"use strict";
-	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup) {
+	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup, LocateButton) {
 		config.defaults.io.alwaysUseProxy = false;
 		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
 		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
@@ -2166,6 +2153,13 @@ function f_startup() {
 										 minZoom: 12,
 										 maxZoom: 22,
 										 infoWindow: infowindow});
+		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+			locateButton = new LocateButton({
+				map: M_meri,
+				scale: 19
+			}, "locate");
+			locateButton.startup();
+		}
 		on(M_meri, "click", function (e) {
 			f_map_click_handler(e);
 		});
@@ -2190,4 +2184,3 @@ function f_startup() {
 	});
 }
 f_deviceCheck();
-f_startup();

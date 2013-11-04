@@ -125,7 +125,7 @@ nav a:hover
 {
 	list-style-type: none;
 	margin: auto;
-	width: 294px;
+	width: 301px;
 }
 .ResultList 
 {
@@ -373,10 +373,6 @@ nav ul li ul li a
 	display:none;
 	background-image: url("img/toolbar-icons-measure.png");	
 }
-.locate
-{
-    background-image: url("img/toolbar-icons-locate.png");	
-}
 .clear
 {
     background-image: url("img/toolbar-icons-clear.png");	
@@ -457,6 +453,27 @@ button:hover, button:focus, .button:hover, .button:focus
 .filter
 {
 	transition: none;
+}
+.LocateButton
+{
+	display: inline-block !important;
+	position: relative;
+	top: 8px;
+}
+.LocateButton .zoomLocateButton
+{
+	background-color: #E9E9E9;
+	border-color: #D0D0D0;
+	border-style: solid;
+	border-width: 1px;
+	background-image: url("img/toolbar-icons-locate.png");
+	padding: 0;
+	width: 32px;
+	height: 33px;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	-o-border-radius: 0;
+	border-radius: 0;
 }
 @media only screen
 {
@@ -614,7 +631,15 @@ input[type="text"][disabled],input[type="password"][disabled]
 	{
 		padding: 10px;
 	}
-}  
+}
+@media only screen and (max-width: 641px)
+{
+  .ul_buttons
+  {
+    margin: auto;
+    width: 314px;
+  }
+}
 @media only screen and (min-width: 981px)
 {
 	.dropdown
