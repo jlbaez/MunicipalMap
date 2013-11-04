@@ -23,12 +23,12 @@ function getPhoto()
 		}
 		else
 		{
-			return "http://webmaps.njmeadowlands.gov/municipal/MunicipalPhotos/Photos/no_property_photo360.jpg";
+			return "http://webmaps.njmeadowlands.gov/municipal/v3/css/img/no_property_photo.jpg";	
 		}
 	}
 	else
 	{
-		return "http://webmaps.njmeadowlands.gov/municipal/MunicipalPhotos/Photos/no_property_photo360.jpg";	
+		return "http://webmaps.njmeadowlands.gov/municipal/v3/css/img/no_property_photo.jpg";	
 	}
 }
 function capthca()

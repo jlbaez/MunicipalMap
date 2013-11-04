@@ -1828,7 +1828,7 @@ function f_layer_list_build() {
 			}
 		});
 		e_sel_flood = domConstruct.create("select", {"onChange": "f_layer_list_flood_update(this)", "class": "select_option"}, e_li);
-		e_opt_flood = domConstruct.create("option", {"innerHTML": "No tidal sruge"}, e_sel_flood);
+		e_opt_flood = domConstruct.create("option", {"innerHTML": "No tidal surge"}, e_sel_flood);
 		array.forEach(map_layers_flooding_json.scenarios, function (scenario, index) {
 			var e_opt_flood = domConstruct.create("option", {"id": "m_layer_flood_" + scenario.lyr, "innerHTML": scenario.group + " Foot Tidal Surge"}, e_sel_flood);
 		});
