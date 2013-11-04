@@ -111,7 +111,7 @@ var legend_children_json = [{"name": "Environmental", "id": "environ", "children
 	 
 require(["dojo/request/xhr"], function (xhr) {
 	"use strict";
-	xhr("/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
+	xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
 		map_legend = content;
 	});
 });
@@ -787,7 +787,6 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.geometry = click_evt.mapPoint;
 		IP_Map_All.mapExtent = M_meri.extent;
 		IP_Map_All.layerIds = IP_Identify_Layers;
-		M_meri.infoWindow.setTitle("Selected Property");
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
 			var e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 				e_tbody = domConstruct.create("tbody", null, e_table);
@@ -800,6 +799,8 @@ function f_map_identify_exec(click_evt) {
 					}
 				});
 			});
+			M_meri.infoWindow.clearFeatures();
+			M_meri.infoWindow.setTitle("Selected Property");
 			M_meri.infoWindow.setContent(el_popup_content);
 			M_meri.infoWindow.show(click_evt.mapPoint);
 			next_arrow.style.display = "block";
@@ -826,9 +827,16 @@ function inArray(array, value) {
 function f_urlExists(url) {
 	"use strict";
 	var http = new XMLHttpRequest();
-	http.open('HEAD', url, false);
-	http.send();
-	return http.status !== 404;
+	http.open("POST", "php/functions.php", false);
+	http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	http.send("function=checkURL&url=" + url);
+	if (http.readyState === 4 && http.status === 200) {
+		if (parseInt(http.responseText, 10) === "1") {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 	"use strict";
@@ -861,7 +869,8 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			el_popup_view = domConstruct.create("div", {"class": "mainSection"}, el_popup_content),
 			e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 			e_tr,
-			e_tbody = domConstruct.create("tbody", null, e_table);
+			e_tbody = domConstruct.create("tbody", null, e_table),
+			next_arrow = document.getElementsByClassName("titleButton arrow")[0];
 		e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
 		domConstruct.create("td", {"class": "attrValue", "innerHTML": '<a href="' + ERIS_LINK + '" target="_blank">View Building Info</a>'}, e_tr);
 		for (featureSet in featureSets) {
@@ -924,7 +933,12 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 				}
 			}
 		}
+		M_meri.infoWindow.clearFeatures();
+		M_meri.infoWindow.setTitle("ERIS Selection");
 		M_meri.infoWindow.setContent(el_popup_content);
+		next_arrow.style.display = "block";
+		document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
+		document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 		M_meri.infoWindow.show(map_event.mapPoint);
 	});
 }
@@ -937,7 +951,8 @@ function f_ERIS_selection_exec(map_event) {
 			QT_Q_RTK_IDS = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/5"),
 			Q_ERIS_selection = new Query(),
 			Q_ERIS_BIDtoINTERMEDIATE = new Query(),
-			Q_RTK_IDS = new RelationshipQuery();
+			Q_RTK_IDS = new RelationshipQuery(),
+			next_arrow = document.getElementsByClassName("titleButton arrow")[0];
 		Q_ERIS_selection.returnGeometry = true;
 		Q_ERIS_selection.outFields = ["BID"];
 		Q_ERIS_selection.geometry = map_event.mapPoint;
@@ -946,7 +961,6 @@ function f_ERIS_selection_exec(map_event) {
 		Q_RTK_IDS.returnGeometry = true;
 		Q_RTK_IDS.relationshipId = 4;
 		Q_RTK_IDS.outFields = ["*"];
-		M_meri.infoWindow.setTitle("ERIS Selection");
 		QT_ERIS_selection.execute(Q_ERIS_selection, function (results) {
 			var bid = results.features[0].attributes.BID;
 			Q_ERIS_BIDtoINTERMEDIATE.text = bid;
@@ -955,7 +969,12 @@ function f_ERIS_selection_exec(map_event) {
 					var ERIS_LINK = 'http://apps.njmeadowlands.gov/eris/?b=' + bid + '&a=planning';
 					ERIS_LINK = '<span class="ERIS_LINK"><a href="' + ERIS_LINK + '" target="_blank">View Building Info</a></span>';
 					if (results.length === 0) {
+						M_meri.infoWindow.clearFeatures();
+						M_meri.infoWindow.setTitle("ERIS Selection");
 						M_meri.infoWindow.setContent(ERIS_LINK);
+						next_arrow.style.display = "block";
+						document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
+						document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 						M_meri.infoWindow.show(map_event.mapPoint);
 					} else {
 						Q_RTK_IDS.objectIds = [results];
@@ -1504,7 +1523,7 @@ function e_load_tools() {
 			nav_tabs = document.getElementById("nav_tabs"),
 			buttons = document.getElementById("buttons"),
 			logo = document.getElementById("logo"),
-			pull_handeler = new On(document.getElementById("pull"), "click", function (e) {
+			pull_handler = new On(document.getElementById("pull"), "click", function (e) {
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
 					header.style.left = "80%";
 					header.style.position = "absolute";
@@ -1797,7 +1816,7 @@ function f_layer_list_build() {
 						} else {
 							legend_text = layer.name;
 						}
-						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": "<img src=\"/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/" + layer_legend.url + "\"class=\"legend_img\" alt=\"error\" /> " + legend_text}, e_ul_ltitle, "last");
+						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": "<img src=\"" + DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/" + layer_legend.url + "\"class=\"legend_img\" alt=\"error\" /> " + legend_text}, e_ul_ltitle, "last");
 						if (layer.vis !== 1) {
 							domAttr.set(e_legend, "style", "display:none");
 						}

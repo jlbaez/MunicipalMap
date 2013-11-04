@@ -8,6 +8,10 @@ else if($_POST["function"] == "capthca")
 {
   echo capthca();
 }
+else if($_POST["function"] == "checkURL")
+{
+	echo checkURL();
+}
 function getPhoto()
 {
 	if(isset($_POST['PID']))
@@ -66,6 +70,13 @@ function capthca()
       return 1;
     }
   }
+}
+function checkURL()
+{
+	if (!$fp = curl_init($_POST["url"]))
+		return false;
+	else
+		return true;	
 }
 ?>
 
