@@ -48,6 +48,7 @@ var IP_Identify_Layers = [];
 var LD_button;
 var LD_flooding;
 var map_legend;
+var ERIS_legend;
 var measurementDijit;
 var M_meri;
 var navToolbar;
@@ -113,6 +114,9 @@ require(["dojo/request/xhr"], function (xhr) {
 	"use strict";
 	xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
 		map_legend = content;
+	});
+	xhr(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
+		ERIS_legend = content;
 	});
 });
 var identify_fields_json = {14: ["FIRM_PAN"],
@@ -1731,7 +1735,6 @@ function f_ERIS_list_build() {
 		array.forEach(map_layers_ERIS_json.layers, function (layer, index) {
 			var e_li = domConstruct.create("li", {"class": "toc_layer_li"}, "dropdown1", "last"),
 				e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check ERIS_layer", "id": "ERIS_layer_" + layer.id}, e_li),
-				e_legend = domConstruct.create("li", {"class": "legend_li legend_ERIS_li_" + layer.id, "innerHTML": layer.desc}, e_legend_ul),
 				e_lbl;
 			e_chk.onclick = function () {
 				f_ESRI_list_update();
@@ -1745,6 +1748,19 @@ function f_ERIS_list_build() {
 				IP_Identify_Layers.push(layer.id);
 			}
 			e_lbl = domConstruct.create("label", {"for": "ERIS_layer_" + layer.id, "class": "toc_layer_label", "title": layer.descs, innerHTML: layer.name}, e_li);
+			array.forEach(ERIS_legend.layers[layer.id].legend, function (layer_legend) {
+				var legend_text = "",
+					e_legend;
+				if (layer_legend.label !== "") {
+					legend_text = layer_legend.label;
+				} else {
+					legend_text = layer.name;
+				}
+				e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": "<img src=\"" + DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/1/images/" + layer_legend.url + "\"class=\"legend_img\" alt=\"error\" /> " + legend_text}, e_legend_ul, "last");
+				if (layer.vis !== 1) {
+					domAttr.set(e_legend, "style", "display:none");
+				}
+			});
 		});
 	});
 }
