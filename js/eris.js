@@ -803,9 +803,11 @@ function f_map_identify_exec(click_evt) {
 			M_meri.infoWindow.setTitle("Selected Property");
 			M_meri.infoWindow.setContent(el_popup_content);
 			M_meri.infoWindow.show(click_evt.mapPoint);
-			next_arrow.style.display = "block";
-			document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
-			document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
+			if (next_arrow !== undefined) {
+				next_arrow.style.display = "block";
+				document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
+				document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
+			}
 			document.getElementById("map_container").style.cursor = "default";
 		});
 	});
@@ -936,10 +938,13 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 		M_meri.infoWindow.clearFeatures();
 		M_meri.infoWindow.setTitle("ERIS Selection");
 		M_meri.infoWindow.setContent(el_popup_content);
-		next_arrow.style.display = "block";
-		document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
-		document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
+		if (next_arrow !== undefined) {
+			next_arrow.style.display = "block";
+			document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
+			document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
+		}
 		M_meri.infoWindow.show(map_event.mapPoint);
+
 	});
 }
 function f_ERIS_selection_exec(map_event) {
@@ -972,9 +977,11 @@ function f_ERIS_selection_exec(map_event) {
 						M_meri.infoWindow.clearFeatures();
 						M_meri.infoWindow.setTitle("ERIS Selection");
 						M_meri.infoWindow.setContent(ERIS_LINK);
-						next_arrow.style.display = "block";
-						document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
-						document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
+						if (next_arrow !== undefined) {
+							next_arrow.style.display = "block";
+							document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
+							document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
+						}
 						M_meri.infoWindow.show(map_event.mapPoint);
 					} else {
 						Q_RTK_IDS.objectIds = [results];

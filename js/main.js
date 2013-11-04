@@ -854,9 +854,11 @@ function f_map_identify_exec(click_evt) {
 			});
 			infowindow.setContent(el_popup_content);
 			infowindow.show(click_evt.mapPoint);
-			next_arrow.style.display = "block";
-			document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
-			document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
+			if (next_arrow !== undefined) {
+				next_arrow.style.display = "block";
+				document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
+				document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
+			}
 			document.getElementById("map_container").style.cursor = "default";
 		});
 	});
