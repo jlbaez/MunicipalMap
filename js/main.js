@@ -1402,16 +1402,16 @@ function e_load_tools() {
 					header.style.overflow = "hidden";
 					header.style.width = "20%";
 					nav_tabs.style.width = "80%";
-					map.style.left = "80%";
 					buttons.style.visibility = "hidden";
 					logo.style.width = "135%";
 					logo.style.visibility = "hidden";
 				} else {
-					header.removeAttribute("style");
-					logo.removeAttribute("style");
-					map.removeAttribute("style");
-					buttons.removeAttribute("style");
+					header.style.left = "0";
+					header.style.width = "100%";
+					buttons.style.visibility = "visible";
 					nav_tabs.style.width = "0";
+					logo.style.visibility = "visible";
+					logo.style.width = "35%";
 				}
 			}),
 			location_handler = new On(document.getElementById("locate"), "click", function (e) {
