@@ -169,6 +169,18 @@ nav a:hover
 	font-size: 12px;
 	line-height: 30px;
 }
+.esriPopupMobile .titlePane
+{
+	background-color: #777;
+}
+.esriPopupMobile .pointer.top
+{
+	background-image: url("img/pointertop.png");
+}
+.esriPopupMobile .pointer.bottom 
+{
+	background-image: url("img/pointerbottom.png");
+}
 .buttons
 {
 	float:left;
