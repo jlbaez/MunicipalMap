@@ -792,6 +792,7 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.geometry = click_evt.mapPoint;
 		IP_Map_All.mapExtent = M_meri.extent;
 		IP_Map_All.layerIds = IP_Identify_Layers;
+		tool_selected = "pan";
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
 			var e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 				e_tbody = domConstruct.create("tbody", null, e_table);
@@ -814,6 +815,7 @@ function f_map_identify_exec(click_evt) {
 				document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 			}
 			document.getElementById("map_container").style.cursor = "default";
+			tool_selected = "identify";
 		});
 	});
 }
@@ -1034,6 +1036,9 @@ function f_measure_map() {
 }
 function f_map_clear() {
 	"use strict";
+	if (locateButton !== undefined) {
+		locateButton.clear();
+	}
 	var dropdown0 = document.getElementById("dropdown0");
 	document.getElementById("export").innerHTML = "";
 	document.getElementById("search_progress").value = "0";
@@ -1557,13 +1562,6 @@ function e_load_tools() {
 			zoomin_handler = new On(document.getElementById("zoomin"), "click", function (e) {
 				navToolbar.activate(Navigation.ZOOM_IN);
 				f_button_clicked("zoomin");
-			}),
-			location_handler = new On(document.getElementById("locate"), "click", function (e) {
-				if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition(f_getLocation);
-				} else {
-					alert("Can't get Location");
-				}
 			}),
 			zoomout_handler = new On(document.getElementById("zoomout"), "click", function (e) {
 				navToolbar.activate(Navigation.ZOOM_OUT);
@@ -2361,13 +2359,13 @@ function f_startup() {
 		on(M_meri, "click", function (e) {
 			f_map_click_handler(e);
 		});
-		on(M_meri, "load", function (e) {
+		on.once(M_meri, "load", function (e) {
 			navToolbar = new Navigation(M_meri);
 			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
 			measurementDijit.startup();
 			e_load_tools();
 		});
-		on(LD_button, "load", function (e) {
+		on.once(LD_button, "load", function (e) {
 			f_base_imagery_list_build();
 			f_ERIS_list_build();
 			f_layer_list_build();

@@ -44,7 +44,6 @@ var GL_buffer_parcel;
 var GL_buffer_selected_parcels;
 var GL_parcel_selection;
 var IL_buttonmap;
-var infowindow;
 var IP_Identify_Layers = [];
 var LD_button;
 var LD_flooding;
@@ -636,7 +635,7 @@ function f_removeSelection() {
 			break;
 		}
 	}
-	infowindow.hide();
+	M_meri.infoWindow.hide();
 }
 function f_export_excel(export_PID) {
 	"use strict";
@@ -830,7 +829,7 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.geometry = click_evt.mapPoint;
 		IP_Map_All.mapExtent = M_meri.extent;
 		IP_Map_All.layerIds = IP_Identify_Layers;
-		infowindow.setTitle("Selected Property");
+		tool_selected = "pan";
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
 			var e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 				e_tbody = domConstruct.create("tbody", null, e_table);
@@ -843,14 +842,17 @@ function f_map_identify_exec(click_evt) {
 					}
 				});
 			});
-			infowindow.setContent(el_popup_content);
-			infowindow.show(click_evt.mapPoint);
+			M_meri.infoWindow.clearFeatures();
+			M_meri.infoWindow.setTitle("Selected Property");
+			M_meri.infoWindow.setContent(el_popup_content);
+			M_meri.infoWindow.show(click_evt.mapPoint);
 			if (next_arrow !== undefined) {
 				next_arrow.style.display = "block";
 				document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
 				document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 			}
 			document.getElementById("map_container").style.cursor = "default";
+			tool_selected = "identify";
 		});
 	});
 }
@@ -901,8 +903,8 @@ function f_map_clear() {
 	GL_buffer_parcel.clear();
 	GL_buffer_buffer.clear();
 	GL_buffer_selected_parcels.clear();
-	infowindow.clearFeatures();
-	infowindow.hide();
+	M_meri.infoWindow.clearFeatures();
+	M_meri.infoWindow.hide();
 	measurementDijit.clearResult();
 	measurementDijit.setTool("location", false);
 	measurementDijit.setTool("area", false);
@@ -1323,7 +1325,7 @@ function f_process_results_buffer(results) {
 			popupTemplate = f_getPopupTemplate(graphic);
 			GL_container.add(graphic);
 			GL_count = GL_container.graphics.length;
-			infowindow.resize("300", "350");
+			M_meri.infoWindow.resize("300", "350");
 		}
 		link.href = "#";
 		link.innerHTML = "Export to Excel: [" + export_PID.length + " item(s)]";
@@ -1389,7 +1391,7 @@ function e_load_tools() {
 			nav_tabs = document.getElementById("nav_tabs"),
 			buttons = document.getElementById("buttons"),
 			logo = document.getElementById("logo"),
-			pull_handeler = new On(document.getElementById("pull"), "click", function (e) {
+			pull_handler = new On(document.getElementById("pull"), "click", function (e) {
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
 					header.style.left = "80%";
 					header.style.position = "absolute";
@@ -2134,7 +2136,8 @@ function f_startup() {
 		GL_buffer_parcel = new GraphicsLayer({opacity: 0.60});
 		GL_buffer_buffer = new GraphicsLayer({opacity: 0.60});
 		GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60});
-		var e_info = document.createElement("div");
+		var e_info = document.createElement("div"),
+			infowindow;
 		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 			infowindow = new PopupMobile(null, e_info);
 		} else {
@@ -2163,13 +2166,13 @@ function f_startup() {
 		on(M_meri, "click", function (e) {
 			f_map_click_handler(e);
 		});
-		on(M_meri, "load", function (e) {
+		on.once(M_meri, "load", function (e) {
 			navToolbar = new Navigation(M_meri);
 			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
 			measurementDijit.startup();
 			e_load_tools();
 		});
-		on(LD_button, "load", function (e) {
+		on.once(LD_button, "load", function (e) {
 			f_base_imagery_list_build();
 			f_layer_list_build();
 			f_search_munis_build();
@@ -2184,3 +2187,4 @@ function f_startup() {
 	});
 }
 f_deviceCheck();
+f_startup();
