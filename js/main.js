@@ -1,4 +1,4 @@
-/*global document, require, setTimeout, sessionStorage, window, navigator, location, XMLHttpRequest, Recaptcha, alert*/
+/*global document, require, setTimeout, sessionStorage, window, navigator, location, XMLHttpRequest, Recaptcha, alert, f_startup_eris, f_ERIS_selection_exec*/
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
@@ -37,7 +37,6 @@
  *	_lbl  -	label
  */
 var DynamicLayerHost = "http://webmaps.njmeadowlands.gov";
-var filters_muni;
 var G_button_clicked = "pan";
 var IL_buttonmap;
 var IP_Identify_Layers = [];
@@ -862,6 +861,9 @@ function f_map_click_handler(evt_click) {
 	case "identify":
 		f_map_identify_exec(evt_click);
 		break;
+	case "ERIS_Identify":
+		f_ERIS_selection_exec(evt_click);
+		break;
 	case "pan":
 		break;
 	}
@@ -1532,6 +1534,8 @@ function e_load_tools() {
 					}
 				});
 			}),
+			forgot_pass_handler;
+		if (document.getElementById("account_link") !== null) {
 			forgot_pass_handler = new On(document.getElementById("account_link"), "click", function (e) {
 				document.getElementById("form_submit").style.display = "none";
 				var li_form = document.getElementById("li_form"),
@@ -1588,6 +1592,7 @@ function e_load_tools() {
 				li_form.appendChild(forgot_form);
 				Recaptcha.create("6LeJT-MSAAAAAAGLpYb9ho-XHXUbA7VxHixYbzF-", "captcha", {theme: "white"});
 			});
+		}
 	});
 }
 function f_base_imagery_list_build() {
@@ -1596,7 +1601,7 @@ function f_base_imagery_list_build() {
 		var e_li_title = domConstruct.create("li", {"id": "image_overlay", "class": "layer_group_title", "innerHTML": "Image Overlay"}, "dropdown1"),
 			e_li = domConstruct.create("li", {"class": "image_layer_li"}, "dropdown1"),
 			e_sel = domConstruct.create("select", {"onChange": "f_image_layer_toggle(this)", "class": "select_option"}, e_li),
-			e_opt = domConstruct.create("option", {"innerHTML": "Default"}, e_sel);
+			e_opt = domConstruct.create("option", {"innerHTML": "Default", "value": ""}, e_sel);
 		Array.forEach(imageryLayersJSON, function (img_lyr, index) {
 			var e_opt = domConstruct.create("option", {value: img_lyr.id, innerHTML: img_lyr.title}, e_sel);
 		});
@@ -1623,13 +1628,13 @@ function f_layer_list_build() {
 					e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check", "id": "m_layer_" + layer.id, "onclick": "f_layer_list_update();f_legend_toggle(this);f_li_highlight(this);"}, e_li),
 					e_lbl;
 				if (layer.vis) {
-					domAttr.set(e_chk, "checked", "checked");
+					domAttr.set(e_chk, "checked", true);
 					domAttr.set(e_li, "class", "toc_layer_li li_checked");
 				}
 				if (layer.ident || (layer.id === 30)) {
 					IP_Identify_Layers.push(layer.id);
 				}
-				e_lbl = domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", "title": layer.descs, innerHTML: layer.name}, e_li);
+				e_lbl = domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", innerHTML: layer.name}, e_li);
 				if (layer.legend !== "no") {
 					array.forEach(map_legend.layers[layer.id].legend, function (layer_legend) {
 						var legend_text = "",
@@ -1721,7 +1726,11 @@ function f_layer_list_update() {
 		require(["dojo/_base/array"], function (array) {
 			array.forEach(inputs, function (input) {
 				if (input.checked) {
-					LD_visible.push(input.id.replace("m_layer_", ""));
+					if (input.id.indexOf("m_layer_") === 0) {
+						LD_visible.push(input.id.replace("m_layer_", ""));
+					} else {
+						LD_visible.push(input.id.replace("ERIS_layer_", ""));
+					}
 				}
 			});
 		});
@@ -2108,17 +2117,27 @@ function f_multi_parcel_buffer_exec(distance) {
 		}
 	});
 }
-function f_deviceCheck() {
+function f_deviceCheck(varsion) {
 	"use strict";
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 		var oldlink = document.getElementsByTagName("link").item(3),
 			newlink = document.createElement("link");
 		newlink.setAttribute("rel", "stylesheet");
 		newlink.setAttribute("type", "text/css");
-		newlink.setAttribute("href", "css/main_mobile.css");
+		if (varsion === "Municipal") {
+			newlink.setAttribute("href", "css/main_mobile.css");
+		} else {
+			newlink.setAttribute("href", "css/main_mobile.css");
+		}
 		document.getElementsByTagName("head").item(0).replaceChild(newlink, oldlink);
 	}
 	document.getElementsByClassName("header-container")[0].style.display = "block";
+}
+function checkERIS() {
+	"use strict";
+	if (typeof f_startup_eris === 'function') {
+		f_startup_eris();
+	}
 }
 function f_startup() {
 	"use strict";
@@ -2164,12 +2183,13 @@ function f_startup() {
 			f_map_click_handler(e);
 		});
 		on.once(M_meri, "load", function (e) {
+			LD_flooding.setDPI(72, false);
+			M_meri.addLayers([LD_flooding, LD_button]);
 			navToolbar = new Navigation(M_meri);
 			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
 			measurementDijit.startup();
 			e_load_tools();
-			LD_flooding.setDPI(72, false);
-			M_meri.addLayers([LD_flooding, LD_button]);
+			checkERIS();
 			M_meri.addLayer(GL_parcel_selection);
 			M_meri.addLayer(GL_buffer_selected_parcels);
 			M_meri.addLayer(GL_buffer_parcel);
@@ -2185,5 +2205,5 @@ function f_startup() {
 		
 	});
 }
-f_deviceCheck();
+f_deviceCheck("Municipal");
 f_startup();
