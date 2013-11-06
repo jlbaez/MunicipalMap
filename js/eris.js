@@ -838,7 +838,7 @@ function f_urlExists(url) {
 	http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	http.send("function=checkURL&url=" + url);
 	if (http.readyState === 4 && http.status === 200) {
-		if (parseInt(http.responseText, 10) === "1") {
+		if (parseInt(http.responseText, 10) === 1) {
 			return true;
 		} else {
 			return false;
@@ -919,9 +919,9 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 				for (index = 0; index < substance_name.length; index += 1) {
 					e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
 					if (f_urlExists('http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
-						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="ERIS/factsheets//' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
+						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
 					} else {
-						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
+						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
 					}
 					for (index2 = old_index; index2 < old_index + 1; index2 += 2) {
 						if (record_main[index2] !== "") {

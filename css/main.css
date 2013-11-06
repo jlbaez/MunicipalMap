@@ -19,7 +19,6 @@ body
 	background-image: linear-gradient(to bottom, #FFF, #F2F2F2);
 	background-repeat: repeat-x;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-	display: none;
 }
 nav ul
 {
@@ -601,7 +600,7 @@ button, .button
 	{
 		margin: auto;
 		margin-bottom: 5px;
-		width: 286px;
+		width: 290px;
 	}
 	.button_row
 	{
