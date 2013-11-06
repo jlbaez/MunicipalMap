@@ -37,7 +37,6 @@
  *	_lbl  -	label
  */
 var DynamicLayerHost = "http://webmaps.njmeadowlands.gov";
-var ERIS_base;
 var G_button_clicked = "pan";
 var GL_buffer_buffer;
 var GL_buffer_parcel;
@@ -45,8 +44,6 @@ var GL_buffer_selected_parcels;
 var GL_parcel_selection;
 var IL_buttonmap;
 var IP_Identify_Layers = [];
-var LD_button;
-var LD_flooding;
 var map_legend;
 var ERIS_legend;
 var measurementDijit;
@@ -1708,7 +1705,7 @@ function f_ESRI_list_update() {
 		if (ERIS_visible.length === 0) {
 			ERIS_visible.push(-1);
 		}
-		ERIS_base.setVisibleLayers(ERIS_visible);
+		M_meri.getLayer("ERIS_base").setVisibleLayers(ERIS_visible);
 	});
 }
 function f_li_highlight(checkbox) {
@@ -1931,16 +1928,16 @@ function f_layer_list_update() {
 		if (LD_visible.length === 0) {
 			LD_visible.push(-1);
 		}
-		LD_button.setVisibleLayers(LD_visible);// update the map layer visibilities
+		M_meri.getLayer("LD_button").setVisibleLayers(LD_visible);// update the map layer visibilities
 	});
 }
 function f_layer_list_flood_update(sel) {
 	"use strict";
 	var inputs = sel.options[sel.selectedIndex].id;
 	if (inputs === "") {
-		LD_flooding.setVisibleLayers([-1]);
+		M_meri.getLayer("LD_flooding").setVisibleLayers([-1]);
 	} else {
-		LD_flooding.setVisibleLayers([inputs.substring(inputs.lastIndexOf("_") + 1, inputs.length)]);
+		M_meri.getLayer("LD_flooding").setVisibleLayers([inputs.substring(inputs.lastIndexOf("_") + 1, inputs.length)]);
 	}
 }
 function f_legend_toggle(layer) {
@@ -2323,15 +2320,15 @@ function f_startup() {
 		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
 		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
 		// set dynamic layer for MunicipalMap_live
-		LD_button = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer", {opacity: 0.8});
-		LD_flooding = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer", {opacity: 0.65});
-		ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1});
-		GL_parcel_selection = new GraphicsLayer({opacity: 0.60});
+		var LD_button = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer", {opacity: 1, id: "LD_button"}),
+			LD_flooding = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer", {opacity: 0.65, id: "LD_flooding"}),
+			ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1, id: "ERIS_base"}),
+			e_info = document.createElement("div"),
+			infowindow;
+		GL_parcel_selection = new GraphicsLayer({opacity: 0.60, id: "ERIS_base"});
 		GL_buffer_parcel = new GraphicsLayer({opacity: 0.60});
 		GL_buffer_buffer = new GraphicsLayer({opacity: 0.60});
 		GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60});
-		var e_info = document.createElement("div"),
-			infowindow;
 		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 			infowindow = new PopupMobile(null, e_info);
 		} else {
@@ -2361,6 +2358,12 @@ function f_startup() {
 		});
 		on.once(M_meri, "load", function (e) {
 			navToolbar = new Navigation(M_meri);
+			LD_flooding.setDPI(72, false);
+			M_meri.addLayers([LD_flooding, LD_button, ERIS_base]);
+			M_meri.addLayer(GL_parcel_selection);
+			M_meri.addLayer(GL_buffer_selected_parcels);
+			M_meri.addLayer(GL_buffer_parcel);
+			M_meri.addLayer(GL_buffer_buffer);
 			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
 			measurementDijit.startup();
 			e_load_tools();
@@ -2373,11 +2376,7 @@ function f_startup() {
 			f_search_qual_build();
 			f_search_landuse_build();
 		});
-		M_meri.addLayers([LD_button, ERIS_base, LD_flooding]);
-		M_meri.addLayer(GL_parcel_selection);
-		M_meri.addLayer(GL_buffer_selected_parcels);
-		M_meri.addLayer(GL_buffer_parcel);
-		M_meri.addLayer(GL_buffer_buffer);
+
 	});
 }
 f_deviceCheck();
