@@ -12,7 +12,12 @@ function f_load_ERIS_tools() {
 			navToolbar.activate(Navigation.PAN);
 			tool_selected = 'ERIS_Identify';
 			f_button_clicked("ERIS");
-		});
+		}),
+			form_logoff_handler = on(document.getElementById("form_logoff"), "submit", function (e) {
+				sessionStorage.clear();
+				document.cookie = "NJMC_MERI_ERIS" + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain=.njmeadowlands.gov';
+				document.location.reload(true);
+			});
 	});
 }
 function inArray(array, value) {
@@ -208,46 +213,6 @@ function f_map_click_handler_ERIS(evt_click) {
 	case "pan":
 		break;
 	}
-}
-function e_load_tools_eris() {
-	"use strict";
-	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/NodeList-traverse"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr) {
-		var pull = document.getElementById("pull"),
-			header = document.getElementsByClassName("header-container")[0],
-			map = document.getElementById("map"),
-			nav_tabs = document.getElementById("nav_tabs"),
-			buttons = document.getElementById("buttons"),
-			logo = document.getElementById("logo"),
-			pull_handler = new On(document.getElementById("pull"), "click", function (e) {
-				if (document.getElementById("nav_tabs").style.width !== "80%") {
-					header.style.left = "80%";
-					header.style.position = "absolute";
-					header.style.overflow = "hidden";
-					header.style.width = "20%";
-					nav_tabs.style.width = "80%";
-					buttons.style.visibility = "hidden";
-					logo.style.width = "135%";
-					logo.style.visibility = "hidden";
-				} else {
-					header.style.left = "0";
-					header.style.width = "100%";
-					buttons.style.visibility = "visible";
-					nav_tabs.style.width = "0";
-					logo.style.visibility = "visible";
-					logo.style.width = "35%";
-				}
-			}),
-			ERIS_handler = new On(document.getElementById("ERIS"), "click", function (e) {
-				navToolbar.activate(Navigation.PAN);
-				tool_selected = 'ERIS_Identify';
-				f_button_clicked("ERIS");
-			}),
-			form_submit_handler = new On(document.getElementById("form_submit"), "submit", function (e) {
-				sessionStorage.clear();
-				document.cookie = "NJMC_MERI_ERIS" + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain=.njmeadowlands.gov';
-				document.location.reload(true);
-			});
-	});
 }
 function f_ESRI_list_update() {
 	"use strict";

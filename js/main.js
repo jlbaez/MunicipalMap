@@ -37,38 +37,12 @@
  *	_lbl  -	label
  */
 var DynamicLayerHost = "http://webmaps.njmeadowlands.gov";
-var G_button_clicked = "pan";
-var IL_buttonmap;
 var IP_Identify_Layers = [];
-var map_legend;
 var measurementDijit;
 var M_meri;
 var navToolbar;
-var S_buffer_buffer;
-var S_buffer_selected_parcels;
-var S_feature_buffer_selection;
-var S_feature_selection;
 var tool_selected;
 var locateButton;
-require(["dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Color, SimpleFillSymbol, SimpleLineSymbol) {
-	"use strict";
-	S_feature_selection = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-															 new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
-																						 new Color([0, 255, 36]), 2),
-															 new Color([52, 83, 130, 0.95]));
-	S_buffer_buffer = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-														new SimpleLineSymbol(SimpleFillSymbol.STYLE_SOLID,
-																					new Color([100, 100, 100]), 3),
-														new Color([255, 0, 0, 0.6]));
-	S_buffer_selected_parcels = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-																	 new SimpleLineSymbol("dashdot",
-																								 new Color([0, 255, 0]), 3),
-																	 new Color([0, 255, 255, 1]));
-	S_feature_buffer_selection = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-																	  new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
-																								  new Color([255, 255, 0]), 3),
-																	  new Color([0, 0, 255, 0.4]));
-});
 var imageryLayersJSON = [{"id": "IMG_1930_BW", "title": "1930 Black and White (NJDEP)"},
 								 {"id": "IMG_1958_BW", "title": "1958 Black and White (NJDEP)"},
 								 {"id": "IMG_1969_BW", "title": "1969 Black and White (NJMC)"},
@@ -139,13 +113,7 @@ var legend_children_json = [{"name": "Environmental", "id": "environ", "children
 									 {"name": "Political/Jurisdiction", "id": "planning_cad", "children": 0},
 									 {"name": "Topographic & Planimetrics", "id": "topo_plan", "children": 0},
 									 {"name": "Transportation", "id": "trans", "children": 0}];
-	 
-require(["dojo/request/xhr"], function (xhr) {
-	"use strict";
-	xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json"}).then(function (content) {
-		map_legend = content;
-	});
-});
+
 var identify_fields_json = {14: ["FIRM_PAN"],
 									 25: ["TMAPNUM", "STATUS "],
 									 27: ["FLD_ZONE", "FLOODWAY", "STATIC_BFE", "SFHA_TF"],
@@ -651,8 +619,12 @@ function f_export_excel(export_PID) {
 }
 function f_process_results_parcel(results, event) {
 	"use strict";
-	require(["dojo/dom-construct", "dojo/_base/array", "dojo/query", "dojo/on"], function (domConstruct, array, query, on) {
-		var feature_div = "selParcel_",
+	require(["dojo/dom-construct", "dojo/_base/array", "dojo/query", "dojo/on", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (domConstruct, array, query, on, Color, SimpleFillSymbol, SimpleLineSymbol) {
+		var S_feature_selection = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+																	  new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
+																								  new Color([0, 255, 36]), 2),
+																	  new Color([52, 83, 130, 0.95])),
+			feature_div = "selParcel_",
 			GL_container = M_meri.getLayer("GL_parcel_selection"),
 			G_symbol = S_feature_selection,
 			object_attr = "PID",
@@ -870,14 +842,13 @@ function f_map_click_handler(evt_click) {
 }
 function f_button_clicked(id) {
 	"use strict";
-	document.getElementsByClassName("button_clicked")[0].removeAttribute("style");
+	var G_button_clicked = document.getElementsByClassName("button_clicked")[0];
 	require(["dojo/dom-class"], function (domClass) {
 		if (G_button_clicked !== "") {
 			domClass.remove(G_button_clicked, "button_clicked");
 			domClass.add(id, "button_clicked");
 		}
 	});
-	document.getElementById(id).style.backgroundColor = "#d0d0d0";
 	G_button_clicked = id;
 }
 function f_measure_map() {
@@ -1301,8 +1272,12 @@ function f_search_owner(owner) {
 }
 function f_process_results_buffer(results) {
 	"use strict";
-	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
+	require(["dojo/dom-construct", "dojo/_base/array", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (domConstruct, array, Color, SimpleFillSymbol, SimpleLineSymbol) {
 	    var featureAttributes,
+			S_feature_buffer_selection = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+																			  new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
+																										  new Color([255, 255, 0]), 3),
+																			  new Color([0, 0, 255, 0.4])),
 			link = document.getElementById("export"),
 			GL_container = M_meri.getLayer("GL_buffer_selected_parcels"),
 			GL_count,
@@ -1334,9 +1309,13 @@ function f_process_results_buffer(results) {
 function f_multi_parcel_buffer_exec(distance) {
 	"use strict";
 	require(["esri/geometry/Polygon", "esri/SpatialReference", "esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/GeometryService",
-             "esri/tasks/BufferParameters", "esri/graphic", "esri/graphic"], function (Polygon, SpatialReference, QueryTask, Query, GeometryService, BufferParameters, Graphic) {
+             "esri/tasks/BufferParameters", "esri/graphic", "esri/graphic", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Polygon, SpatialReference, QueryTask, Query, GeometryService, BufferParameters, Graphic, Color, SimpleFillSymbol, SimpleLineSymbol) {
 		M_meri.infoWindow.hide();
 		var multiparcel_geometries = new Polygon(new SpatialReference({"wkid": 102100})),
+			S_buffer_buffer = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+																new SimpleLineSymbol(SimpleFillSymbol.STYLE_SOLID,
+																							new Color([100, 100, 100]), 3),
+																new Color([255, 0, 0, 0.6])),
 			m,
 			bufferDistanceTxt = distance,
 			bufferDistance,
@@ -1517,23 +1496,7 @@ function e_load_tools() {
 			buffer_handler = new On(new Query("#buffer_exe"), "click", function (e) {
 				f_multi_parcel_buffer_exec(document.getElementById("buffer_distance").value);
 			}),
-			form_submit_handler = new On(document.getElementById("form_submit"), "submit", function (e) {
-				sessionStorage.username = document.getElementById("username").value;
-				xhr('./ERIS/authenticate.php', {
-					"method": "POST",
-					"data": {
-						"userName": document.getElementById("username").value,
-						"password": document.getElementById("password").value
-					},
-					"sync": true
-				}).then(function (data) {
-					if (data === "true") {
-						location.reload();
-					} else {
-						document.getElementById("login_response").innerHTML = "Wrong login Credentials";
-					}
-				});
-			}),
+			form_submit_handler,
 			forgot_pass_handler;
 		if (document.getElementById("account_link") !== null) {
 			forgot_pass_handler = new On(document.getElementById("account_link"), "click", function (e) {
@@ -1593,6 +1556,25 @@ function e_load_tools() {
 				Recaptcha.create("6LeJT-MSAAAAAAGLpYb9ho-XHXUbA7VxHixYbzF-", "captcha", {theme: "white"});
 			});
 		}
+		if (document.getElementById("form_submit") !== null) {
+			form_submit_handler = new On(document.getElementById("form_submit"), "submit", function (e) {
+				sessionStorage.username = document.getElementById("username").value;
+				xhr('./ERIS/authenticate.php', {
+					"method": "POST",
+					"data": {
+						"userName": document.getElementById("username").value,
+						"password": document.getElementById("password").value
+					},
+					"sync": true
+				}).then(function (data) {
+					if (data === "true") {
+						location.reload();
+					} else {
+						document.getElementById("login_response").innerHTML = "Wrong login Credentials";
+					}
+				});
+			});
+		}
 	});
 }
 function f_base_imagery_list_build() {
@@ -1610,7 +1592,7 @@ function f_base_imagery_list_build() {
 }
 function f_layer_list_build() {
 	"use strict";
-	require(["dojo/dom-construct", "dojo/dom-attr", "dojo/_base/array"], function (domConstruct, domAttr, array) {
+	require(["dojo/dom-construct", "dojo/dom-attr", "dojo/_base/array", "dojo/request/xhr"], function (domConstruct, domAttr, array, xhr) {
 		var e_li_title = domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "Flooding Scenario:"}, "dropdown1"),
 			e_li = domConstruct.create("li", null, "dropdown1"),
 			e_sel_flood,
@@ -1636,18 +1618,21 @@ function f_layer_list_build() {
 				}
 				e_lbl = domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", innerHTML: layer.name}, e_li);
 				if (layer.legend !== "no") {
-					array.forEach(map_legend.layers[layer.id].legend, function (layer_legend) {
-						var legend_text = "",
-							e_legend;
-						if (layer_legend.label !== "") {
-							legend_text = layer_legend.label;
-						} else {
-							legend_text = layer.name;
-						}
-						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": '<img src="' + DynamicLayerHost + '/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/' + layer_legend.url + '" class="legend_img" alt="error" />' + legend_text}, e_ul_ltitle, "last");
-						if (layer.vis !== 1) {
-							domAttr.set(e_legend, "style", "display:none");
-						}
+					xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json", sync: true}).then(function (content) {
+						var map_legend = content;
+						array.forEach(map_legend.layers[layer.id].legend, function (layer_legend) {
+							var legend_text = "",
+								e_legend;
+							if (layer_legend.label !== "") {
+								legend_text = layer_legend.label;
+							} else {
+								legend_text = layer.name;
+							}
+							e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": '<img src="' + DynamicLayerHost + '/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/' + layer_legend.url + '" class="legend_img" alt="error" />' + legend_text}, e_ul_ltitle, "last");
+							if (layer.vis !== 1) {
+								domAttr.set(e_legend, "style", "display:none");
+							}
+						});
 					});
 				}
 			});
@@ -1698,13 +1683,14 @@ function f_search_landuse_build() {
 }
 function f_image_layer_toggle(sel) {
 	"use strict";
-	var img_layer = sel.options[sel.selectedIndex].value;
+	var img_layer = sel.options[sel.selectedIndex].value,
+		IL_buttonmap = M_meri.getLayer("IL_buttonmap");
 	if (IL_buttonmap !== undefined) {
 		M_meri.removeLayer(IL_buttonmap);
 	}
 	if (img_layer !== "") {
 		require(["esri/layers/ArcGISImageServiceLayer"], function (ArcGISImageServiceLayer) {
-			IL_buttonmap = new ArcGISImageServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Imagery/" + img_layer + "/ImageServer");
+			IL_buttonmap = new ArcGISImageServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Imagery/" + img_layer + "/ImageServer", {id: "IL_buttonmap"});
 			M_meri.addLayer(IL_buttonmap, 1);
 		});
 	}
@@ -2077,9 +2063,13 @@ function f_feature_action(funct, target, oid) {
 function f_multi_parcel_buffer_exec(distance) {
 	"use strict";
 	require(["esri/geometry/Polygon", "esri/SpatialReference", "esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/GeometryService",
-             "esri/tasks/BufferParameters", "esri/graphic", "esri/graphic"], function (Polygon, SpatialReference, QueryTask, Query, GeometryService, BufferParameters, Graphic) {
+             "esri/tasks/BufferParameters", "esri/graphic", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Polygon, SpatialReference, QueryTask, Query, GeometryService, BufferParameters, Graphic, Color, SimpleFillSymbol, SimpleLineSymbol) {
 		M_meri.infoWindow.hide();
 		var multiparcel_geometries = new Polygon(new SpatialReference({"wkid": 102100})),
+			S_buffer_buffer = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+																new SimpleLineSymbol(SimpleFillSymbol.STYLE_SOLID,
+																							new Color([100, 100, 100]), 3),
+																new Color([255, 0, 0, 0.6])),
 			m,
 			bufferDistanceTxt = distance,
 			bufferDistance,
@@ -2124,10 +2114,10 @@ function f_deviceCheck(varsion) {
 			newlink = document.createElement("link");
 		newlink.setAttribute("rel", "stylesheet");
 		newlink.setAttribute("type", "text/css");
-		if (varsion === "Municipal") {
+		if (version === "Municipal") {
 			newlink.setAttribute("href", "css/main_mobile.css");
 		} else {
-			newlink.setAttribute("href", "css/main_mobile.css");
+			newlink.setAttribute("href", "css/esri_mobile.css");
 		}
 		document.getElementsByTagName("head").item(0).replaceChild(newlink, oldlink);
 	}
@@ -2183,7 +2173,7 @@ function f_startup() {
 			f_map_click_handler(e);
 		});
 		on.once(M_meri, "load", function (e) {
-			LD_flooding.setDPI(72, false);
+			LD_flooding.setDPI(7, false);
 			M_meri.addLayers([LD_flooding, LD_button]);
 			navToolbar = new Navigation(M_meri);
 			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
@@ -2194,6 +2184,7 @@ function f_startup() {
 			M_meri.addLayer(GL_buffer_selected_parcels);
 			M_meri.addLayer(GL_buffer_parcel);
 			M_meri.addLayer(GL_buffer_buffer);
+			console.log(M_meri);
 		});
 		on.once(LD_button, "load", function (e) {
 			f_base_imagery_list_build();

@@ -527,165 +527,203 @@ input[type="text"][disabled],input[type="password"][disabled]
 {
   	background-color: #dddddd; 
 }
+.zoomin
+{
+  display: none;
+}
+.zoomout
+{
+  display: none;
+}
+.pan
+{
+  display: none;
+}
+.esriMobileNavigationBar
+{
+  background-color: #777;
+  background-image: none;	
+}
+.ResultList
+{
+  top: 0;
+  margin: 0;
+}
+.parcel_content 
+{
+  padding: 10px;
+}
+ nav
+{
+  border-bottom: 0
+}
+nav a
+{
+  margin-bottom: 0
+}
+ul
+{
+  list-style-type: none
+}
+.buttons
+{
+  float:none;
+  width:100%;
+}
+.tab
+{
+  padding: 20px 0;
+}
+.print_a
+{
+  display: none;
+}
+.logo
+{
+  float: none;
+  left: 35%;
+  position: relative;
+  width: 35%;
+}
+.tabs
+{
+  height: 100%;
+}
+.dropdown
+{
+  padding: 5px;
+}
+.dropdown
+{
+  position:relative;
+}
+.esriSimpleSliderTL
+{
+  display:none;
+}
+.esriPopupMobile .titlePane .footer
+{
+  visibility: hidden;
+}
+.attrTable
+{
+  margin: auto;
+}
+.esriMobileInfoView .esriMobileInfoViewItem .gallery
+{
+  margin: auto;
+}
+.esriMobileNavigationItem.center
+{
+  visibility: hidden;
+}
 /* ==========================================================================
    Media Queries
    ========================================================================== */
-@media only screen and (max-width : 980px)
+@media only screen and (min-width: 360px)
 {
-	nav
-	{
-		border-bottom: 0
-	}
-	nav a
-	{
-		margin-bottom: 0
-	}
-	ul
-	{
-		list-style-type: none
-	}
-	.pull
-	{
-		background: url('img/nav-icon.png') no-repeat;
-		background-size: 100% auto;
-		background-position:center; 
-		display: block;
-		height: 25px;
-		left: 7px;
-		top: 7px;
-		width: 25px;
-		z-index: 1;
-	}
-	.buttons
-	{
-		float:none;
-		width:100%;
-	}
-	.tab
-	{
-		padding: 20px 0;
-	}
-	.print_a
-	{
-		display: none;
-	}
+  .esriViewPopup .gallery
+  {
+    width: 350px;
+    height: 300px;
+  }
+  .esriViewPopup .gallery .frame img
+  {
+    max-width: 350px;
+    max-height: 300px;
+  }
+}
+@media only screen and (max-width: 799px)
+{
+  .nav_tabs
+  {
+    background-color: #FAFAFA;
+    background-image: linear-gradient(to bottom, #FFF, #F2F2F2);
+    background-repeat: repeat-x;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    width: 0;
+    overflow-x: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+  }
+  .pull
+  {
+    background: url('img/nav-icon.png') no-repeat;
+    background-size: 100% auto;
+    background-position:center; 
+    display: block;
+    height: 25px;
+    left: 7px;
+    top: 7px;
+    width: 25px;
+    z-index: 1;
+  }
+}
+@media only screen and (min-width: 800px)
+{
+  .button_row
+  {
+    padding: 0;
+  }
+  .dropdown
+  {
+    position: absolute;
+    max-height: 65%;
+  }
+  .nav_tabs
+  {
+    display: block;
+    width: auto;
+  }
+  .tab
+  {
+    margin-bottom: 0;
+    padding: 17px 5px;
+  }
+  .tabs
+  {
+    width: 414px;
+    margin: auto;
+  }
+  .tabs>li
+  {
+    display: inline-block;
+    margin-right: 2%;
+  }  
+}
+@media only screen and (min-width: 1280px)
+{
 	.logo
-	{
-		float: none;
-		left: 35%;
-		position: relative;
-		width: 35%;
-	}
-	.tabs
-	{
-		height: 100%;
-	}
-	.dropdown
-	{
-		padding: 5px;
-	}
-	.dropdown
-	{
-		position:relative;
-	}
-	.esriSimpleSliderTL
-	{
-		display:none;
-	}
-	.nav_tabs
-	{
-		background-color: #FAFAFA;
-		background-image: linear-gradient(to bottom, #FFF, #F2F2F2);
-		background-repeat: repeat-x;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-		width: 0;
-		overflow-x: hidden;
-		position: fixed;
-		top: 0;
-		left: 0;
-		height: 100%;
-	}
-	.zoomin
-	{
-		display: none;
-	}
-	.zoomout
-	{
-		display: none;
-	}
-	.pan
-	{
-		display: none;
-	}
-	.esriMobileNavigationBar
-	{
-		background-color: #777;
-		background-image: none;	
-	}
-	.ResultList
-	{
-		top: 0;
-		margin: 0;
-	}
-	.parcel_content 
-	{
-		padding: 10px;
-	}
-}  
-@media only screen and (min-width: 981px)
-{
-	.dropdown
-	{
-		max-height:75%;
-	}
-	.nav_tabs
-	{
-		width:45%;
-	}
-	.header-container, .main aside
-	{
-		box-shadow: 0 5px 10px #2C2C2C;
-		-webkit-user-select: none;
-  		-moz-user-select: none;   
-  		-ms-user-select: none;
-		user-select: none;
-	}
-	.tab
-	{
-		margin-bottom: 0;
-		padding: 17px 5px;
-	}
-	.tab
-	{
-		width: 100%;
-	}
-	.main article
-	{
-		float: left;
-		width: 57%;
-	}
-	.main aside
-	{
-		float: right;
-		width: 28%;
-	}
-	.tabs>li
-	{
-		display: inline-block;
-		margin-right: 2%;
-	}
-	button, .button
-	{
-		display: inline-block;
-	}
-	.wrapper
-	{
-		margin: 0 auto;
-		width: 1026px;
-	}
-	.ResultList 
-	{
-		margin: 0;
-		top: 0
-	}
+  {
+    float:left;
+    width: 15%;
+    position: static;
+  }
+  .buttons
+  {
+    display: inline-block;
+    float: left;
+    width: auto;
+  }
+  .button_row
+  {
+    margin-right: 5px;
+  }
+  .nav_tabs
+  {
+    display: inline-block;
+  }
+  .mainSection
+  {
+    width: 40%;
+    display: inline-block;
+    float: left;
+  }
+  .mediaSection
+  {
+    width: 40%;
+    display: inline-block;
+  }
 }
