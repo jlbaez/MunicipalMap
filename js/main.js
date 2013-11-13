@@ -1,4 +1,4 @@
-/*global document, require, setTimeout, sessionStorage, window, navigator, location, XMLHttpRequest, Recaptcha, alert, f_startup_eris, f_ERIS_selection_exec*/
+/*global document, require, setTimeout, sessionStorage, window, navigator, location, XMLHttpRequest, Recaptcha, alert, f_startup_eris, f_ERIS_selection_exec, version*/
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
@@ -43,388 +43,279 @@ var M_meri;
 var navToolbar;
 var tool_selected;
 var locateButton;
-var imageryLayersJSON = [{"id": "IMG_1930_BW", "title": "1930 Black and White (NJDEP)"},
-								 {"id": "IMG_1958_BW", "title": "1958 Black and White (NJDEP)"},
-								 {"id": "IMG_1969_BW", "title": "1969 Black and White (NJMC)"},
-								 {"id": "IMG_1978_BW", "title": "1978 Black and White (NJMC)"},
-								 {"id": "IMG_1985_BW", "title": "1985 Black and White (NJMC)"},
-								 {"id": "IMG_1992_BW", "title": "1992 Black and White (NJMC)"},
-								 {"id": "IMG_1995-97_CIR", "title": "1995-97 Color Infrared (NJDEP)"},
-								 {"id": "IMG_2001_C", "title": "2001 Color (NJMC)"},
-								 {"id": "IMG_2002_BW", "title": "2002 Black and White (NJMC)"},
-								 {"id": "IMG_2002_C", "title": "2002 Color Infrared (NJDEP)"},
-								 {"id": "IMG_2008_C", "title": "2008 Color (NJDEP)"},
-								 {"id": "IMG_2009_C", "title": "2009 Color (NJMC)"},
-								 {"id": "IMG_2010_C", "title": "2010 Color (Hudson County)"},
-								 {"id": "IMG_2012_C", "title": "2012 Color (NJDEP)"}];
-
-var mapLayersJSON = [{"name": "Environmental", "id": "environ", "layers":
-							 [{"id": "14", "name": "FEMA Panel", "vis": 1, "ident": 1, "desc": "FEMA Panel"},
-							  {"id": "25", "name": "Riparian Claim (NJDEP)", "vis": 0, "ident": 1, "desc": "Riparian Claim (NJDEP)"},
-							  {"id": "27", "name": "FEMA (100-YR FLOOD)", "vis": 0, "ident": 1, "desc": "FEMA (100-YR FLOOD)"},
-							  {"id": "28", "name": "Wetlands (DEP)", "vis": 0, "ident": 1, "desc": "Wetlands (DEP)"}]},
-							{"name": "Hydro", "id": "hydro", "layers":
-							 [{"id": 1, "name": "Tidegates", "vis": 1, "ident": 1, "desc": "Tidegates"},
-							  {"id": 2, "name": "Creek Names", "vis": 1, "ident": 0, "desc": "Creek Names", "legend": "no"},
-							  {"id": 13, "name": "Drainage", "vis": 1, "ident": 1, "desc": "Drainage"},
-							  {"id": 23, "name": "Hydro Lines - Wetland Edge", "vis": 1, "ident": 1, "desc": "Hydro Lines - Wetland Edge"},
-							  {"id": 24, "name": "Waterways", "vis": 0, "ident": 0, "desc": "Waterways"}]},
-							{"name": "Infrastructure/Utilities", "id": "inf_util", "layers":
-							 [{"id": 5, "name": "Stormwater Catchbasins", "vis": 0, "ident": 1, "desc": "Stormwater Catchbasins"},
-							  {"id": 6, "name": "Stormwater Manholes", "vis": 0, "ident": 1, "desc": "Stormwater Manholes"},
-							  {"id": 7, "name": "Stormwater Outfalls", "vis": 0, "ident": 1, "desc": "Stormwater Outfalls"},
-							  {"id": 8, "name": "Stormwater Lines", "vis": 0, "ident": 1, "desc": "Stormwater Lines"},
-							  {"id": 9, "name": "Sanitary Manhole", "vis": 0, "ident": 1, "desc": "Sanitary Manhole"},
-							  {"id": 10, "name": "Sanitary Lines", "vis": 0, "ident": 1, "desc": "Sanitary Lines"},
-							  {"id": 11, "name": "Hydrants", "vis": 1, "ident": 1, "desc": "Hydrants"}]},
-							{"name": "Political/Jurisdiction", "id": "planning_cad", "layers":
-							 [{"id": 3, "name": "NJMC District", "vis": 1, "ident": 0, "desc": "NJMC District"},
-							  {"id": 4, "name": "Municipal Boundaries", "vis": 1, "ident": 0, "desc": "Municipal Boundaries"},
-							  {"id": 20, "name": "Block Limit", "vis": 1, "ident": 0, "desc": "Block Limit"},
-							  {"id": 21, "name": "Parcel Lines", "vis": 1, "ident": 0, "desc": "Parcel Lines"},
-							  {"id": 26, "name": "Buildings", "vis": 1, "ident": 1, "desc": "Buildings"},
-							  {"id": 31, "name": "Land Use", "vis": 0, "ident": 1, "desc": "Land Use"},
-							  {"id": 32, "name": "Zoning", "vis": 0, "ident": 1, "desc": "Zoning"},
-							  {"id": 22, "name": "Encumbrance/Easements", "vis": 0, "ident": 1, "desc": "Encumbrance/Easements"},
-							  {"id": 30, "name": "Census Blocks 2010", "vis": 0, "ident": 0, "desc": "Census Blocks 2010"},
-							  {"id" : 29, "name": "Voting Districts 2010", "vis": 0, "ident": 1, "desc": "Voting Districts 2010"}]},
-							{"name": "Topographic & Planimetrics", "id": "topo_plan", "layers":
-							 [{"id": 0, "name": "Spot Elevations", "vis": 0, "ident": 1, "desc": "Spot Elevations"},
-							  {"id": 15, "name": "Fence Lines", "vis": 0, "ident": 1, "desc": "Fence Lines"},
-							  {"id": 16, "name": "Contour Lines", "vis": 0, "ident": 1, "desc": "Contour Lines"}]},
-							{"name": "Transportation", "id": "trans", "layers":
-							 [{"id": 12, "name": "DOT Roads", "vis": 1, "ident": 1, "desc": "DOT Roads", "legend": "no"},
-							  {"id": 19, "name": "Bridges - Overpass", "vis": 1, "ident": 0, "desc": "Bridges - Overpass"},
-							  {"id": 17, "name": "Rails", "vis": 1, "ident": 1, "desc": "Rails"},
-							  {"id": 18, "name": "Roads ROW", "vis": 1, "ident": 1, "desc": "Roads ROW", "legend": "no"}]}];
-
-var map_layers_flooding_json = {"title": "Flooding Scenarios",
-										  "title_tgf": "Predicted Flooding in absence of tidegates",
-										  "title_surge": "Storm Surge",
-										  "scenarios": [{"group": 8, "lyr": 1, "vis": 0},
-															 {"group": 7, "lyr": 2, "vis": 0},
-															 {"group": 6, "lyr": 3, "vis": 0},
-															 {"group": 5, "lyr": 4, "vis": 0},
-															 {"group": 4, "lyr": 5, "vis": 0}]};
-
-var legend_children_json = [{"name": "Environmental", "id": "environ", "children": 0},
-									 {"name": "Hydro", "id": "hydro", "children": 0},
-									 {"name": "Infrastructure/Utilities", "id": "inf_util", "children": 0},
-									 {"name": "Political/Jurisdiction", "id": "planning_cad", "children": 0},
-									 {"name": "Topographic & Planimetrics", "id": "topo_plan", "children": 0},
-									 {"name": "Transportation", "id": "trans", "children": 0}];
-
-var identify_fields_json = {14: ["FIRM_PAN"],
-									 25: ["TMAPNUM", "STATUS "],
-									 27: ["FLD_ZONE", "FLOODWAY", "STATIC_BFE", "SFHA_TF"],
-									 28: ["LABEL07", "TYPE07", "ACRES", "LU07"],
-									 1: ["MUNICIPALITY", "TIDEGATE_NAME", "GPSPOINT_TYPE", "ELEVATION", "DATE_OBS", "TYPE_OF_TIDE_GATE", "TYPE_OF_GATE", "FUNCTIONALITY", "MAINTENANCEREQUIRED"],
-									 13: ["TYPE"],
-									 23: ["TYPE"],
-									 5: ["FacilityID", "Municipality", "MaintainedBy", "CBType", "ReceivingWater"],
-									 6: ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"],
-									 7: ["FacilityID", "Municipality", "MaintainedBy", "Diameter", "ReceivingWater"],
-									 8: ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"],
-									 9: ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"],
-									 10: ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"],
-									 11: ["ID", "STREET", "LOCATION1", "LOCATION2", "ACCESS_", "PIPE_DIAMETER", "PIPEDIAMETER_VALUE"],
-									 26: ["BID", "FACILITY_NAME", "BUILDING_LOCATION", "TOTALBLDG_SF"],
-									 31: ["LandUse_Code"],
-									 32: ["Zone_Code"],
-									 22: ["ENCUMBRANCETYPE", "ENCUMBRANCEOWNER", "ENCUMBRANCEDESCRIPTION"],
-									 29: ["NAME10"],
-									 30: ["TRACTCE10", "BLOCKCE10", "POPULATION"],
-									 0: ["ELEVATION"],
-									 15: ["Elevation", "Type"],
-									 16: ["ELEVATION"],
-									 12: ["SLD_NAME"],
-									 17: ["Elevation", "Type"],
-									 18: ["Elevation", "Type"]};
-
-var aliases = {"munCodes":
-					{"205": "Carlstadt",
-					 "212": "East Rutherford",
-					 "230": "Little Ferry",
-					 "232": "Lyndhurst",
-					 "237": "Moonachie",
-					 "239": "North Arlington",
-					 "249": "Ridgefield",
-					 "256": "Rutherford",
-					 "259": "South Hackensack",
-					 "262": "Teterboro",
-					 "906": "Jersey City",
-					 "907": "Kearny",
-					 "908": "North bergen",
-					 "909": "Secaucus"},
-					"landUseCodes" :
-					{"000": "Unclassified",
-					 "AL": "Altered Lands",
-					 "CO": "Commercial Office",
-					 "CR": "Commercial Retail",
-					 "CU": "Communication Utility",
-					 "HM": "Hotels and Motels",
-					 "ICC": "Ind. Comm. Complex",
-					 "IND": "Industrial",
-					 "PQP": "Public Services",
-					 "RES": "Residential",
-					 "RL": "Recreational Land",
-					 "TRS": "Transportation",
-					 "VAC": "Open Land",
-					 "TL": "Transitional Lands",
-					 "WAT": "Water",
-					 "WET": "Wetlands"},
-					"zoneCodes":
-					{"AV": "Aviation facilities",
-					 "CP": "Commercial Park",
-					 "EC": "Environmental Conservation",
-					 "HI": "Heavy Industrial",
-					 "HC": "Highway Commercial",
-					 "IA": "Intermodal A",
-					 "IB": "Intermodal B",
-					 "LIA": "Light Industrial A",
-					 "LIB": "Light Industrial B",
-					 "LDR": "Low Density Residential",
-					 "NC": "Neighborhood Commercial",
-					 "PR": "Planned Residential",
-					 "PU" : "Public Utilities",
-					 "RC": "Regional Commercial",
-					 "TC": "Transportation Center",
-					 "WR" : "Waterfront Recreation",
-					 "RRR" : "Roads, Rails, ROWs",
-					 "000" : "Unclassified",
-					 "RA" : "Redevelopment Area",
-					 "MZ" : "Multiple Zones",
-					 "CZC-SECA" : "Commercial Zone C - Secaucus",
-					 "LI1-SECA" : "Light Industrial Zone 1 - Secaucus",
-					 "RZA-SECA" : "Residential Zone A - Secaucus",
-					 "WAT" : "Water",
-					 "LID-TET" : "Light Industrial & Distribution Zone - Teterboro",
-					 "RA1-TET" : "Redevelopment Area 1 Zone - Teterboro",
-					 "RA2-TET" : "Redevelopment Area 2 Zone - Teterboro",
-					 "PA" : "Parks and Recreation",
-					 "C-CARL" : "Commercial Zone - Carlstadt",
-					 "LI-CARL" : "Light Industrial - Carlstadt",
-					 "LDR-TET" : "Low Density Residential - Teterboro",
-					 "MCZ-CARL" : "Mixed Commercial Zone - Carlstadt",
-					 "RZ-CARL" : "Residential Zone - Carlstadt",
-					 "RZB-SECA" : "Residential Zone B - Secaucus",
-					 "MNF-MOON" : "Manufacturing Zone - Moonachie",
-					 "R1-MOON" : "1-Family Residential Zone - Moonachie",
-					 "R2-MOON" : "2-Family Residential Zone - Moonachie",
-					 "B1-MOON" : "General Business Zone - Moonachie",
-					 "B2-MOON" : "Limited Business Zone - Moonachie",
-					 "R1-ER" : "Low Density Residential - E Rutherford",
-					 "R2-ER" : "Medium Density Residential - E Rutherford",
-					 "R3-ER" : "Multi-Family Residential - E Rutherford",
-					 "NC-ER" : "Neighborhood Commercial - E Rutherford",
-					 "RC-ER" : "Regional Commercial - E Rutherford",
-					 "PCD-ER" : "Planned Commercial Development - E Rutherford",
-					 "RD1-ER" : "Redevelopment-1 - E Rutherford",
-					 "R1-NA" : "1-Family Residential - N Arlington",
-					 "R2-NA" : "1&2-Family Residential - N Arlington",
-					 "RRRA-NA" : "Ridge Road Redevelopment Area - N Arlington",
-					 "PARA-NA" : "Porete Avenue Redevelopment Area - N Arlington",
-					 "R3-NA" : "Multi-Family Residential - N Arlington",
-					 "I1-NA" : "Light Industrial - N Arlington",
-					 "C3-NA" : "Cemetery - N Arlington",
-					 "P/OS-NA" : "Parks & Open Space - N Arlington",
-					 "W/C-NA" : "Waterways & Creeks - N Arlington",
-					 "SEA" : "Sports and Expositions",
-					 "I-ER" : "Light Industrial -  E Rutherford",
-					 "C2-NA" : "Commercial 2 - N Arlington",
-					 "C1-NA" : "Commercial 1 - N Arlington",
-					 "R1-RU" : "Single Family Residential - Rutherford",
-					 "R1A-RU" : "Single Family Residential - Rutherford",
-					 "R1B-RU" : "Single Family Residential - Rutherford",
-					 "R2-RU" : "Two Family Residential - Rutherford",
-					 "R4-RU" : "Five Story Apartment - Rutherford",
-					 "B1-RU" : "Three Story Office - Rutherford",
-					 "B2-RU" : "Five Story Office - Rutherford",
-					 "B3-RU" : "Three Story Office-Retail - Rutherford",
-					 "B3/SH-RU" : "Business / Senior Housing - Rutherford",
-					 "B4-RU" : "Business / Light Industrial - Rutherford",
-					 "ORD-RU" : "Ten Story Office, Research & Distribution - Rutherford",
-					 "HC-RU" : "Highway Commercial Development - Rutherford",
-					 "PCD-RU" : "Planned Commercial Development - Rutherford",
-					 "R3-RU" : "Three Story Apartment - Rutherford",
-					 "UR1A-RU" : "University / Residential, Single Family - Rutherford",
-					 "C-RF" : "Commercial - Ridgefield",
-					 "C/HRH-RF" : "Commercial / High Rise Hotel - Ridgefield",
-					 "GA/TH C-RF" : "GA/TH Cluster - Ridgefield",
-					 "LM-RF" : "Light Manufacturing - Ridgefield",
-					 "NB-RF" : "Neighborhood Business - Ridgefield",
-					 "O/TH-RF" : "Office / T.H. - Ridgefield",
-					 "OC-RF" : "Office Commercial - Ridgefield",
-					 "OMR-RF" : "Office Mid Rise - Ridgefield",
-					 "OMRH-RF" : "Office Mid Rise Hotel - Ridgefield",
-					 "OFR-RF" : "One Family Residential - Ridgefield",
-					 "P/SP-RF" : "Public / Semi Public - Ridgefield",
-					 "TH/SRCH-RF" : "TH / SR Citizens Housing - Ridgefield",
-					 "T-RF" : "Townhomes - Ridgefield",
-					 "TFR-RF" : "Two Family Residential - Ridgefield",
-					 "RB-LF" : "One & Two Family Residential - Little Ferry",
-					 "RM-LF" : "Multifamily Residential - Little Ferry",
-					 "BH-LF" : "Highway & Regional Business - Little Ferry",
-					 "BN-LF" : "Neighborhood Business - Little Ferry",
-					 "IR-LF" : "Restricted Industrial - Little Ferry",
-					 "IG-LF" : "General Industrial - Little Ferry",
-					 "P-LF" : "Public Facilities - Little Ferry",
-					 "RA-LF" : "One Family Residential - Little Ferry",
-					 "P/SP-NA" : "Public/Semi-Public - N Arlington",
-					 "A-SH" : "Residential - South Hackensack",
-					 "B-SH" : "Commercial - South Hackensack",
-					 "C-SH" : "Industrial - South Hackensack",
-					 "M-SH" : "Mixed - South Hackensack",
-					 "SCR-SH" : "Senior Citizen Multifamily Res - South Hackensack",
-					 "RA-LYND" : "One Family Residence - Lyndhurst",
-					 "RB-LYND" : "One and Two Familly Residence - Lyndhurst",
-					 "RC-LYND" : "Medium Density Residential - Lyndhurst",
-					 "B-LYND" : "Business - Lyndhurst",
-					 "M1-LYND" : "Light Industrial - Lyndhurst",
-					 "M2-LYND" : "Heavy Industrial - Lyndhurst",
-					 "CGI-LYND" : "Commercial-General Industrial - Lyndhurst",
-					 "R-1-K" : "One Family Residential - Kearny",
-					 "OS-K" : "Open Space Parks and Recreation District - Kearny",
-					 "SU-1-K" : "Special Use 1 - Kearny",
-					 "SU-3_K" : "Special Use 3 - Kearny",
-					 "SOCD-K" : "Street Oriented Commercial District - Kearny",
-					 "SKI-N-K" : "South Kearny Industrial North - Kearny",
-					 "SKI-S-K" : "South Kearny Industrial South - Kearny",
-					 "RDP-K" : "Research Distribution Park - Kearny",
-					 "RD-K" : "Residential District - Kearny",
-					 "R-A-K" : "Redevelopment Area - Kearny",
-					 "R-3-K" : "Multi-Family Residential - Kearny",
-					 "R-2B-K" : "One_Two Family Residential/Hospital - Kearny",
-					 "R-2-K" : "One_Two Family Residential - Kearny",
-					 "PRD-K" : "Planned Residential Development - Kearny",
-					 "MXD-K" : "Mixed Use District - Kearny",
-					 "MP-K" : "Marshland Preservation - Kearny",
-					 "M-K" : "Manufacturing - Kearny",
-					 "LTI-K" : "Light Industrial - Kearny",
-					 "LID-B-K" : "Light Industrial Distribution B - Kearny",
-					 "LID-A-K" : "Light Industrial Distribution A - Kearny",
-					 "LCD-K" : "Large Scale Commercial District - Kearny",
-					 "H-I-K" : "Heavy Industrial - Kearny",
-					 "ESCD-K" : "Existing Shopping Center District - Kearny",
-					 "CEM-K" : "Cemetery - Kearny",
-					 "C-4-K" : "General Commercial - Kearny",
-					 "C-3-K" : "Community Business - Kearny",
-					 "C-2-K" : "Neighborhood Business - Kearny",
-					 "C-1-K" : "Office - Kearny",
-					 "ARLD-K" : "Adaptive Reuse Loft District - Kearny",
-					 "ACD-K" : "Automobile Oriented Commercial District - Kearny",
-					 "LI-K" : "Limited Industrial- Kearny",
-					 "R1-NB" : "Low Density Residential - N Bergen",
-					 "R2-NB" : "Intermediate Density Residential - N Bergen",
-					 "R3-NB" : "Moderate Density Residential - N Bergen",
-					 "C1-NB" : "General Business - N Bergen",
-					 "C1A-NB" : "General Business Limited Mixed Use - N Bergen",
-					 "C1B-NB" : "General Business Limited Mixed Use Bergenline - N Bergen",
-					 "C1C-NB" : "General Business Mixed Use - N Bergen",
-					 "C1R-NB" : "Commercial Residential District - N Bergen",
-					 "C2-NB" : "Highway Business - N Bergen",
-					 "I-NB" : "Industrial - N Bergen",
-					 "P1-NB" : "Riverside - N Bergen",
-					 "P2-NB" : "Edgecliff - N Bergen",
-					 "P3-NB" : "River Road West - N Bergen",
-					 "TRD-NB" : "Tonnelle Ave Redevelopment Area - N Bergen",
-					 "ET-NB" : "East Side Tonnelle Ave Zone - N Bergen",
-					 "GL-NB" : "Granton Ave-Liberty Ave-69th Street Zone - N Bergen",
-					 "KO-NB" : "Kennedy Overlay Zone - N Bergen",
-					 "TO-NB" : "Townhouse Overlay Zone - N Bergen"},
-					"fieldNames":
-					{"BLOCK": "Block",
-					 "LOT": "Lot",
-					 "PID" : "PID",
-					 "PAMS Pin" : "PAMS Pin",
-					 "PAMS_PIN" : "PAMS Pin",
-					 "OLD_BLOCK" : "Old Block",
-					 "OLD_LOT" : "Old Lot",
-					 "PROPERTY_ADDRESS" : "Address",
-					 "TAX_ACRES" : "Tax Acres",
-					 "CITY_STATE" : "City, State",
-					 "MAP_ACRES" : "GIS Acres",
-					 "MUN_CODE" : "Municipality",
-					 "LANDUSE_CODE" : "Landuse",
-					 "ZONE_CODE" : "Zone",
-					 'NAME' : 'Name', "ADDRESS" : 'Address', "FIRM_PAN" : "Firm Panel #",
-					 "TMAPNUM" : "Tidelands Map #",
-					 "FLD_ZONE" : "Flood Zone",
-					 "STATIC_BFE" : 'Static Base<br>Flood Elevation',
-					 "LABEL07" : "Wetland Label",
-					 "TYPE07" : "Wetland Type",
-					 "LU07" : "Anderson landuse class",
-					 "RECIEVINGWATER" : "Receiving Water",
-					 "NAME10" : "Voting District Label",
-					 "TRACTCE10" : "Census Tract #",
-					 "BLOCKCE10" : "Census Block #",
-					 "FACILITY_NAME" : "Facility Name",
-					 "BUILDING_LOCATION" : "Building Location",
-					 "TOTALBLDG_SF" : "Total Building Square Feet",
-					 "PHYSICAL_ADDRESS" : "Address",
-					 "PHYSICAL_CITY" : "City",
-					 "PHYSICAL_ZIP" : "Zip Code",
-					 "COMPANY_CONTACT" : "Company Contact",
-					 "CONTACT_PHONE" : "Phone",
-					 "OFFICIAL_CONTACT" : "Official Contact",
-					 "OFFICIAL_PHONE" : "Phone",
-					 "EMERGENCY_CONTACT" : "Emergency Contact",
-					 "EMERGENCY_PHONE" : "Phone",
-					 "CAS_NUMBER" : "CAS Number",
-					 "LandUse_Code" : "Landuse",
-					 "QUALIFIER": "Qualifier",
-					 "ENCUMBRANCEDESCRIPTION": "Encumbrance<br>Description",
-					 "ENCUMBRANCETYPE": "Encumbrance<br>Type",
-					 "ENCUMBRANCEOWNER": "Encumbrance<br>Owner",
-					 "POPULATION": "Population",
-					 "STATUS ": "Status",
-					 "FacilityID": "Facility ID",
-					 "Zone_Code": "Zoning"}};
-
-var F_outFields = {"parcel": ["PID",
-										"PAMS_PIN",
-										"BLOCK",
-										"LOT",
-										"OLD_BLOCK",
-										"OLD_LOT",
-										"FACILITY_NAME",
-										"PROPERTY_ADDRESS",
-										"MAP_ACRES",
-										"TAX_ACRES",
-										"MUN_CODE",
-										"QUALIFIER"],
-						 "parcelB": ["PID"],
-						 "search": ["PROPERTY_ADDRESS",
-										"BLOCK",
-										"LOT"],
-						 "owner": ["OWNID",
-									  "NAME",
-									  "ADDRESS",
-									  "CITY_STATE",
-									  "ZIPCODE"],
-						 "building": ["PID",
-										  "BID",
-										  "MUNICIPALITY",
-										  "BUILDING_LOCATION",
-										  "FACILITY_NAME"],
-						 "ERIS": ["*"]};
-var landuse_json = [{"code": "CO", "name": "Commercial Office"},
-							 {"code": "CR", "name": "Commercial Retail"},
-							 {"code": "HM", "name": "Hotels and Motels"},
-							 {"code": "IND", "name": "Industrial"},
-							 {"code": "ICC", "name": "Industrial Commercial Complex"},
-							 {"code": "PQP", "name": "Public/Quasi Public Services"},
-							 {"code": "RL", "name": "Recreational Land"},
-							 {"code": "RES", "name": "Residential"},
-							 {"code": "TRS", "name": "Transportation"},
-							 {"code": "WAT", "name": "Water"},
-							 {"code": "WET", "name": "Wetlands"},
-							 {"code": "000", "name": "Unclassified"},
-							 {"code": "CU", "name": "Communication Utility"},
-							 {"code": "MU", "name": "Multiple Uses"},
-							 {"code": "VAC", "name": "Open Lands"},
-							 {"code": "TL", "name": "Transitional Lands"}
-                    ];
+function f_getAliases() {
+	"use strict";
+	var aliases = {"munCodes":
+						{"205": "Carlstadt",
+						 "212": "East Rutherford",
+						 "230": "Little Ferry",
+						 "232": "Lyndhurst",
+						 "237": "Moonachie",
+						 "239": "North Arlington",
+						 "249": "Ridgefield",
+						 "256": "Rutherford",
+						 "259": "South Hackensack",
+						 "262": "Teterboro",
+						 "906": "Jersey City",
+						 "907": "Kearny",
+						 "908": "North bergen",
+						 "909": "Secaucus"},
+						"landUseCodes" :
+						{"000": "Unclassified",
+						 "AL": "Altered Lands",
+						 "CO": "Commercial Office",
+						 "CR": "Commercial Retail",
+						 "CU": "Communication Utility",
+						 "HM": "Hotels and Motels",
+						 "ICC": "Ind. Comm. Complex",
+						 "IND": "Industrial",
+						 "PQP": "Public Services",
+						 "RES": "Residential",
+						 "RL": "Recreational Land",
+						 "TRS": "Transportation",
+						 "VAC": "Open Land",
+						 "TL": "Transitional Lands",
+						 "WAT": "Water",
+						 "WET": "Wetlands"},
+						"zoneCodes":
+						{"AV": "Aviation facilities",
+						 "CP": "Commercial Park",
+						 "EC": "Environmental Conservation",
+						 "HI": "Heavy Industrial",
+						 "HC": "Highway Commercial",
+						 "IA": "Intermodal A",
+						 "IB": "Intermodal B",
+						 "LIA": "Light Industrial A",
+						 "LIB": "Light Industrial B",
+						 "LDR": "Low Density Residential",
+						 "NC": "Neighborhood Commercial",
+						 "PR": "Planned Residential",
+						 "PU" : "Public Utilities",
+						 "RC": "Regional Commercial",
+						 "TC": "Transportation Center",
+						 "WR" : "Waterfront Recreation",
+						 "RRR" : "Roads, Rails, ROWs",
+						 "000" : "Unclassified",
+						 "RA" : "Redevelopment Area",
+						 "MZ" : "Multiple Zones",
+						 "CZC-SECA" : "Commercial Zone C - Secaucus",
+						 "LI1-SECA" : "Light Industrial Zone 1 - Secaucus",
+						 "RZA-SECA" : "Residential Zone A - Secaucus",
+						 "WAT" : "Water",
+						 "LID-TET" : "Light Industrial & Distribution Zone - Teterboro",
+						 "RA1-TET" : "Redevelopment Area 1 Zone - Teterboro",
+						 "RA2-TET" : "Redevelopment Area 2 Zone - Teterboro",
+						 "PA" : "Parks and Recreation",
+						 "C-CARL" : "Commercial Zone - Carlstadt",
+						 "LI-CARL" : "Light Industrial - Carlstadt",
+						 "LDR-TET" : "Low Density Residential - Teterboro",
+						 "MCZ-CARL" : "Mixed Commercial Zone - Carlstadt",
+						 "RZ-CARL" : "Residential Zone - Carlstadt",
+						 "RZB-SECA" : "Residential Zone B - Secaucus",
+						 "MNF-MOON" : "Manufacturing Zone - Moonachie",
+						 "R1-MOON" : "1-Family Residential Zone - Moonachie",
+						 "R2-MOON" : "2-Family Residential Zone - Moonachie",
+						 "B1-MOON" : "General Business Zone - Moonachie",
+						 "B2-MOON" : "Limited Business Zone - Moonachie",
+						 "R1-ER" : "Low Density Residential - E Rutherford",
+						 "R2-ER" : "Medium Density Residential - E Rutherford",
+						 "R3-ER" : "Multi-Family Residential - E Rutherford",
+						 "NC-ER" : "Neighborhood Commercial - E Rutherford",
+						 "RC-ER" : "Regional Commercial - E Rutherford",
+						 "PCD-ER" : "Planned Commercial Development - E Rutherford",
+						 "RD1-ER" : "Redevelopment-1 - E Rutherford",
+						 "R1-NA" : "1-Family Residential - N Arlington",
+						 "R2-NA" : "1&2-Family Residential - N Arlington",
+						 "RRRA-NA" : "Ridge Road Redevelopment Area - N Arlington",
+						 "PARA-NA" : "Porete Avenue Redevelopment Area - N Arlington",
+						 "R3-NA" : "Multi-Family Residential - N Arlington",
+						 "I1-NA" : "Light Industrial - N Arlington",
+						 "C3-NA" : "Cemetery - N Arlington",
+						 "P/OS-NA" : "Parks & Open Space - N Arlington",
+						 "W/C-NA" : "Waterways & Creeks - N Arlington",
+						 "SEA" : "Sports and Expositions",
+						 "I-ER" : "Light Industrial -  E Rutherford",
+						 "C2-NA" : "Commercial 2 - N Arlington",
+						 "C1-NA" : "Commercial 1 - N Arlington",
+						 "R1-RU" : "Single Family Residential - Rutherford",
+						 "R1A-RU" : "Single Family Residential - Rutherford",
+						 "R1B-RU" : "Single Family Residential - Rutherford",
+						 "R2-RU" : "Two Family Residential - Rutherford",
+						 "R4-RU" : "Five Story Apartment - Rutherford",
+						 "B1-RU" : "Three Story Office - Rutherford",
+						 "B2-RU" : "Five Story Office - Rutherford",
+						 "B3-RU" : "Three Story Office-Retail - Rutherford",
+						 "B3/SH-RU" : "Business / Senior Housing - Rutherford",
+						 "B4-RU" : "Business / Light Industrial - Rutherford",
+						 "ORD-RU" : "Ten Story Office, Research & Distribution - Rutherford",
+						 "HC-RU" : "Highway Commercial Development - Rutherford",
+						 "PCD-RU" : "Planned Commercial Development - Rutherford",
+						 "R3-RU" : "Three Story Apartment - Rutherford",
+						 "UR1A-RU" : "University / Residential, Single Family - Rutherford",
+						 "C-RF" : "Commercial - Ridgefield",
+						 "C/HRH-RF" : "Commercial / High Rise Hotel - Ridgefield",
+						 "GA/TH C-RF" : "GA/TH Cluster - Ridgefield",
+						 "LM-RF" : "Light Manufacturing - Ridgefield",
+						 "NB-RF" : "Neighborhood Business - Ridgefield",
+						 "O/TH-RF" : "Office / T.H. - Ridgefield",
+						 "OC-RF" : "Office Commercial - Ridgefield",
+						 "OMR-RF" : "Office Mid Rise - Ridgefield",
+						 "OMRH-RF" : "Office Mid Rise Hotel - Ridgefield",
+						 "OFR-RF" : "One Family Residential - Ridgefield",
+						 "P/SP-RF" : "Public / Semi Public - Ridgefield",
+						 "TH/SRCH-RF" : "TH / SR Citizens Housing - Ridgefield",
+						 "T-RF" : "Townhomes - Ridgefield",
+						 "TFR-RF" : "Two Family Residential - Ridgefield",
+						 "RB-LF" : "One & Two Family Residential - Little Ferry",
+						 "RM-LF" : "Multifamily Residential - Little Ferry",
+						 "BH-LF" : "Highway & Regional Business - Little Ferry",
+						 "BN-LF" : "Neighborhood Business - Little Ferry",
+						 "IR-LF" : "Restricted Industrial - Little Ferry",
+						 "IG-LF" : "General Industrial - Little Ferry",
+						 "P-LF" : "Public Facilities - Little Ferry",
+						 "RA-LF" : "One Family Residential - Little Ferry",
+						 "P/SP-NA" : "Public/Semi-Public - N Arlington",
+						 "A-SH" : "Residential - South Hackensack",
+						 "B-SH" : "Commercial - South Hackensack",
+						 "C-SH" : "Industrial - South Hackensack",
+						 "M-SH" : "Mixed - South Hackensack",
+						 "SCR-SH" : "Senior Citizen Multifamily Res - South Hackensack",
+						 "RA-LYND" : "One Family Residence - Lyndhurst",
+						 "RB-LYND" : "One and Two Familly Residence - Lyndhurst",
+						 "RC-LYND" : "Medium Density Residential - Lyndhurst",
+						 "B-LYND" : "Business - Lyndhurst",
+						 "M1-LYND" : "Light Industrial - Lyndhurst",
+						 "M2-LYND" : "Heavy Industrial - Lyndhurst",
+						 "CGI-LYND" : "Commercial-General Industrial - Lyndhurst",
+						 "R-1-K" : "One Family Residential - Kearny",
+						 "OS-K" : "Open Space Parks and Recreation District - Kearny",
+						 "SU-1-K" : "Special Use 1 - Kearny",
+						 "SU-3_K" : "Special Use 3 - Kearny",
+						 "SOCD-K" : "Street Oriented Commercial District - Kearny",
+						 "SKI-N-K" : "South Kearny Industrial North - Kearny",
+						 "SKI-S-K" : "South Kearny Industrial South - Kearny",
+						 "RDP-K" : "Research Distribution Park - Kearny",
+						 "RD-K" : "Residential District - Kearny",
+						 "R-A-K" : "Redevelopment Area - Kearny",
+						 "R-3-K" : "Multi-Family Residential - Kearny",
+						 "R-2B-K" : "One_Two Family Residential/Hospital - Kearny",
+						 "R-2-K" : "One_Two Family Residential - Kearny",
+						 "PRD-K" : "Planned Residential Development - Kearny",
+						 "MXD-K" : "Mixed Use District - Kearny",
+						 "MP-K" : "Marshland Preservation - Kearny",
+						 "M-K" : "Manufacturing - Kearny",
+						 "LTI-K" : "Light Industrial - Kearny",
+						 "LID-B-K" : "Light Industrial Distribution B - Kearny",
+						 "LID-A-K" : "Light Industrial Distribution A - Kearny",
+						 "LCD-K" : "Large Scale Commercial District - Kearny",
+						 "H-I-K" : "Heavy Industrial - Kearny",
+						 "ESCD-K" : "Existing Shopping Center District - Kearny",
+						 "CEM-K" : "Cemetery - Kearny",
+						 "C-4-K" : "General Commercial - Kearny",
+						 "C-3-K" : "Community Business - Kearny",
+						 "C-2-K" : "Neighborhood Business - Kearny",
+						 "C-1-K" : "Office - Kearny",
+						 "ARLD-K" : "Adaptive Reuse Loft District - Kearny",
+						 "ACD-K" : "Automobile Oriented Commercial District - Kearny",
+						 "LI-K" : "Limited Industrial- Kearny",
+						 "R1-NB" : "Low Density Residential - N Bergen",
+						 "R2-NB" : "Intermediate Density Residential - N Bergen",
+						 "R3-NB" : "Moderate Density Residential - N Bergen",
+						 "C1-NB" : "General Business - N Bergen",
+						 "C1A-NB" : "General Business Limited Mixed Use - N Bergen",
+						 "C1B-NB" : "General Business Limited Mixed Use Bergenline - N Bergen",
+						 "C1C-NB" : "General Business Mixed Use - N Bergen",
+						 "C1R-NB" : "Commercial Residential District - N Bergen",
+						 "C2-NB" : "Highway Business - N Bergen",
+						 "I-NB" : "Industrial - N Bergen",
+						 "P1-NB" : "Riverside - N Bergen",
+						 "P2-NB" : "Edgecliff - N Bergen",
+						 "P3-NB" : "River Road West - N Bergen",
+						 "TRD-NB" : "Tonnelle Ave Redevelopment Area - N Bergen",
+						 "ET-NB" : "East Side Tonnelle Ave Zone - N Bergen",
+						 "GL-NB" : "Granton Ave-Liberty Ave-69th Street Zone - N Bergen",
+						 "KO-NB" : "Kennedy Overlay Zone - N Bergen",
+						 "TO-NB" : "Townhouse Overlay Zone - N Bergen"},
+						"fieldNames":
+						{"BLOCK": "Block",
+						 "LOT": "Lot",
+						 "PID" : "PID",
+						 "PAMS Pin" : "PAMS Pin",
+						 "PAMS_PIN" : "PAMS Pin",
+						 "OLD_BLOCK" : "Old Block",
+						 "OLD_LOT" : "Old Lot",
+						 "PROPERTY_ADDRESS" : "Address",
+						 "TAX_ACRES" : "Tax Acres",
+						 "CITY_STATE" : "City, State",
+						 "MAP_ACRES" : "GIS Acres",
+						 "MUN_CODE" : "Municipality",
+						 "LANDUSE_CODE" : "Landuse",
+						 "ZONE_CODE" : "Zone",
+						 'NAME' : 'Name', "ADDRESS" : 'Address', "FIRM_PAN" : "Firm Panel #",
+						 "TMAPNUM" : "Tidelands Map #",
+						 "FLD_ZONE" : "Flood Zone",
+						 "STATIC_BFE" : 'Static Base<br>Flood Elevation',
+						 "LABEL07" : "Wetland Label",
+						 "TYPE07" : "Wetland Type",
+						 "LU07" : "Anderson landuse class",
+						 "RECIEVINGWATER" : "Receiving Water",
+						 "NAME10" : "Voting District Label",
+						 "TRACTCE10" : "Census Tract #",
+						 "BLOCKCE10" : "Census Block #",
+						 "FACILITY_NAME" : "Facility Name",
+						 "BUILDING_LOCATION" : "Building Location",
+						 "TOTALBLDG_SF" : "Total Building Square Feet",
+						 "PHYSICAL_ADDRESS" : "Address",
+						 "PHYSICAL_CITY" : "City",
+						 "PHYSICAL_ZIP" : "Zip Code",
+						 "COMPANY_CONTACT" : "Company Contact",
+						 "CONTACT_PHONE" : "Phone",
+						 "OFFICIAL_CONTACT" : "Official Contact",
+						 "OFFICIAL_PHONE" : "Phone",
+						 "EMERGENCY_CONTACT" : "Emergency Contact",
+						 "EMERGENCY_PHONE" : "Phone",
+						 "CAS_NUMBER" : "CAS Number",
+						 "LandUse_Code" : "Landuse",
+						 "QUALIFIER": "Qualifier",
+						 "ENCUMBRANCEDESCRIPTION": "Encumbrance<br>Description",
+						 "ENCUMBRANCETYPE": "Encumbrance<br>Type",
+						 "ENCUMBRANCEOWNER": "Encumbrance<br>Owner",
+						 "POPULATION": "Population",
+						 "STATUS ": "Status",
+						 "FacilityID": "Facility ID",
+						 "Zone_Code": "Zoning"}};
+	return aliases;
+}
+function f_getoutFields() {
+	"use strict";
+	var outFields_json = {"parcel": ["PID",
+											"PAMS_PIN",
+											"BLOCK",
+											"LOT",
+											"OLD_BLOCK",
+											"OLD_LOT",
+											"FACILITY_NAME",
+											"PROPERTY_ADDRESS",
+											"MAP_ACRES",
+											"TAX_ACRES",
+											"MUN_CODE",
+											"QUALIFIER"],
+							 "parcelB": ["PID"],
+							 "search": ["PROPERTY_ADDRESS",
+											"BLOCK",
+											"LOT"],
+							 "owner": ["OWNID",
+										  "NAME",
+										  "ADDRESS",
+										  "CITY_STATE",
+										  "ZIPCODE"],
+							 "building": ["PID",
+											  "BID",
+											  "MUNICIPALITY",
+											  "BUILDING_LOCATION",
+											  "FACILITY_NAME"],
+							 "ERIS": ["*"]};
+}
 function e_printMap(pid) {
 	"use strict";
 	sessionStorage.setItem('printPID', pid);
@@ -437,6 +328,7 @@ function f_printMap() {
 }
 function fieldAlias(fieldName, dataSource) {
 	"use strict";
+	var aliases = f_getAliases();
 	dataSource = typeof (dataSource) !== 'undefined' ? dataSource : '';
 	aliases.fieldNames.NAME = dataSource + 'Name';
 	aliases.fieldNames.ADDRESS = dataSource + 'Address';
@@ -448,6 +340,7 @@ function fieldAlias(fieldName, dataSource) {
 }
 function landuseAlias(a) {
 	"use strict";
+	var aliases = f_getAliases();
 	if (typeof (aliases.landUseCodes[a]) !== "undefined") {
 		return aliases.landUseCodes[a];
 	} else {
@@ -456,6 +349,7 @@ function landuseAlias(a) {
 }
 function zoningAlias(a) {
 	"use strict";
+	var aliases = f_getAliases();
 	if (typeof (aliases.zoneCodes[a]) !== "undefined") {
 		return aliases.zoneCodes[a];
 	} else {
@@ -464,6 +358,7 @@ function zoningAlias(a) {
 }
 function muncodeToName(c) {
 	"use strict";
+	var aliases = f_getAliases();
 	if (c.length === 4) {
 		c = c.substr(1, 3);
 	}
@@ -542,7 +437,8 @@ function f_getPopupTemplate(graphic) {
 				e_table = domConstruct.create("table", {"class": "attrTable", "cellspacing": "0px", "cellpadding": "0px"}, e_parent),
 				e_tbody = domConstruct.create("tbody", null, e_table),
 				attr,
-				e_tr;
+				e_tr,
+				aliases = f_getAliases();
 			for (attr in attributes) {
 				if (attributes.hasOwnProperty(attr)) {
 					if (attributes[attr] !== null) {
@@ -765,10 +661,11 @@ function f_parcel_selection_exec(map_event) {
 	"use strict";
 	require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 		var Q_parcel_selection = new Query(),
-			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
+			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0"),
+			outFields_json = f_getoutFields();
 		Q_parcel_selection.outSpatialReference = {wkid: 3857};
 		Q_parcel_selection.returnGeometry = true;
-		Q_parcel_selection.outFields = F_outFields.parcel;
+		Q_parcel_selection.outFields = outFields_json.parcel;
 		Q_parcel_selection.geometry = map_event.mapPoint;
 		QT_parcel_selection.execute(Q_parcel_selection, function (results) {
 			f_process_results_parcel(results, "click");
@@ -783,7 +680,33 @@ function f_map_identify_exec(click_evt) {
 			el_popup_content = domConstruct.create("div", {"class": "esriViewPopup"}),
 			el_popup_view = domConstruct.create("div", {"class": "mainSection"}, el_popup_content),
 			IT_Map_All = new IdentifyTask(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer"),
-			next_arrow = document.getElementsByClassName("titleButton arrow")[0];
+			next_arrow = document.getElementsByClassName("titleButton arrow")[0],
+			identify_fields_json = {14: ["FIRM_PAN"],
+											25: ["TMAPNUM", "STATUS "],
+											27: ["FLD_ZONE", "FLOODWAY", "STATIC_BFE", "SFHA_TF"],
+											28: ["LABEL07", "TYPE07", "ACRES", "LU07"],
+											1: ["MUNICIPALITY", "TIDEGATE_NAME", "GPSPOINT_TYPE", "ELEVATION", "DATE_OBS", "TYPE_OF_TIDE_GATE", "TYPE_OF_GATE", "FUNCTIONALITY", "MAINTENANCEREQUIRED"],
+											13: ["TYPE"],
+											23: ["TYPE"],
+											5: ["FacilityID", "Municipality", "MaintainedBy", "CBType", "ReceivingWater"],
+											6: ["FacilityID", "Municipality", "MaintainedBy", "RIMELEVATION"],
+											7: ["FacilityID", "Municipality", "MaintainedBy", "Diameter", "ReceivingWater"],
+											8: ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"],
+											9: ["FacilityID", "Municipality", "MaintainedBy", "RIMELEVATION"],
+											10: ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"],
+											11: ["ID", "STREET", "LOCATION1", "LOCATION2", "ACCESS_", "PIPE_DIAMETER", "PIPEDIAMETER_VALUE"],
+											26: ["BID", "FACILITY_NAME", "BUILDING_LOCATION", "TOTALBLDG_SF"],
+											31: ["LandUse_Code"],
+											32: ["Zone_Code"],
+											22: ["ENCUMBRANCETYPE", "ENCUMBRANCEOWNER", "ENCUMBRANCEDESCRIPTION"],
+											29: ["NAME10"],
+											30: ["TRACTCE10", "BLOCKCE10", "POPULATION"],
+											0: ["ELEVATION"],
+											15: ["Elevation", "Type"],
+											16: ["ELEVATION"],
+											12: ["SLD_NAME"],
+											17: ["Elevation", "Type"],
+											18: ["Elevation", "Type"]};
 		IP_Map_All.tolerance = 3;
 		IP_Map_All.returnGeometry = true;
 		IP_Map_All.layerIds = [14, 25, 27, 26, 31, 30, 29];
@@ -940,10 +863,11 @@ function f_search_parcel_old(address, block, lot, where_PID) {
 			Q_parcel_selection = new Query(),
 			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0"),
 			where_muni,
-			where_qual;
+			where_qual,
+			outFields_json = f_getoutFields();
 		Q_parcel_selection.outSpatialReference = {wkid: 3857};
 		Q_parcel_selection.returnGeometry = true;
-		Q_parcel_selection.outFields = F_outFields.parcel;
+		Q_parcel_selection.outFields = outFields_json.parcel;
 		if (document.getElementById("rdo_muni_searchSelect").checked) {
 			if (muni_array.length > 0) {
 				where_muni = "[MUN_CODE] IN (";
@@ -1038,10 +962,11 @@ function f_candidate_search(where, candidate_array) {
 				featureAttributes,
 				parcel_address,
 				candidate_address = document.getElementById("address").value.split(" ", 2)[1],
-				add_num = document.getElementById("address").value.split(" ", 1)[0];
+				add_num = document.getElementById("address").value.split(" ", 1)[0],
+				outFields_json = f_getoutFields();
 			Q_parcel_selection.outSpatialReference = {wkid: 3857};
 			Q_parcel_selection.returnGeometry = true;
-			Q_parcel_selection.outFields = F_outFields.parcel;
+			Q_parcel_selection.outFields = outFields_json.parcel;
 			search_progress.value = ".5";
 			if (where.length === 0) {
 				Q_parcel_selection.where = where.join(" AND ");
@@ -1260,9 +1185,10 @@ function f_search_owner(owner) {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 			var Q_owners = new Query(),
 				QT_owners = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/5"),
-				e_search_progress = document.getElementById("search_progress");
+				e_search_progress = document.getElementById("search_progress"),
+				outFields_json = f_getoutFields();
 			Q_owners.returnGeometry = false;
-			Q_owners.outFields = F_outFields.owner;
+			Q_owners.outFields = outFields_json.owner;
 			Q_owners.where = "Where [NAME] LIKE '%" + owner + "%'";
 			QT_owners.execute(Q_owners, f_query_owners_results);
 			e_search_progress.value = "1";
@@ -1324,7 +1250,8 @@ function f_multi_parcel_buffer_exec(distance) {
 			GeomS_parcel_buffer,
 			BP_parcel_selection,
 			GL_parcel_selection = M_meri.getLayer("GL_parcel_selection"),
-			GL_buffer_parcel = M_meri.getLayer("GL_buffer_parcel");
+			GL_buffer_parcel = M_meri.getLayer("GL_buffer_parcel"),
+			outFields_json = f_getoutFields();
 		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
 			multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
 		}
@@ -1334,7 +1261,7 @@ function f_multi_parcel_buffer_exec(distance) {
 			bufferDistance = bufferDistanceTxt * 1.35;
 			Q_parcel_selection_buffer.returnGeometry = true;
 			Q_parcel_selection_buffer.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
-			Q_parcel_selection_buffer.outFields = F_outFields.parcel;
+			Q_parcel_selection_buffer.outFields = outFields_json.parcel;
 			GeomS_parcel_buffer = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
 			BP_parcel_selection = new BufferParameters();
 			BP_parcel_selection.geometries  = [multiparcel_geometries];
@@ -1345,7 +1272,7 @@ function f_multi_parcel_buffer_exec(distance) {
 				var graphic = new Graphic(geometries[0], S_buffer_buffer);
 				M_meri.getLayer("GL_buffer_buffer").add(graphic);
 				Q_parcel_selection_buffer.geometry = graphic.geometry;
-				Q_parcel_selection_buffer.outFields = F_outFields.parcelB;
+				Q_parcel_selection_buffer.outFields = outFields_json.parcelB;
 				QT_parcel_selection_buffer.execute(Q_parcel_selection_buffer, function (fset) {
 					f_process_results_buffer(fset);
 				});
@@ -1583,7 +1510,21 @@ function f_base_imagery_list_build() {
 		var e_li_title = domConstruct.create("li", {"id": "image_overlay", "class": "layer_group_title", "innerHTML": "Image Overlay"}, "dropdown1"),
 			e_li = domConstruct.create("li", {"class": "image_layer_li"}, "dropdown1"),
 			e_sel = domConstruct.create("select", {"onChange": "f_image_layer_toggle(this)", "class": "select_option"}, e_li),
-			e_opt = domConstruct.create("option", {"innerHTML": "Default", "value": ""}, e_sel);
+			e_opt = domConstruct.create("option", {"innerHTML": "Default", "value": ""}, e_sel),
+			imageryLayersJSON = [{"id": "IMG_1930_BW", "title": "1930 Black and White (NJDEP)"},
+										{"id": "IMG_1958_BW", "title": "1958 Black and White (NJDEP)"},
+										{"id": "IMG_1969_BW", "title": "1969 Black and White (NJMC)"},
+										{"id": "IMG_1978_BW", "title": "1978 Black and White (NJMC)"},
+										{"id": "IMG_1985_BW", "title": "1985 Black and White (NJMC)"},
+										{"id": "IMG_1992_BW", "title": "1992 Black and White (NJMC)"},
+										{"id": "IMG_1995-97_CIR", "title": "1995-97 Color Infrared (NJDEP)"},
+										{"id": "IMG_2001_C", "title": "2001 Color (NJMC)"},
+										{"id": "IMG_2002_BW", "title": "2002 Black and White (NJMC)"},
+										{"id": "IMG_2002_C", "title": "2002 Color Infrared (NJDEP)"},
+										{"id": "IMG_2008_C", "title": "2008 Color (NJDEP)"},
+										{"id": "IMG_2009_C", "title": "2009 Color (NJMC)"},
+										{"id": "IMG_2010_C", "title": "2010 Color (Hudson County)"},
+										{"id": "IMG_2012_C", "title": "2012 Color (NJDEP)"}];
 		Array.forEach(imageryLayersJSON, function (img_lyr, index) {
 			var e_opt = domConstruct.create("option", {value: img_lyr.id, innerHTML: img_lyr.title}, e_sel);
 		});
@@ -1600,7 +1541,54 @@ function f_layer_list_build() {
 			e_li_flood,
 			e_ul,
 			e_li2,
-			e_legend;
+			e_legend,
+			mapLayersJSON = [{"name": "Environmental", "id": "environ", "layers":
+									[{"id": "14", "name": "FEMA Panel", "vis": 1, "ident": 1, "desc": "FEMA Panel"},
+									 {"id": "25", "name": "Riparian Claim (NJDEP)", "vis": 0, "ident": 1, "desc": "Riparian Claim (NJDEP)"},
+									 {"id": "27", "name": "FEMA (100-YR FLOOD)", "vis": 0, "ident": 1, "desc": "FEMA (100-YR FLOOD)"},
+									 {"id": "28", "name": "Wetlands (DEP)", "vis": 0, "ident": 1, "desc": "Wetlands (DEP)"}]},
+								  {"name": "Hydro", "id": "hydro", "layers":
+									[{"id": 1, "name": "Tidegates", "vis": 1, "ident": 1, "desc": "Tidegates"},
+									 {"id": 2, "name": "Creek Names", "vis": 1, "ident": 0, "desc": "Creek Names", "legend": "no"},
+									 {"id": 13, "name": "Drainage", "vis": 1, "ident": 1, "desc": "Drainage"},
+									 {"id": 23, "name": "Hydro Lines - Wetland Edge", "vis": 1, "ident": 1, "desc": "Hydro Lines - Wetland Edge"},
+									 {"id": 24, "name": "Waterways", "vis": 0, "ident": 0, "desc": "Waterways"}]},
+								  {"name": "Infrastructure/Utilities", "id": "inf_util", "layers":
+									[{"id": 5, "name": "Stormwater Catchbasins", "vis": 0, "ident": 1, "desc": "Stormwater Catchbasins"},
+									 {"id": 6, "name": "Stormwater Manholes", "vis": 0, "ident": 1, "desc": "Stormwater Manholes"},
+									 {"id": 7, "name": "Stormwater Outfalls", "vis": 0, "ident": 1, "desc": "Stormwater Outfalls"},
+									 {"id": 8, "name": "Stormwater Lines", "vis": 0, "ident": 1, "desc": "Stormwater Lines"},
+									 {"id": 9, "name": "Sanitary Manhole", "vis": 0, "ident": 1, "desc": "Sanitary Manhole"},
+									 {"id": 10, "name": "Sanitary Lines", "vis": 0, "ident": 1, "desc": "Sanitary Lines"},
+									 {"id": 11, "name": "Hydrants", "vis": 1, "ident": 1, "desc": "Hydrants"}]},
+								  {"name": "Political/Jurisdiction", "id": "planning_cad", "layers":
+									[{"id": 3, "name": "NJMC District", "vis": 1, "ident": 0, "desc": "NJMC District"},
+									 {"id": 4, "name": "Municipal Boundaries", "vis": 1, "ident": 0, "desc": "Municipal Boundaries"},
+									 {"id": 20, "name": "Block Limit", "vis": 1, "ident": 0, "desc": "Block Limit"},
+									 {"id": 21, "name": "Parcel Lines", "vis": 1, "ident": 0, "desc": "Parcel Lines"},
+									 {"id": 26, "name": "Buildings", "vis": 1, "ident": 1, "desc": "Buildings"},
+									 {"id": 31, "name": "Land Use", "vis": 0, "ident": 1, "desc": "Land Use"},
+									 {"id": 32, "name": "Zoning", "vis": 0, "ident": 1, "desc": "Zoning"},
+									 {"id": 22, "name": "Encumbrance/Easements", "vis": 0, "ident": 1, "desc": "Encumbrance/Easements"},
+									 {"id": 30, "name": "Census Blocks 2010", "vis": 0, "ident": 0, "desc": "Census Blocks 2010"},
+									 {"id" : 29, "name": "Voting Districts 2010", "vis": 0, "ident": 1, "desc": "Voting Districts 2010"}]},
+								  {"name": "Topographic & Planimetrics", "id": "topo_plan", "layers":
+									[{"id": 0, "name": "Spot Elevations", "vis": 0, "ident": 1, "desc": "Spot Elevations"},
+									 {"id": 15, "name": "Fence Lines", "vis": 0, "ident": 1, "desc": "Fence Lines"},
+									 {"id": 16, "name": "Contour Lines", "vis": 0, "ident": 1, "desc": "Contour Lines"}]},
+								  {"name": "Transportation", "id": "trans", "layers":
+									[{"id": 12, "name": "DOT Roads", "vis": 1, "ident": 1, "desc": "DOT Roads", "legend": "no"},
+									 {"id": 19, "name": "Bridges - Overpass", "vis": 1, "ident": 0, "desc": "Bridges - Overpass"},
+									 {"id": 17, "name": "Rails", "vis": 1, "ident": 1, "desc": "Rails"},
+									 {"id": 18, "name": "Roads ROW", "vis": 1, "ident": 1, "desc": "Roads ROW", "legend": "no"}]}],
+			map_layers_flooding_json = {"title": "Flooding Scenarios",
+												 "title_tgf": "Predicted Flooding in absence of tidegates",
+												 "title_surge": "Storm Surge",
+												 "scenarios": [{"group": 8, "lyr": 1, "vis": 0},
+																	{"group": 7, "lyr": 2, "vis": 0},
+																	{"group": 6, "lyr": 3, "vis": 0},
+																	{"group": 5, "lyr": 4, "vis": 0},
+																	{"group": 4, "lyr": 5, "vis": 0}]};
 		array.forEach(mapLayersJSON, function (group, index) {
 			var e_li_legend = domConstruct.create("li", null, "dropdown4"),
 				e_li_title = domConstruct.create("li", {"class": "layer_group_title", "innerHTML": group.name + ":"}, "dropdown1"),
@@ -1673,6 +1661,23 @@ function f_search_qual_build() {
 }
 function f_search_landuse_build() {
 	"use strict";
+	var landuse_json = [{"code": "CO", "name": "Commercial Office"},
+							  {"code": "CR", "name": "Commercial Retail"},
+							  {"code": "HM", "name": "Hotels and Motels"},
+							  {"code": "IND", "name": "Industrial"},
+							  {"code": "ICC", "name": "Industrial Commercial Complex"},
+							  {"code": "PQP", "name": "Public/Quasi Public Services"},
+							  {"code": "RL", "name": "Recreational Land"},
+							  {"code": "RES", "name": "Residential"},
+							  {"code": "TRS", "name": "Transportation"},
+							  {"code": "WAT", "name": "Water"},
+							  {"code": "WET", "name": "Wetlands"},
+							  {"code": "000", "name": "Unclassified"},
+							  {"code": "CU", "name": "Communication Utility"},
+							  {"code": "MU", "name": "Multiple Uses"},
+							  {"code": "VAC", "name": "Open Lands"},
+							  {"code": "TL", "name": "Transitional Lands"}
+							 ];
 	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
 		array.forEach(landuse_json, function (landuse, index) {
 			var e_li_landuse = domConstruct.create("li", {"class": "landuseCheckRow"}, "search_landuse"),
@@ -1706,6 +1711,7 @@ function f_base_map_toggle(sel) {
 }
 function f_layer_list_update() {
 	"use strict";
+	console.log("here");
 	require(["dojo/query"], function (query) {
 		var inputs = query(".toc_layer_check"),
 			LD_visible = [];
@@ -1770,7 +1776,8 @@ function f_query_owner_int_exec(ownerid) {
 			GV_current_ownerid,
 			QT_owner_int,
 			Q_owner_int,
-			QT_parcel_selection;
+			QT_parcel_selection,
+			outFields_json = f_getoutFields();
 		if (findparcels.innerHTML === "Find Owner Parcels") {
 			GV_current_ownerid = ownerid;
 			QT_owner_int = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/8");
@@ -1788,7 +1795,7 @@ function f_query_owner_int_exec(ownerid) {
 					Q_owner_parcels.outFields = ["PID"];
 					Q_parcel_selection.outSpatialReference = {wkid: 3857};
 					Q_parcel_selection.returnGeometry = true;
-					Q_parcel_selection.outFields = F_outFields.parcel;
+					Q_parcel_selection.outFields = outFields_json.parcel;
 					QT_owner_parcels.executeRelationshipQuery(Q_owner_parcels, function (featureSets) {
 						var where_PID = "PID IN (",
 							featureSet,
@@ -2078,7 +2085,8 @@ function f_multi_parcel_buffer_exec(distance) {
 			GeomS_parcel_buffer,
 			BP_parcel_selection,
 			GL_parcel_selection = M_meri.getLayer("GL_parcel_selection"),
-			GL_buffer_parcel = M_meri.getLayer("GL_buffer_parcel");
+			GL_buffer_parcel = M_meri.getLayer("GL_buffer_parcel"),
+			outFields_json = f_getoutFields();
 		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
 			multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
 		}
@@ -2088,7 +2096,7 @@ function f_multi_parcel_buffer_exec(distance) {
 			bufferDistance = bufferDistanceTxt * 1.35;
 			Q_parcel_selection_buffer.returnGeometry = true;
 			Q_parcel_selection_buffer.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
-			Q_parcel_selection_buffer.outFields = F_outFields.parcel;
+			Q_parcel_selection_buffer.outFields = outFields_json.parcel;
 			GeomS_parcel_buffer = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
 			BP_parcel_selection = new BufferParameters();
 			BP_parcel_selection.geometries  = [multiparcel_geometries];
@@ -2099,7 +2107,7 @@ function f_multi_parcel_buffer_exec(distance) {
 				var graphic = new Graphic(geometries[0], S_buffer_buffer);
 				M_meri.getLayer("GL_buffer_buffer").add(graphic);
 				Q_parcel_selection_buffer.geometry = graphic.geometry;
-				Q_parcel_selection_buffer.outFields = F_outFields.parcelB;
+				Q_parcel_selection_buffer.outFields = outFields_json.parcelB;
 				QT_parcel_selection_buffer.execute(Q_parcel_selection_buffer, function (fset) {
 					f_process_results_buffer(fset);
 				});
@@ -2107,7 +2115,7 @@ function f_multi_parcel_buffer_exec(distance) {
 		}
 	});
 }
-function f_deviceCheck(varsion) {
+function f_deviceCheck(version) {
 	"use strict";
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 		var oldlink = document.getElementsByTagName("link").item(3),
@@ -2184,7 +2192,6 @@ function f_startup() {
 			M_meri.addLayer(GL_buffer_selected_parcels);
 			M_meri.addLayer(GL_buffer_parcel);
 			M_meri.addLayer(GL_buffer_buffer);
-			console.log(M_meri);
 		});
 		on.once(LD_button, "load", function (e) {
 			f_base_imagery_list_build();
