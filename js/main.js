@@ -315,15 +315,11 @@ function f_getoutFields() {
 											  "BUILDING_LOCATION",
 											  "FACILITY_NAME"],
 							 "ERIS": ["*"]};
+	return outFields_json;
 }
-function e_printMap(pid) {
+function f_printMap(pid) {
 	"use strict";
 	sessionStorage.setItem('printPID', pid);
-	window.open("print/parcel_info.html", "_blank");
-}
-function f_printMap() {
-	"use strict";
-	sessionStorage.setItem('printPID', document.getElementById("popup_pid").innerHTML);
 	window.open("print/parcel_info.html", "_blank");
 }
 function fieldAlias(fieldName, dataSource) {
@@ -543,7 +539,9 @@ function f_process_results_parcel(results, event) {
 		}
 		e_print = domConstruct.create("a", {"innerHTML": "Print", "href": "#",  "onclick": "return false;", "class": "a_print action"}, query(".actionList", window.map.esriPopup)[0]);
 		e_remove = domConstruct.create("a", {"innerHTML": "Remove", "href": "#", "onclick": "return false;", "class": "a_remove action"}, query(".actionList", window.map.esriPopup)[0]);
-		on(e_print, "click", f_printMap);
+		on(e_print, "click", function () {
+			f_printMap(results.features[0].attributes.PID);
+		});
 		on(e_remove, "click", f_removeSelection);
 		array.forEach(results.features, function (result) {
 			var el_featureAttribs,
@@ -602,7 +600,7 @@ function f_process_results_parcel(results, event) {
 													  "first");
 			el_featureToolPrint = domConstruct.create("a",
 																	{"href": "#",
-																	 "onclick": "e_printMap(" + featureAttributes[object_attr] + ");return false;",
+																	 "onclick": "f_printMap(" + featureAttributes[object_attr] + ");return false;",
 																	 "innerHTML": "Print",
 																	 "class": "selection_a feature_tool print_a"},
 																	el_parcel);
@@ -1711,7 +1709,6 @@ function f_base_map_toggle(sel) {
 }
 function f_layer_list_update() {
 	"use strict";
-	console.log("here");
 	require(["dojo/query"], function (query) {
 		var inputs = query(".toc_layer_check"),
 			LD_visible = [];
