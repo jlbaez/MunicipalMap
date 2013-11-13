@@ -316,16 +316,16 @@ function f_query_parcel_results(results) {
 							array.block = att;
 						} else if (att === "LOT") {
 							array.LOT = att;
-						}						
+						}
 						parcel_li = domConstruct.create("li", {"innerHTML": ": " + featureAttributes[att], "class": "feature_li"}, "uParcel");
 						feature_name = domConstruct.create("strong", {"innerHTML": DisplayFields.parcel[att]}, parcel_li, "first");
 					}
 					if (att === 'PID') {
-						imageExists(att, 'photo');
+						imageExists(featureAttributes[att], 'photo');
 					}
 				}
 			}
-			console.log(array);
+			map.graphics.clear();
 			map.setExtent(graphic.geometry.getExtent().expand(3), true);
 			map.graphics.add(graphic);
 		}
@@ -526,14 +526,17 @@ function f_startup() {
 			map.removeAllLayers();
 			var dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/CityView/Aerials_2009/MapServer");
 			map.addLayer(dynamicMapServiceLayer);
+			return false;
 		});
 		on(document.getElementById("toggle_large"), "click", function () {
 			document.getElementById("map").style.width = "800px";
 			document.getElementById("map").style.height = "1000px";
 			map.resize();
-		});
-		on(map, "resize", function () {
-			map.centerAndZoom(graphic.geometry.getExtent().getCenter(), 12);
+			on(map, "resize", function () {
+				console.log("here");
+				map.setExtent(graphic.geometry.getExtent().expand(1.3), true);
+			});
+			return false;
 		});
 	});
 }

@@ -2,7 +2,7 @@
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
-// Date:   7 Oct 2013
+// Date:   11 Nov 2013
 //=========================================
 /* Naming Conventions
  *
@@ -31,9 +31,6 @@
  *
  *	f_    -	javascript function
  *	e_    -	html element
- *	b_    -	boolean variable
- *	r_    -	search result divs
- *	GV_   -	global var
  *	_lbl  -	label
  */
 var DynamicLayerHost = "http://webmaps.njmeadowlands.gov";
