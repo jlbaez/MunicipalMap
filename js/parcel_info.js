@@ -11,22 +11,9 @@ var map,
 	image = "",
 	parcel_id = sessionStorage.getItem('printPID'),
 	parcel_OID,
-	QT_Parcel,
-	Q_Parcel,
-	QT_OwnerInt,
-	Q_OwnerInt,
-	QT_Owners,
-	QT_Building,
-	Q_Building,
-	QR_Owners,
-	QT_Zoning,
-	Q_Zoning,
-	QT_LandUse,
-	Q_LandUse,
 	dynamicMapServiceLayer,
 	map,
 	graphic;
-// Output Fields for Queries of Parcel, Zoning, Land Use, Owners, Building
 var QT_OutFields = {parcel: ["PID",
 									  "BLOCK",
 									  "LOT",
@@ -225,46 +212,28 @@ var aliases = {"zoneCodes":
 					 "KO-NB" : "Kennedy Overlay Zone - N Bergen",
 					 "TO-NB" : "Townhouse Overlay Zone - N Bergen"},
 					"fieldNames":
-					{"BLOCK": "Block",
-					 "LOT": "Lot",
-					 "PID" : "PID",
-					 "PAMS Pin" : "PAMS Pin",
-					 "PAMS_PIN" : "PAMS Pin",
-					 "OLD_BLOCK" : "Old Block",
-					 "OLD_LOT" : "Old Lot",
-					 "PROPERTY_ADDRESS" : "Address",
-					 "TAX_ACRES" : "Tax Acres",
-					 "CITY_STATE" : "City, State",
-					 "MAP_ACRES" : "GIS Acres",
-					 "MUN_CODE" : "Municipality",
-					 "LANDUSE_CODE" : "Landuse",
-					 "ZONE_CODE" : "Zone",
-					 'NAME' : 'Name', "ADDRESS" : 'Address', "FIRM_PAN" : "Firm Panel #",
-					 "TMAPNUM" : "Tidelands Map #",
+					{"TMAPNUM" : "Tidelands Map #",
 					 "FLD_ZONE" : "Flood Zone",
 					 "STATIC_BFE" : "Static Base Flood Elevation",
-					 "LABEL07" : "Wetland Label",
-					 "TYPE07" : "Wetland Type",
-					 "LU07" : "Anderson landuse class",
-					 "RECIEVINGWATER" : "Receiving Water",
-					 "NAME10" : "Voting District Label",
-					 "TRACTCE10" : "Census Tract #",
-					 "BLOCKCE10" : "Census Block #",
-					 "FACILITY_NAME" : "Facility Name",
-					 "BUILDING_LOCATION" : "Building Location",
-					 "TOTALBLDG_SF" : "Total Building Square Feet",
-					 "PHYSICAL_ADDRESS" : "Address",
-					 "PHYSICAL_CITY" : "City",
-					 "PHYSICAL_ZIP" : "Zip Code",
-					 "COMPANY_CONTACT" : "Company Contact",
-					 "CONTACT_PHONE" : "Phone",
-					 "OFFICIAL_CONTACT" : "Official Contact",
-					 "OFFICIAL_PHONE" : "Phone",
-					 "EMERGENCY_CONTACT" : "Emergency Contact",
-					 "EMERGENCY_PHONE" : "Phone",
-					 "CAS_NUMBER" : "CAS Number",
-					 "LandUse_Code" : "Landuse",
-					 "Zone_Code" : "Zoning"}};
+					 "STATUS ": "Status",
+					 "SFHA_TF": "Special Flood Hazard Area"},
+				  "landUseCodes" :
+						{"000": "Unclassified",
+						 "AL": "Altered Lands",
+						 "CO": "Commercial Office",
+						 "CR": "Commercial Retail",
+						 "CU": "Communication Utility",
+						 "HM": "Hotels and Motels",
+						 "ICC": "Ind. Comm. Complex",
+						 "IND": "Industrial",
+						 "PQP": "Public Services",
+						 "RES": "Residential",
+						 "RL": "Recreational Land",
+						 "TRS": "Transportation",
+						 "VAC": "Open Land",
+						 "TL": "Transitional Lands",
+						 "WAT": "Water",
+						 "WET": "Wetlands"}};
 
 function pams_to_old(pin) {
 	"use strict";
@@ -289,18 +258,32 @@ function imageExists(id, target_div) {
 		});
 	});
 }
+function identAlias(a) {
+	"use strict";
+	if (typeof (aliases.fieldNames[a]) !== "undefined") {
+		return aliases.fieldNames[a];
+	} else {
+		return a;
+	}
+}
 function f_query_parcel_results(results) {
 	"use strict";
 	var resultFeatures = results.features,
 		i,
 		il,
 		array = [];
-	require(["dojo/dom-construct", "esri/geometry/Geometry", "esri/SpatialReference", "dojo/on"], function (domConstruct, Geometry, SpatialReference, on) {
+	require(["dojo/dom-construct", "esri/geometry/Geometry", "esri/SpatialReference", "dojo/on", "esri/tasks/IdentifyParameters", "esri/tasks/IdentifyTask", "dojo/_base/array"], function (domConstruct, Geometry, SpatialReference, on, IdentifyParameters, IdentifyTask, array) {
+		var IP_Map_All = new IdentifyParameters(),
+			IT_Map_All = new IdentifyTask("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer"),
+			featureAttributes,
+			att,
+			parcel_li,
+			feature_name,
+			identify_fields_json = {14: ["FIRM_PAN"],
+											25: ["TMAPNUM", "STATUS "],
+											27: ["FLD_ZONE", "STATIC_BFE", "SFHA_TF"]},
+			uinfo = document.getElementById("uInfo");
 		for (i = 0, il = resultFeatures.length; i < il; i += 1) {
-			var featureAttributes,
-				att,
-				parcel_li,
-				feature_name;
 			graphic = resultFeatures[i];
 			graphic.setSymbol(G_symbol);
 			if (i === 0) {
@@ -329,6 +312,32 @@ function f_query_parcel_results(results) {
 			map.setExtent(graphic.geometry.getExtent().expand(3), true);
 			map.graphics.add(graphic);
 		}
+		IP_Map_All.tolerance = 0;
+		IP_Map_All.returnGeometry = false;
+		IP_Map_All.layerIds = [14, 25, 27];
+		IP_Map_All.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE;
+		IP_Map_All.width  = map.width;
+		IP_Map_All.height = map.height;
+		IP_Map_All.geometry = graphic.geometry.getExtent().getCenter();
+		IP_Map_All.mapExtent = map.extent;
+		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
+			array.forEach(identifyResults, function (identifyResult) {
+				array.forEach(identify_fields_json[identifyResult.layerId], function (attr) {
+					if (identifyResult.feature.attributes[attr] !== "Null" && identifyResult.feature.attributes[attr] !== null && identifyResult.feature.attributes[attr] !== "") {
+						if (identifyResult.feature.attributes[attr] !== undefined) {
+							var feature_li = domConstruct.create("li", {"class": "feature_li"}, uinfo);
+							domConstruct.create("strong", {"innerHTML": identAlias(attr) + ": "}, feature_li);
+							if (identifyResult.feature.attributes[attr] === "T") {
+								identifyResult.feature.attributes[attr] = "True";
+							} else if (identifyResult.feature.attributes[attr] === "F") {
+								identifyResult.feature.attributes[attr] = "False";
+							}
+							feature_li.innerHTML += identifyResult.feature.attributes[attr];
+						}
+					}
+				});
+			});
+		});
 		on(map, "extent-change", function (e) {
 			document.getElementById("map").style.visibility = "visible";
 		});
@@ -389,11 +398,13 @@ function f_query_landuse_results(results) {
 			var featureAttributes = resultFeatures[i].attributes,
 				att,
 				parcel_li,
-				feature_name;
+				feature_name,
+				index = i + 1;
 			for (att in featureAttributes) {
 				if (featureAttributes.hasOwnProperty(att)) {
-					parcel_li = domConstruct.create("li", {"innerHTML": ": " + landuseAlias(featureAttributes[att]), "class": "feature_li"}, "uLand");
-					feature_name = domConstruct.create("strong", {"innerHTML": DisplayFields.land_use[att]}, parcel_li, "first");
+					parcel_li = domConstruct.create("li", {"class": "feature_li"}, "uLand");
+					domConstruct.create("strong", {"innerHTML": "Land Use " + index + ": "}, parcel_li);
+					parcel_li.innerHTML += landuseAlias(featureAttributes[att]);
 				}
 			}
 		}
@@ -450,7 +461,19 @@ function f_query_building_results(results) {
 }
 function f_startup() {
 	"use strict";
-	require(["esri/map", "esri/symbols/SimpleMarkerSymbol", "dojo/_base/Color", "esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/RelationshipQuery", "esri/layers/ArcGISDynamicMapServiceLayer", "dojo/on"], function (Map, SimpleMarkerSymbol, Color, QueryTask, Query, RelationshipQuery, ArcGISDynamicMapServiceLayer, on) {
+	require(["esri/map", "esri/symbols/SimpleMarkerSymbol", "dojo/_base/Color", "esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/RelationshipQuery", "esri/layers/ArcGISDynamicMapServiceLayer", "dojo/on"], function (Map, SimpleMarkerSymbol, Color, QueryTask, Query, RelationshipQuery, ArcGISDynamicMapServiceLayer, on, IdentifyParameters, IdentifyTask) {
+		var QT_Parcel,
+			Q_Parcel,
+			QT_OwnerInt,
+			Q_OwnerInt,
+			QT_Owners,
+			QT_Building,
+			Q_Building,
+			QR_Owners,
+			QT_Zoning,
+			Q_Zoning,
+			QT_LandUse,
+			Q_LandUse;
 		map = new Map("map", {nav: false, logo: false});
 		map.disablePan();
 		on(map, "load", function () {
@@ -533,10 +556,8 @@ function f_startup() {
 			document.getElementById("map").style.height = "1000px";
 			map.resize();
 			on(map, "resize", function () {
-				console.log("here");
-				map.setExtent(graphic.geometry.getExtent().expand(1.3), true);
+				map.centerAt(graphic.geometry.getExtent().getCenter());
 			});
-			return false;
 		});
 	});
 }

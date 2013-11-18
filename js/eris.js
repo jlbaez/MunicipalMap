@@ -249,7 +249,7 @@ function f_ERIS_list_build() {
 			e_legend_title = domConstruct.create("li", {"class": "legend_title", "innerHTML": "ERIS"}, e_legend_ul);
 		array.forEach(map_layers_ERIS_json.layers, function (layer, index) {
 			var e_li = domConstruct.create("li", {"class": "toc_layer_li"}, "dropdown1", "last"),
-				e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check ERIS_layer", "id": "ERIS_layer_" + layer.id}, e_li),
+				e_chk = domConstruct.create("input", {"type": "checkbox", "class": "ERIS_layer_check ERIS_layer", "id": "ERIS_layer_" + layer.id}, e_li),
 				e_lbl;
 			e_chk.onclick = function () {
 				f_ESRI_list_update();

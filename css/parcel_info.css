@@ -53,12 +53,9 @@ ul
 }
 .left
 {
-	width:49%;	
-}
-.right
-{
-	float: right;
-	width: 50%;
+	float: left;
+	position: relative;
+	width:29%;	
 }
 .dataGroupHeader{
 	font-weight: bold;
@@ -78,12 +75,12 @@ ul
 }
 .content
 {
-	height: 730px;
-	width: 1200px;
+	width:100%;
+	overflow:hidden;
 }
 .footer{
 	height:40px;
-	width:1200px;
+	width:60%;
 	vertical-align:bottom;
 	overflow:hidden;
 	font-family:Verdana, Arial, Helvetica, sans-serif;

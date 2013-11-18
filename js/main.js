@@ -1714,8 +1714,6 @@ function f_layer_list_update() {
 				if (input.checked) {
 					if (input.id.indexOf("m_layer_") === 0) {
 						LD_visible.push(input.id.replace("m_layer_", ""));
-					} else {
-						LD_visible.push(input.id.replace("ERIS_layer_", ""));
 					}
 				}
 			});
@@ -2119,7 +2117,7 @@ function f_deviceCheck(version) {
 		if (version === "Municipal") {
 			newlink.setAttribute("href", "css/main_mobile.css");
 		} else {
-			newlink.setAttribute("href", "css/esri_mobile.css");
+			newlink.setAttribute("href", "css/ERIS_mobile.css");
 		}
 		document.getElementsByTagName("head").item(0).replaceChild(newlink, oldlink);
 	}

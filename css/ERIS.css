@@ -25,6 +25,10 @@ body
 	background-repeat: repeat-x;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
 }
+.ERIS_layer_check
+{
+	display:none;
+}
 nav ul
 {
 	margin: 0;
