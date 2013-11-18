@@ -17,7 +17,7 @@ if(isset($_GET['version'])){
 	}
 }
 require_once('ERIS/validate.php');
-if(validateERIS()){
+if(!validateERIS()){
 	$AUTH = true;
 	$Load = 'ERIS_v3';
 }

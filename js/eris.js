@@ -1,4 +1,4 @@
-/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location, alert, aliases, formatResult, M_meri, DynamicLayerHost, tool_selected: true, f_parcel_selection_exec, f_map_identify_exec, navToolbar, f_button_clicked, f_li_highlight, f_deviceCheck, Navigation*/
+/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location, alert, f_getAliases, formatResult, M_meri, DynamicLayerHost, tool_selected: true, f_parcel_selection_exec, f_map_identify_exec, navToolbar, f_button_clicked, f_li_highlight, f_deviceCheck, Navigation*/
 //==========================================
 // Title:  Municipal Map ERIS V.3
 // Author: Jose Baez
@@ -76,7 +76,8 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 			e_tr,
 			e_tbody = domConstruct.create("tbody", null, e_table),
-			next_arrow = document.getElementsByClassName("titleButton arrow")[0];
+			next_arrow = document.getElementsByClassName("titleButton arrow")[0],
+			aliases = f_getAliases();
 		e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
 		domConstruct.create("td", {"class": "attrValue", "innerHTML": '<a href="' + ERIS_LINK + '" target="_blank">View Building Info</a>'}, e_tr);
 		for (featureSet in featureSets) {
