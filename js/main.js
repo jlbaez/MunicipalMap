@@ -711,11 +711,9 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.height = M_meri.height;
 		IP_Map_All.geometry = click_evt.mapPoint;
 		IP_Map_All.mapExtent = M_meri.extent;
-		console.log(IP_Identify_Layers);
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
-			console.log(identifyResults);
 			var e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 				e_tbody = domConstruct.create("tbody", null, e_table);
 			array.forEach(identifyResults, function (identifyResult) {
@@ -2179,7 +2177,6 @@ function f_startup() {
 		on.once(M_meri, "load", function (e) {
 			LD_flooding.setDPI(7, false);
 			M_meri.addLayers([LD_flooding, LD_button]);
-			console.log(LD_button);
 			navToolbar = new Navigation(M_meri);
 			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
 			measurementDijit.startup();
