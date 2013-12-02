@@ -212,11 +212,12 @@ var aliases = {"zoneCodes":
 					 "KO-NB" : "Kennedy Overlay Zone - N Bergen",
 					 "TO-NB" : "Townhouse Overlay Zone - N Bergen"},
 					"fieldNames":
-					{"TMAPNUM" : "Tidelands Map #",
-					 "FLD_ZONE" : "Flood Zone",
-					 "STATIC_BFE" : "Static Base Flood Elevation",
+					{"TMAPNUM": "Tidelands Map #",
+					 "FLD_ZONE": "Flood Zone",
+					 "STATIC_BFE": "Static Base Flood Elevation",
 					 "STATUS ": "Status",
-					 "SFHA_TF": "Special Flood Hazard Area"},
+					 "SFHA_TF": "Special Flood Hazard Area",
+					 "FIRM_PAN": "Firm Panel #"},
 				  "landUseCodes" :
 						{"000": "Unclassified",
 						 "AL": "Altered Lands",
@@ -315,7 +316,7 @@ function f_query_parcel_results(results) {
 		IP_Map_All.tolerance = 0;
 		IP_Map_All.returnGeometry = false;
 		IP_Map_All.layerIds = [14, 25, 27];
-		IP_Map_All.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE;
+		IP_Map_All.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
 		IP_Map_All.width  = map.width;
 		IP_Map_All.height = map.height;
 		IP_Map_All.geometry = graphic.geometry.getExtent().getCenter();
@@ -423,7 +424,7 @@ function f_query_zoning_results(results) {
 				feature_name;
 			for (att in featureAttributes) {
 				if (featureAttributes.hasOwnProperty(att)) {
-					if (featureAttributes[att] !== null || featureAttributes[att] !== "") {
+					if (featureAttributes[att] !== null && featureAttributes[att] !== "" && isNaN(featureAttributes[att])) {
 						parcel_li = domConstruct.create("li", {"innerHTML": ": " + zoningAlias(featureAttributes[att]), "class": "feature_li"}, "uZoning");
 						feature_name = domConstruct.create("strong", {"innerHTML": DisplayFields.zoning[att]}, parcel_li, "first");
 					}
@@ -552,10 +553,14 @@ function f_startup() {
 			return false;
 		});
 		on(document.getElementById("toggle_large"), "click", function () {
-			document.getElementById("map").style.width = "800px";
-			document.getElementById("map").style.height = "1000px";
+			document.getElementById("map").style.width = "700px";
+			document.getElementById("map").style.height = "700px";
 			map.resize();
 			on(map, "resize", function () {
+				map.reposition();
+				map.graphics.clear();
+				//map.setExtent(graphic.geometry.getExtent().expand(3), true);
+				//map.graphics.add(graphic);
 				map.centerAt(graphic.geometry.getExtent().getCenter());
 			});
 		});

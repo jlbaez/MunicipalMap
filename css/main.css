@@ -93,7 +93,9 @@ nav a:hover
 {
 	color: #345382;
 	display:inline-block;
+	font-weight: bold;
 	padding: 0;
+	text-decoration:underline;
 	text-align:left;
 	width:auto
 }

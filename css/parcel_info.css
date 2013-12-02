@@ -3,12 +3,12 @@
 	background: #fff;
 	bottom: 0;	
 	visibility:hidden;
-	height:360px; 
+	height:540px; 
 	left: 300px; /* True value of left frame*/
 	overflow: hidden;
 	right: 0;
 	top: 0; 
-	width:360px; 
+	width:540px; 
 }
 .photo
 {
@@ -18,8 +18,8 @@
 	bottom: 0;
 	overflow: hidden;
 	background: #fff;
-	width:360px; 
-	height:360px; 	
+	width:540px; 
+	height:540px; 	
 }
 .map
 {
@@ -98,8 +98,8 @@ ul
 	margin-bottom: 5px;
 }
 .property_photo{
-	width:360px; 
-	height:360px; 
+	width:540px; 
+	height:540px; 
 }
 @media print
 {
@@ -113,5 +113,16 @@ ul
 	.toggle
 	{
 		display : none;
+	}
+	.dataGroupHeader
+	{
+		font-size: 20px;
+	}
+	.feature_li
+	{
+		font-size:18px;
+	}
+	.map
+	{
 	}
 }
