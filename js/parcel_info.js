@@ -214,7 +214,7 @@ var aliases = {"zoneCodes":
 					"fieldNames":
 					{"TMAPNUM": "Tidelands Map #",
 					 "FLD_ZONE": "Flood Zone",
-					 "STATIC_BFE": "Static BFE(NAPD88)",
+					 "STATIC_BFE": "Static BFE",
 					 "STATUS ": "Status",
 					 "SFHA_TF": "Special Flood Hazard Area",
 					 "FIRM_PAN": "Firm Panel #"},
