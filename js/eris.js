@@ -54,7 +54,7 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			MAIN_RTK = ["CAS_NUMBER", "LOCATION"],
 			FLDS_IGNORE_RTK = ["SUBSTANCE_NAME", "RTK_SUBSTANCE_NUMBER"],
 			featureAttributes,
-			ERIS_LINK = 'http://apps.njmeadowlands.gov/eris/?b=' + bid + '&a=planning',
+			ERIS_LINK = 'http://apps.njmeadowlands.gov/ERIS/?b=' + bid + '&a=planning',
 			RTK_OUTPUT,
 			Once_Output,
 			Current_Once,
