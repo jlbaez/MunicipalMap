@@ -7,7 +7,7 @@
 var ERIS = true;
 function f_load_ERIS_tools() {
 	"use strict";
-	require(["dojo/on", "esri/toolbars/navigation"], function (on, Navigation) {
+	require(["dojo/on", "esri/toolbars/navigation", "dojo/domReady!"], function (on, Navigation) {
 		var ERIS_handler = on(document.getElementById("ERIS"), "click", function (e) {
 			navToolbar.activate(Navigation.PAN);
 			tool_selected = 'ERIS_Identify';
@@ -163,7 +163,7 @@ function f_ERIS_selection_exec(map_event) {
 			Q_RTK_IDS = new RelationshipQuery(),
 			next_arrow = document.getElementsByClassName("titleButton arrow")[0];
 		Q_ERIS_selection.returnGeometry = true;
-		Q_ERIS_selection.outFields = ["BID"];
+		Q_ERIS_selection.outFields = ["BID", "MUNICIPALITY"];
 		Q_ERIS_selection.geometry = map_event.mapPoint;
 		Q_ERIS_BIDtoINTERMEDIATE.returnGeometry = true;
 		Q_ERIS_BIDtoINTERMEDIATE.outFields = ["*"];
@@ -171,11 +171,12 @@ function f_ERIS_selection_exec(map_event) {
 		Q_RTK_IDS.relationshipId = 4;
 		Q_RTK_IDS.outFields = ["*"];
 		QT_ERIS_selection.execute(Q_ERIS_selection, function (results) {
-			var bid = results.features[0].attributes.BID;
+			var bid = results.features[0].attributes.BID,
+				mun = results.features[0].attributes.MUNICIPALITY;
 			Q_ERIS_BIDtoINTERMEDIATE.text = bid;
 			QT_ERIS_BIDtoINTERMEDIATE.executeForIds(Q_ERIS_BIDtoINTERMEDIATE, function (results) {
 				if (results) {
-					var ERIS_LINK = 'http://apps.njmeadowlands.gov/eris/?b=' + bid + '&a=planning';
+					var ERIS_LINK = 'http://apps.njmeadowlands.gov/ERIS/?b=' + bid + '&a=planning';
 					ERIS_LINK = '<span class="ERIS_LINK"><a href="' + ERIS_LINK + '" target="_blank">View Building Info</a></span>';
 					if (results.length === 0) {
 						M_meri.infoWindow.clearFeatures();
@@ -190,7 +191,7 @@ function f_ERIS_selection_exec(map_event) {
 					} else {
 						Q_RTK_IDS.objectIds = [results];
 						QT_Q_RTK_IDS.executeRelationshipQuery(Q_RTK_IDS, function (results) {
-							f_query_RTK_IDS_results(results, bid, map_event);
+							f_query_RTK_IDS_results(results, bid, mun, map_event);
 						});
 					}
 				}

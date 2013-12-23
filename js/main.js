@@ -685,10 +685,10 @@ function f_map_identify_exec(click_evt) {
 											13: ["TYPE"],
 											23: ["TYPE"],
 											5: ["FacilityID", "Municipality", "MaintainedBy", "CBType", "ReceivingWater"],
-											6: ["FacilityID", "Municipality", "MaintainedBy", "RIMELEVATION"],
+											6: ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"],
 											7: ["FacilityID", "Municipality", "MaintainedBy", "Diameter", "ReceivingWater"],
 											8: ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"],
-											9: ["FacilityID", "Municipality", "MaintainedBy", "RIMELEVATION"],
+											9: ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"],
 											10: ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"],
 											11: ["ID", "STREET", "LOCATION1", "LOCATION2", "ACCESS_", "PIPE_DIAMETER", "PIPEDIAMETER_VALUE"],
 											26: ["BID", "FACILITY_NAME", "BUILDING_LOCATION", "TOTALBLDG_SF"],
@@ -1283,7 +1283,7 @@ function e_goBack() {
 }
 function e_load_tools() {
 	"use strict";
-	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/NodeList-traverse"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr) {
+	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/NodeList-traverse", "dojo/domReady!"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr) {
 		var pull = document.getElementById("pull"),
 			header = document.getElementsByClassName("header-container")[0],
 			map = document.getElementById("map"),
@@ -1336,9 +1336,9 @@ function e_load_tools() {
 				f_button_clicked("identify");
 			}),
 			parcel_handler = new On(document.getElementById("parcel"), "click", function (e) {
+				f_button_clicked("parcel");
 				navToolbar.activate(Navigation.PAN);
 				tool_selected = "parcel";
-				f_button_clicked("parcel");
 			}),
 			measure_handler = new On(document.getElementById("measure"), "click", function (e) {
 				navToolbar.activate(Navigation.PAN);
@@ -1585,7 +1585,11 @@ function f_layer_list_build() {
 																	{"group": 7, "lyr": 2, "vis": 0},
 																	{"group": 6, "lyr": 3, "vis": 0},
 																	{"group": 5, "lyr": 4, "vis": 0},
-																	{"group": 4, "lyr": 5, "vis": 0}]};
+																	{"group": 4, "lyr": 5, "vis": 0}]},
+			map_legend;
+		xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json", sync: true}).then(function (content) {
+			map_legend = content;
+		});
 		array.forEach(mapLayersJSON, function (group, index) {
 			var e_li_legend = domConstruct.create("li", null, "dropdown4"),
 				e_li_title = domConstruct.create("li", {"class": "layer_group_title", "innerHTML": group.name + ":"}, "dropdown1"),
@@ -1603,21 +1607,18 @@ function f_layer_list_build() {
 				}
 				e_lbl = domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", innerHTML: layer.name}, e_li);
 				if (layer.legend !== "no") {
-					xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json", sync: true}).then(function (content) {
-						var map_legend = content;
-						array.forEach(map_legend.layers[layer.id].legend, function (layer_legend) {
-							var legend_text = "",
-								e_legend;
-							if (layer_legend.label !== "") {
-								legend_text = layer_legend.label;
-							} else {
-								legend_text = layer.name;
-							}
-							e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": '<img src="' + DynamicLayerHost + '/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/' + layer_legend.url + '" class="legend_img" alt="error" />' + legend_text}, e_ul_ltitle, "last");
-							if (layer.vis !== 1) {
-								domAttr.set(e_legend, "style", "display:none");
-							}
-						});
+					array.forEach(map_legend.layers[layer.id].legend, function (layer_legend) {
+						var legend_text = "",
+							e_legend;
+						if (layer_legend.label !== "") {
+							legend_text = layer_legend.label;
+						} else {
+							legend_text = layer.name;
+						}
+						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": '<img src="' + DynamicLayerHost + '/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/' + layer_legend.url + '" class="legend_img" alt="error" />' + legend_text}, e_ul_ltitle, "last");
+						if (layer.vis !== 1) {
+							domAttr.set(e_legend, "style", "display:none");
+						}
 					});
 				}
 			});
@@ -2131,6 +2132,19 @@ function checkERIS() {
 		f_startup_eris();
 	}
 }
+function f_firefoxfix() {
+	"use strict";
+	require(["dojo/on"], function (on) {
+		if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+			on.once(M_meri, "zoom-end", function () {
+				console.log("zoom-end");
+				M_meri.setZoom(12);
+			});
+			console.log("zoom-start");
+			M_meri.setZoom(14);
+		}
+	});
+}
 function f_startup() {
 	"use strict";
 	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup, LocateButton) {
@@ -2162,8 +2176,8 @@ function f_startup() {
 										 fadeOnZoom: true,
 										 logo: false,
 										 minZoom: 12,
-										 maxZoom: 22,
-										 infoWindow: infowindow});
+										 infoWindow: infowindow
+										});
 		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 			locateButton = new LocateButton({
 				map: M_meri,
@@ -2193,6 +2207,9 @@ function f_startup() {
 			f_search_munis_build();
 			f_search_qual_build();
 			f_search_landuse_build();
+			//The map doesn't seem to load on firefox until it zooms
+			//this zooms in and then immediatily zooms out to fix it
+			f_firefoxfix();
 		});
 		
 	});
