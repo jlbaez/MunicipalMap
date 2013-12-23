@@ -51,7 +51,7 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			object_attr = "PID",
 			s = "",
 			ONCE_FLDS_RTK = ["FACILITY_NAME", "PHYSICAL_ADDRESS", "PHYSICAL_CITY", "PHYSICAL_ZIP", "COMPANY_CONTACT", "CONTACT_PHONE", "OFFICIAL_CONTACT", "OFFICIAL_PHONE", "EMERGENCY_CONTACT", "EMERGENCY_PHONE"],
-			MAIN_RTK = ["CAS_NUMBER", "LOCATION"],
+			MAIN_RTK = ["CAS_NUMBER", "Location"],
 			FLDS_IGNORE_RTK = ["SUBSTANCE_NAME", "RTK_SUBSTANCE_NUMBER"],
 			featureAttributes,
 			ERIS_LINK = 'http://apps.njmeadowlands.gov/ERIS/?b=' + bid + '&a=planning',
@@ -143,12 +143,12 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 		M_meri.infoWindow.clearFeatures();
 		M_meri.infoWindow.setTitle("ERIS Selection");
 		M_meri.infoWindow.setContent(el_popup_content);
+		M_meri.infoWindow.show(map_event.mapPoint);
 		if (next_arrow !== undefined) {
 			next_arrow.style.display = "block";
 			document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
 			document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 		}
-		M_meri.infoWindow.show(map_event.mapPoint);
 	});
 }
 function f_ERIS_selection_exec(map_event) {
@@ -191,7 +191,7 @@ function f_ERIS_selection_exec(map_event) {
 					} else {
 						Q_RTK_IDS.objectIds = [results];
 						QT_Q_RTK_IDS.executeRelationshipQuery(Q_RTK_IDS, function (results) {
-							f_query_RTK_IDS_results(results, bid, mun, map_event);
+							f_query_RTK_IDS_results(results, bid, map_event);
 						});
 					}
 				}
@@ -247,7 +247,11 @@ function f_ERIS_list_build() {
 			e_li_title = domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "ERIS Layers:"}, "dropdown1"),
 			e_li_legend = domConstruct.create("li", null, "dropdown4"),
 			e_legend_ul = domConstruct.create("ul", {"class": "legend_group_title"}, e_li_legend),
-			e_legend_title = domConstruct.create("li", {"class": "legend_title", "innerHTML": "ERIS"}, e_legend_ul);
+			e_legend_title = domConstruct.create("li", {"class": "legend_title", "innerHTML": "ERIS"}, e_legend_ul),
+			ERIS_legend;
+		xhr(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/legend?f=json", {handleAs: "json", sync: true}).then(function (content) {
+			ERIS_legend = content;
+		});
 		array.forEach(map_layers_ERIS_json.layers, function (layer, index) {
 			var e_li = domConstruct.create("li", {"class": "toc_layer_li"}, "dropdown1", "last"),
 				e_chk = domConstruct.create("input", {"type": "checkbox", "class": "ERIS_layer_check ERIS_layer", "id": "ERIS_layer_" + layer.id}, e_li),
@@ -261,21 +265,18 @@ function f_ERIS_list_build() {
 				domAttr.set(e_li, "class", "toc_layer_li li_checked");
 			}
 			e_lbl = domConstruct.create("label", {"for": "ERIS_layer_" + layer.id, "class": "toc_layer_label", "title": layer.descs, innerHTML: layer.name}, e_li);
-			xhr(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/legend?f=json", {handleAs: "json", sync: true}).then(function (content) {
-				var ERIS_legend = content;
-				array.forEach(ERIS_legend.layers[layer.id].legend, function (layer_legend) {
-					var legend_text = "",
-						e_legend;
-					if (layer_legend.label !== "") {
-						legend_text = layer_legend.label;
-					} else {
-						legend_text = layer.name;
-					}
-					e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": "<img src=\"" + DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/1/images/" + layer_legend.url + "\"class=\"legend_img\" alt=\"error\" /> " + legend_text}, e_legend_ul, "last");
-					if (layer.vis !== 1) {
-						domAttr.set(e_legend, "style", "display:none");
-					}
-				});
+			array.forEach(ERIS_legend.layers[layer.id].legend, function (layer_legend) {
+				var legend_text = "",
+					e_legend;
+				if (layer_legend.label !== "") {
+					legend_text = layer_legend.label;
+				} else {
+					legend_text = layer.name;
+				}
+				e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": "<img src=\"" + DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/1/images/" + layer_legend.url + "\"class=\"legend_img\" alt=\"error\" /> " + legend_text}, e_legend_ul, "last");
+				if (layer.vis !== 1) {
+					domAttr.set(e_legend, "style", "display:none");
+				}
 			});
 		});
 	});
@@ -287,7 +288,6 @@ function f_startup_eris() {
 		var ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1, id: "ERIS_base"});
 		M_meri.addLayer(ERIS_base);
 		M_meri.getLayer("LD_button").setVisibleLayers(["1", "2", "3", "4", "11", "12", "13", "14", "17", "18", "19", "20", "21"]);
-		document.getElementById("m_layer_26").click();
 		on.once(ERIS_base, "load", function (e) {
 			f_ERIS_list_build();
 		});

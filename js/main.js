@@ -2137,10 +2137,8 @@ function f_firefoxfix() {
 	require(["dojo/on"], function (on) {
 		if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 			on.once(M_meri, "zoom-end", function () {
-				console.log("zoom-end");
 				M_meri.setZoom(12);
 			});
-			console.log("zoom-start");
 			M_meri.setZoom(14);
 		}
 	});
@@ -2191,15 +2189,15 @@ function f_startup() {
 		on.once(M_meri, "load", function (e) {
 			LD_flooding.setDPI(7, false);
 			M_meri.addLayers([LD_flooding, LD_button]);
+			M_meri.addLayer(GL_parcel_selection);
+			M_meri.addLayer(GL_buffer_selected_parcels);
+			M_meri.addLayer(GL_buffer_parcel);
+			M_meri.addLayer(GL_buffer_buffer);
 			navToolbar = new Navigation(M_meri);
 			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
 			measurementDijit.startup();
 			e_load_tools();
 			checkERIS();
-			M_meri.addLayer(GL_parcel_selection);
-			M_meri.addLayer(GL_buffer_selected_parcels);
-			M_meri.addLayer(GL_buffer_parcel);
-			M_meri.addLayer(GL_buffer_buffer);
 		});
 		on.once(LD_button, "load", function (e) {
 			f_base_imagery_list_build();
@@ -2207,11 +2205,14 @@ function f_startup() {
 			f_search_munis_build();
 			f_search_qual_build();
 			f_search_landuse_build();
+			//turns off building layer when ERIS is loaded
+			if (typeof f_startup_eris === 'function') {
+				document.getElementById("m_layer_26").click();
+			}
 			//The map doesn't seem to load on firefox until it zooms
 			//this zooms in and then immediatily zooms out to fix it
 			f_firefoxfix();
 		});
-		
 	});
 }
 f_deviceCheck("Municipal");
