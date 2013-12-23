@@ -51,7 +51,7 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			object_attr = "PID",
 			s = "",
 			ONCE_FLDS_RTK = ["FACILITY_NAME", "PHYSICAL_ADDRESS", "PHYSICAL_CITY", "PHYSICAL_ZIP", "COMPANY_CONTACT", "CONTACT_PHONE", "OFFICIAL_CONTACT", "OFFICIAL_PHONE", "EMERGENCY_CONTACT", "EMERGENCY_PHONE"],
-			MAIN_RTK = ["CAS_NUMBER", "Location"],
+			MAIN_RTK = ["CAS_NUMBER", "LOCATION"],
 			FLDS_IGNORE_RTK = ["SUBSTANCE_NAME", "RTK_SUBSTANCE_NUMBER"],
 			featureAttributes,
 			ERIS_LINK = 'http://apps.njmeadowlands.gov/ERIS/?b=' + bid + '&a=planning',
