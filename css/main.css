@@ -236,6 +236,7 @@ input[type=checkbox]:checked + label
 }
 .filters
 {
+	box-shadow: none;
 	position:relative;
 }
 .filter
@@ -245,14 +246,18 @@ input[type=checkbox]:checked + label
 	text-decoration: underline;
 	margin: 3px;
 }
-.owner_li
+.li_owner
 {
-    display:none;
+	display: none;
 }
 .ul_indentify
 {
 	margin: 0;
 	padding-left: 0
+}
+.search_item
+{
+	box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
 }
 .indentify_title
 {

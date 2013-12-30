@@ -1194,9 +1194,10 @@ function f_query_owners_results(results) {
 	    }
 	});
 }
-function f_search_owner(owner) {
+function f_search_owner(json) {
 	"use strict";
-	if (owner !== "") {
+	var search = JSON.parse(json);
+	if (search.owner !== "") {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 			var Q_owners = new Query(),
 				QT_owners = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/5"),
@@ -1204,7 +1205,7 @@ function f_search_owner(owner) {
 				outFields_json = f_getoutFields();
 			Q_owners.returnGeometry = false;
 			Q_owners.outFields = outFields_json.owner;
-			Q_owners.where = "Where [NAME] LIKE '%" + owner + "%'";
+			Q_owners.where = "Where [NAME] LIKE '%" + search.owner + "%'";
 			QT_owners.execute(Q_owners, f_query_owners_results);
 			e_search_progress.value = "1";
 			e_search_progress.style.display = "none";
@@ -1371,8 +1372,8 @@ function e_load_tools() {
 			search_add_handler = new On(document.getElementById("search_property"), "submit", function (e) {
 				f_search_address(domForm.toJson("search_property"));
 			}),
-			search_own_handler = new On(document.getElementById("search_own"), "click", function (e) {
-				f_search_owner(document.getElementById("txtQueryOwner").value);
+			search_own_handler = new On(document.getElementById("search_owner"), "click", function (e) {
+				f_search_owner(domForm.toJson("search_owner"));
 			}),
 			search_toggle_handler = new On(new Query(".search_toggle"), "click", function (e) {
 				var toElem = e.originalTarget || e.toElement || e.srcElement;
@@ -1391,8 +1392,10 @@ function e_load_tools() {
 				new Query(this).siblings()[0].style.color = "#666";
 				if (this.id === "owner_toggle") {
 					document.getElementById("li_property").style.display = "none";
+					document.getElementById("li_owner").style.display = "block";
 				} else if (this.id === "property_toggle") {
 					document.getElementById("li_property").style.display = "block";
+					document.getElementById("li_owner").style.display = "none";
 				}
 			}),
 			tab_click_handler = new On(new Query(".tab"), "click", function (e) {
@@ -2224,7 +2227,7 @@ function f_startup() {
 			f_search_landuse_build();
 			//turns off building layer when ERIS is loaded
 			if (typeof f_startup_eris === 'function') {
-				document.getElementById("m_layer_26").click();
+				document.getElementById("m_layer_26").checked = false;
 			}
 			//The map doesn't seem to load on firefox until it zooms
 			//this zooms in and then immediatily zooms out to fix it
