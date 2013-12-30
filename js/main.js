@@ -784,6 +784,9 @@ function f_map_clear() {
 	document.getElementById("search_progress").value = "0";
 	document.getElementById("search_tally").innerHTML = "";
 	document.getElementById("search_export").innerHTML = "";
+	document.getElementById("rdo_muni_searchAll").click();
+	document.getElementById("rdo_qual_searchAll").click();
+	document.getElementById("rdo_landuse_searchAll").click();
 	M_meri.getLayer("GL_parcel_selection").clear();
 	M_meri.getLayer("GL_buffer_parcel").clear();
 	M_meri.getLayer("GL_buffer_buffer").clear();
@@ -832,7 +835,7 @@ function f_map_clear() {
 		});
 	}
 }
-function f_search_parcel_old(address, block, lot, where_PID) {
+function f_search_parcel_old(search, where_PID) {
 	"use strict";
 	document.getElementById("search_progress").value = ".5";
 	var where = [],
@@ -840,53 +843,55 @@ function f_search_parcel_old(address, block, lot, where_PID) {
 		where_block,
 		where_lot,
 		search_progress = document.getElementById("search_progress");
-	if (address !== "") {
-		where_address = "Where [PROPERTY_ADDRESS] LIKE '%" + address + "%'";
+	if (search.address !== "") {
+		where_address = "Where [PROPERTY_ADDRESS] LIKE '%" + search.address.toLowerCase() + "%'";
 		where.push(where_address);
-	} else if (block !== "" || lot !== "") {
-		if (block !== "") {
-			where_block = "([BLOCK] = '" + block + "' OR [OLD_BLOCK] = '" + block + "')";
+	} else if (search.block !== "" || search.lot !== "") {
+		if (search.block !== "") {
+			where_block = "([BLOCK] = '" + search.block + "' OR [OLD_BLOCK] = '" + search.block + "')";
 			where.push(where_block);
 		}
-		if (lot !== "") {
-			where_lot = "([LOT] = '" + lot + "' OR [OLD_LOT] = '" + lot + "')";
+		if (search.lot !== "") {
+			where_lot = "([LOT] = '" + search.lot + "' OR [OLD_LOT] = '" + search.lot + "')";
 			where.push(where_lot);
 		}
 	}
-	require(["dojo/_base/array", "dojo/query", "esri/tasks/query", "esri/tasks/QueryTask"], function (array, query, Query, QueryTask) {
-		var muni_array = query(".s_muni_chk_item:checked"),
-			qual_array,
-			Q_parcel_selection = new Query(),
+	require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
+		var Q_parcel_selection = new Query(),
 			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0"),
 			where_muni,
 			where_qual,
-			outFields_json = f_getoutFields();
+			outFields_json = f_getoutFields(),
+			index = 0;
 		Q_parcel_selection.outSpatialReference = {wkid: 3857};
 		Q_parcel_selection.returnGeometry = true;
 		Q_parcel_selection.outFields = outFields_json.parcel;
-		if (document.getElementById("rdo_muni_searchSelect").checked) {
-			if (muni_array.length > 0) {
+		if (search.rdo_muni_search === "yes") {
+			if (search.s_muni_chk_item.length > 0) {
 				where_muni = "[MUN_CODE] IN (";
-				array.forEach(muni_array, function (checkbox) {
-					if (checkbox.checked) {
-						where_muni += "'" + checkbox.value + "',";
+				if (search.s_muni_chk_item instanceof Array) {
+					for (index = 0; index < search.s_muni_chk_item.length; index += 1) {
+						where_muni += "'" + search.s_muni_chk_item[index] + "',";
 					}
-				});
-				where_muni = where_muni.substring(0, where_muni.length - 1);
+					where_muni = where_muni.substring(0, where_muni.length - 1);
+				} else {
+					where_muni += "'" + search.s_muni_chk_item + "'";
+				}
 				where_muni += ")";
 				where.push(where_muni);
 			}
 		}
-		if (document.getElementById("rdo_qual_searchSelect").checked) {
-			qual_array = query(".s_qual_chk_item:checked");
-			if (qual_array.length > 0) {
+		if (search.rdo_qual_search === "yes") {
+			if (search.s_qual_chk_item.length > 0) {
 				where_qual = "[QUALIFIER] in (";
-				array.forEach(qual_array, function (checkbox) {
-					if (checkbox.checked) {
-						where_qual += "'" + checkbox.value + "',";
+				if (search.s_qual_chk_item instanceof Array) {
+					for (index = 0; index < search.s_qual_chk_item.length; index += 1) {
+						where_qual += "'" + search.s_qual_chk_item[index] + "',";
 					}
-				});
-				where_qual = where_qual.substring(0, where_qual.length - 1);
+					where_qual = where_qual.substring(0, where_qual.length - 1);
+				} else {
+					where_qual += "'" + search.s_qual_chk_item + "'";
+				}
 				where_qual += ")";
 				where.push(where_qual);
 			}
@@ -896,30 +901,43 @@ function f_search_parcel_old(address, block, lot, where_PID) {
 		}
 		Q_parcel_selection.where = where.join(" AND ");
 		QT_parcel_selection.execute(Q_parcel_selection, function (results) {
+			var check = 0,
+				index,
+				old_result;
+			for (index = 0; index < results.features.length; index += 1) {
+				if (old_result !== undefined) {
+					if (results.features[index].attributes.BLOCK === old_result.attributes.BLOCK && results.features[index].attributes.LOT === old_result.attributes.LOT) {
+						delete results.features[index];
+					}
+				}
+				old_result = results.features[index];
+			}
 			f_process_results_parcel(results, "search");
 			search_progress.value = "1";
 			search_progress.style.display = "none";
 		});
 	});
 }
-function f_search_landuse(address, block, lot) {
+function f_search_landuse_2(search) {
 	"use strict";
-	if (document.getElementById("rdo_landuse_searchSelect").checked) {
-		require(["dojo/_base/array", "dojo/query", "esri/tasks/query", "esri/tasks/QueryTask"], function (array, query, Query, QueryTask) {
-			var landuse_array = query(".s_landuse_chk_item:checked"),
-				Q_landuse = new Query(),
+	if (search.rdo_landuse_search === "yes") {
+		require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
+			var Q_landuse = new Query(),
 				QT_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/9"),
 				where_landuse,
-				where_PID;
+				where_PID,
+				index = 0;
 			Q_landuse.returnGeometry = false;
 			Q_landuse.outFields = ["PID"];
-			if (landuse_array.length > 0) {
+			if (search.s_landuse_chk_item.length > 0) {
 				where_landuse = "where LANDUSE_CODE IN (";
-				array.forEach(document.getElementsByName("s_landuse_chk_item"), function (checkbox) {
-					if (checkbox.checked) {
-						where_landuse += "'" + checkbox.value + "',";
+				if (search.s_landuse_chk_item instanceof Array) {
+					for (index = 0; index < search.s_landuse_chk_item.length; index += 1) {
+						where_landuse += "'" + search.s_landuse_chk_item[index] + "',";
 					}
-				});
+				} else {
+					where_landuse += "'" + search.s_landuse_chk_item + "',";
+				}
 				where_landuse = where_landuse.substring(0, where_landuse.length - 1);
 				where_landuse += ")";
 				Q_landuse.where = where_landuse;
@@ -932,15 +950,15 @@ function f_search_landuse(address, block, lot) {
 						}
 						where_PID = where_PID.substring(0, where_PID.length - 1);
 						where_PID += ")";
-						f_search_parcel_old(address, block, lot, where_PID);
+						f_search_parcel_old(search, where_PID);
 					}
 				});
 			} else {
-				f_search_parcel_old(address, block, lot, null);
+				f_search_parcel_old(search, null);
 			}
 		});
 	} else {
-		f_search_parcel_old(address, block, lot, null);
+		f_search_parcel_old(search, null);
 	}
 }
 function f_candidate_search(where, candidate_array) {
@@ -1106,17 +1124,18 @@ function showResults(candidates) {
 		}
 	});
 }
-function f_search_address(address_input) {
+function f_search_address(json) {
 	"use strict";
-	var search_progress = document.getElementById("search_progress");
+	var search = JSON.parse(json),
+		search_progress = document.getElementById("search_progress");
 	search_progress.style.display = "block";
 	search_progress.value = "0";
 	require(["esri/geometry/Extent", "esri/tasks/locator"], function (Extent, Locator) {
-		if (isNaN(address_input.split(" ", 1)) || address_input === "") {
+		if (isNaN(search.address.split(" ", 1)) || search.address === "") {
 			search_progress.value = ".25";
-			f_search_landuse(document.getElementById("address").value, document.getElementById("block").value, document.getElementById("lot").value);
+			f_search_landuse_2(search);
 		} else {
-			var address = {"SingleLine": address_input},
+			var address = {"SingleLine": search.address},
 				options = {address: address, outFields: ["Addr_type", "StName", "AddNum", "Xmax", "Ymax", "Xmin", "Ymin", "DisplayX", "DisplayY", "City", "geometry"], searchExtent: M_meri.extent},
 				locator = new Locator("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
 			locator.on("address-to-locations-complete", showResults, function (evt) {
@@ -1283,7 +1302,7 @@ function e_goBack() {
 }
 function e_load_tools() {
 	"use strict";
-	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/NodeList-traverse", "dojo/domReady!"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr) {
+	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr, domForm) {
 		var pull = document.getElementById("pull"),
 			header = document.getElementsByClassName("header-container")[0],
 			map = document.getElementById("map"),
@@ -1349,8 +1368,8 @@ function e_load_tools() {
 			clear_handler = new On(document.getElementById("clear"), "click", function (e) {
 				f_map_clear();
 			}),
-			search_add_handler = new On(document.getElementById("search_add"), "click", function (e) {
-				f_search_address(document.getElementById("address").value);
+			search_add_handler = new On(document.getElementById("search_property"), "submit", function (e) {
+				f_search_address(domForm.toJson("search_property"));
 			}),
 			search_own_handler = new On(document.getElementById("search_own"), "click", function (e) {
 				f_search_owner(document.getElementById("txtQueryOwner").value);
@@ -1371,11 +1390,9 @@ function e_load_tools() {
 				}
 				new Query(this).siblings()[0].style.color = "#666";
 				if (this.id === "owner_toggle") {
-					new Query(".owner_li").forEach(function (node) {}).style("display", "block");
-					new Query(".property_li").forEach(function (node) {}).style("display", "none");
+					document.getElementById("li_property").style.display = "none";
 				} else if (this.id === "property_toggle") {
-					new Query(".owner_li").forEach(function (node) {}).style("display", "none");
-					new Query(".property_li").forEach(function (node) {}).style("display", "block");
+					document.getElementById("li_property").style.display = "block";
 				}
 			}),
 			tab_click_handler = new On(new Query(".tab"), "click", function (e) {
@@ -1643,7 +1660,7 @@ function f_search_munis_build() {
 		array.forEach(munis_json, function (muni, index) {
 			var e_li_muni = domConstruct.create("li", {"class": "muniCheckRow"}, "search_munis"),
 				e_chk_muni = domConstruct.create("input", {type: "checkbox", "id": "chk_muni_" + muni.muncode, "name": "s_muni_chk_item", "class": "s_muni_chk_item", "value": muni.muncode}, e_li_muni),
-				e_lbl_muni = domConstruct.create("label", {"for": "chk_muni_" + muni.muncode, "class": "search_muni_label", "innerHTML": muni.mun}, e_li_muni);
+				e_lbl_muni = domConstruct.create("label", {"for": "chk_muni_" + muni.muncode, "class": "search_muni_label", "innerHTML": " " + muni.mun}, e_li_muni);
 		});
 	});
 }
@@ -1653,7 +1670,7 @@ function f_search_qual_build() {
 		array.forEach(quals_json, function (qual, index) {
 			var e_li_qual = domConstruct.create("li", {"class": "qualCheckRow"}, "search_qual"),
 				e_chk_qual = domConstruct.create("input", {"type": "checkbox", "id": "chk_qual_" + qual.id, "name": "s_qual_chk_item", "class": "s_qual_chk_item", "value": qual.id}, e_li_qual),
-				e_lbl_qual = domConstruct.create("label", {"for": "chk_qual_" + qual.id, "class": "search_qual_label", "innerHTML": qual.name}, e_li_qual);
+				e_lbl_qual = domConstruct.create("label", {"for": "chk_qual_" + qual.id, "class": "search_qual_label", "innerHTML": " " + qual.name}, e_li_qual);
 		});
 	});
 }
@@ -1680,7 +1697,7 @@ function f_search_landuse_build() {
 		array.forEach(landuse_json, function (landuse, index) {
 			var e_li_landuse = domConstruct.create("li", {"class": "landuseCheckRow"}, "search_landuse"),
 				e_chk_landuse = domConstruct.create("input", {type: "checkbox", "id": "chk_landuse_" + landuse.code, "class": "s_landuse_chk_item", "name": "s_landuse_chk_item", "value": landuse.code}, e_li_landuse),
-				e_lbl_landuse = domConstruct.create("label", {"for": "chk_landuse_" + landuse.code, "class": "search_landuse_label", "innerHTML": landuse.name}, e_li_landuse);
+				e_lbl_landuse = domConstruct.create("label", {"for": "chk_landuse_" + landuse.code, "class": "search_landuse_label", "innerHTML": " " + landuse.name}, e_li_landuse);
 		});
 	});
 }
@@ -2211,7 +2228,7 @@ function f_startup() {
 			}
 			//The map doesn't seem to load on firefox until it zooms
 			//this zooms in and then immediatily zooms out to fix it
-			f_firefoxfix();
+			//f_firefoxfix();
 		});
 	});
 }
