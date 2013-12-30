@@ -33,13 +33,16 @@
  *	e_    -	html element
  *	_lbl  -	label
  */
-var DynamicLayerHost = "http://webmaps.njmeadowlands.gov";
-var IP_Identify_Layers = [];
-var measurementDijit;
-var M_meri;
-var navToolbar;
-var tool_selected;
-var locateButton;
+var DynamicLayerHost = "http://webmaps.njmeadowlands.gov",
+	IP_Identify_Layers = [],
+	measurementDijit,
+	M_meri,
+	navToolbar,
+	tool_selected,
+	locateButton,
+	search_results = [],
+	search_acres = [],
+	parcel_results = [];
 function f_getAliases() {
 	"use strict";
 	var aliases = {"munCodes":
@@ -468,6 +471,85 @@ function f_getPopupTemplate(graphic) {
 	});
 	return popupTemplate;
 }
+function f_export_excel(event) {
+	"use strict";
+	var form = document.createElement("form"),
+		hidden,
+		index,
+		pid,
+		target;
+	if (event === "search") {
+		target = search_results;
+	} else {
+		target = parcel_results;
+	}
+	form.action = "./php/export_parcel_owners.php";
+	form.target = "_blank";
+	form.method = "POST";
+	form.style.display = "none";
+	for (pid in target) {
+		if (target.hasOwnProperty(pid)) {
+			hidden = document.createElement("input");
+			hidden.type = "hidden";
+			hidden.name = "PID[]";
+			hidden.value = pid;
+			form.appendChild(hidden);
+		}
+	}
+	document.body.appendChild(form);
+	form.submit();
+	form.remove();
+}
+function f_update_export_parcel() {
+	"use strict";
+	if (Object.keys(parcel_results).length > 0) {
+		var a_export = document.createElement("a"),
+			search_export = document.getElementById("parcel_export"),
+			total_acres = 0,
+			pid;
+		a_export.className = "selection_a";
+		a_export.href = "#";
+		a_export.style.color = "#09D";
+		a_export.onclick = function () {
+			f_export_excel("click");
+			return false;
+		};
+		search_export.innerHTML = "";
+		a_export.innerHTML = "Export to Excel: [" + Object.keys(parcel_results).length + " item(s)]";
+		search_export.appendChild(a_export);
+	} else {
+		document.getElementById("search_export").innerHTML = "";
+	}
+}
+function f_update_export_search() {
+	"use strict";
+	if (Object.keys(search_results).length > 0) {
+		var a_export = document.createElement("a"),
+			search_export = document.getElementById("search_export"),
+			search_tally = document.getElementById("search_tally"),
+			total_acres = 0,
+			pid;
+		a_export.className = "selection_a";
+		a_export.href = "#";
+		a_export.style.color = "#09D";
+		a_export.onclick = function () {
+			f_export_excel("search");
+			return false;
+		};
+		search_export.innerHTML = "";
+		a_export.innerHTML = "Export to Excel: [" + Object.keys(search_results).length + " item(s)]";
+		search_export.appendChild(a_export);
+		for (pid in search_acres) {
+			if (search_acres.hasOwnProperty(pid)) {
+				total_acres += search_acres[pid];
+			}
+		}
+		search_tally.innerHTML = Object.keys(search_acres).length + " results found. Total Acres: " + Math.round(total_acres * 100) / 100;
+	} else {
+		document.getElementById("search_export").innerHTML = "";
+		document.getElementById("search_tally").innerHTML = "";
+	}
+}
 function f_removeSelection() {
 	"use strict";
 	var graphics_layer = M_meri.getLayer("GL_parcel_selection"),
@@ -486,26 +568,6 @@ function f_removeSelection() {
 		}
 	}
 	M_meri.infoWindow.hide();
-}
-function f_export_excel(export_PID) {
-	"use strict";
-	var form = document.createElement("form"),
-		hidden,
-		index;
-	form.action = "./php/export_parcel_owners.php";
-	form.target = "_blank";
-	form.method = "POST";
-	form.style.display = "none";
-	for (index = 0; index < export_PID.length; index += 1) {
-		hidden = document.createElement("input");
-		hidden.type = "hidden";
-		hidden.name = "PID[]";
-		hidden.value = export_PID[index];
-		form.appendChild(hidden);
-	}
-	document.body.appendChild(form);
-	form.submit();
-	form.remove();
 }
 function f_process_results_parcel(results, event) {
 	"use strict";
@@ -556,7 +618,13 @@ function f_process_results_parcel(results, event) {
 				e_print,
 				remove;
 			graphic.setSymbol(G_symbol);
-			total_acres += graphic.attributes.MAP_ACRES;
+			if (event === "search") {
+				total_acres += graphic.attributes.MAP_ACRES;
+				search_results[graphic.attributes.PID] = graphic.attributes.PID;
+				search_acres[graphic.attributes.PID] = graphic.attributes.MAP_ACRES;
+			} else {
+				parcel_results[graphic.attributes.PID] = graphic.attributes.PID;
+			}
 			export_PID.push(graphic.attributes.PID);
 			popupTemplate = f_getPopupTemplate(graphic);
 			graphic.infoTemplate = popupTemplate;
@@ -632,24 +700,10 @@ function f_process_results_parcel(results, event) {
 			buffer_li[i].style.display = "block";
 		}
 		if (event === "search") {
-			a_export = document.createElement("a");
-			a_export.className = "selection_a";
-			a_export.href = "#";
-			a_export.style.color = "#09D";
-			a_export.onclick = function () {
-				f_export_excel(export_PID);
-				return false;
-			};
-			if (search_export.children.length > 0) {
-				number = parseInt(search_export.children[0].innerHTML.replace(/\D/g, ""), 10) + export_PID.length;
-				a_export.innerHTML = "Export to Excel: [" + number + " item(s)]";
-				search_export.innerHTML = "";
-				search_export.appendChild(a_export);
-			} else {
-				a_export.innerHTML = "Export to Excel: [" + export_PID.length + " item(s)]";
-				search_export.appendChild(a_export);
-			}
+			f_update_export_search();
 			document.getElementById("search_tally").innerHTML = results.features.length + " results found. Total Acres: " + Math.round(total_acres * 100) / 100;
+		} else {
+			f_update_export_parcel();
 		}
 	});
 }
@@ -780,10 +834,13 @@ function f_map_clear() {
 		locateButton.clear();
 	}
 	var dropdown0 = document.getElementById("dropdown0");
-	document.getElementById("export").innerHTML = "";
+	search_results = [];
+	parcel_results = [];
+	search_acres = [];
 	document.getElementById("search_progress").value = "0";
 	document.getElementById("search_tally").innerHTML = "";
 	document.getElementById("search_export").innerHTML = "";
+	document.getElementById("parcel_export").innerHTML = "";
 	document.getElementById("rdo_muni_searchAll").click();
 	document.getElementById("rdo_qual_searchAll").click();
 	document.getElementById("rdo_landuse_searchAll").click();
@@ -918,7 +975,7 @@ function f_search_parcel_old(search, where_PID) {
 		});
 	});
 }
-function f_search_landuse_2(search) {
+function f_search_landuse(search) {
 	"use strict";
 	if (search.rdo_landuse_search === "yes") {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
@@ -982,7 +1039,7 @@ function f_candidate_search(where, candidate_array) {
 			Q_parcel_selection.returnGeometry = true;
 			Q_parcel_selection.outFields = outFields_json.parcel;
 			search_progress.value = ".5";
-			if (where.length === 0) {
+			if (where.length > 0) {
 				Q_parcel_selection.where = where.join(" AND ");
 			}
 			if (candidate.attributes.Addr_type === "StreetAddress") {
@@ -1037,12 +1094,10 @@ function f_candidate_search(where, candidate_array) {
 		search_progress.style.display = "none";
 	}
 }
-function showResults(candidates) {
+function showResults(candidates, search) {
 	"use strict";
 	var muni = ["Carlstadt", "East Rutherford", "Little Ferry", "Lyndhurst", "Moonachie", "North Arlington", "Ridgefield", "Rutherford", "South Hackensack", "Teterboro", "Jersey City", "Kearny", "North bergen", "Secaucus"],
 		where = [],
-		muni_array,
-		qual_array,
 		Q_landuse,
 		QT_landuse,
 		where_qual,
@@ -1053,35 +1108,37 @@ function showResults(candidates) {
 		where_landuse,
 		i,
 		il;
-	require(["dojo/_base/array", "dojo/query", "esri/tasks/query", "esri/tasks/QueryTask"], function (array, query, Query, QueryTask) {
+	require(["esri/tasks/query", "esri/tasks/QueryTask", "dojo/_base/array"], function (Query, QueryTask, array) {
 		Q_landuse = new Query();
 		Q_landuse.returnGeometry = false;
 		Q_landuse.outFields = ["PID"];
 		QT_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/9");
-		if (document.getElementById("rdo_muni_searchSelect").checked) {
-			muni_array = query(".s_muni_chk_item:checked");
-			if (muni_array.length > 0) {
+		if (search.rdo_muni_search === "yes") {
+			if (search.s_muni_chk_item.length > 0) {
 				var where_muni = "[MUN_CODE] IN (";
-				array.forEach(muni_array, function (checkbox) {
-					if (checkbox.checked) {
-						where_muni += "'" + checkbox.value + "',";
+				if (search.s_muni_chk_item instanceof Array) {
+					for (i = 0; i < search.s_muni_chk_item.length; i += 1) {
+						where_muni += "'" + search.s_muni_chk_item[i] + "',";
 					}
-				});
-				where_muni = where_muni.substring(0, where_muni.length - 1);
+					where_muni = where_muni.substring(0, where_muni.length - 1);
+				} else {
+					where_muni += "'" + search.s_muni_chk_item + "'";
+				}
 				where_muni += ")";
 				where.push(where_muni);
 			}
 		}
-		if (document.getElementById("rdo_qual_searchSelect").checked) {
-			qual_array = query(".s_qual_chk_item:checked");
-			if (qual_array.length > 0) {
+		if (search.rdo_qual_search === "yes") {
+			if (search.s_qual_chk_item.length > 0) {
 				where_qual = "[QUALIFIER] in (";
-				array.forEach(qual_array, function (checkbox) {
-					if (checkbox.checked) {
-						where_qual += "'" + checkbox.value + "',";
+				if (search.s_qual_chk_item instanceof Array) {
+					for (i = 0; i < search.s_qual_chk_item.length; i += 1) {
+						where_qual += "'" + search.s_qual_chk_item[i] + "',";
 					}
-				});
-				where_qual = where_qual.substring(0, where_qual.length - 1);
+					where_qual = where_qual.substring(0, where_qual.length - 1);
+				} else {
+					where_qual += "'" + search.s_qual_chk_item + "'";
+				}
 				where_qual += ")";
 				where.push(where_qual);
 			}
@@ -1092,16 +1149,17 @@ function showResults(candidates) {
 				candidate_array.unshift(candidate);
 			}
 		});
-		if (document.getElementById("rdo_landuse_searchSelect").checked) {
-			landuse_array = query(".s_landuse_chk_item:checked");
-			if (landuse_array.length > 0) {
+		if (search.rdo_landuse_searchSelect === "yes") {
+			if (search.s_landuse_chk_item.length > 0) {
 				where_landuse = "where LANDUSE_CODE IN (";
-				array.forEach(document.getElementsByName("s_landuse_chk_item"), function (checkbox) {
-					if (checkbox.checked) {
-						where_landuse += "'" + checkbox.value + "',";
+				if (search.s_landuse_chk_item instanceof Array) {
+					for (i = 0; i < search.s_landuse_chk_item.length; i += 1) {
+						where_landuse += "'" + search.s_landuse_chk_item[i] + "',";
 					}
-				});
-				where_landuse = where_landuse.substring(0, where_landuse.length - 1);
+					where_landuse = where_landuse.substring(0, where_landuse.length - 1);
+				} else {
+					where_landuse += "'" + search.s_landuse_chk_item + "'";
+				}
 				where_landuse += ")";
 				Q_landuse.where = where_landuse;
 				QT_landuse.execute(Q_landuse, function (results) {
@@ -1133,13 +1191,13 @@ function f_search_address(json) {
 	require(["esri/geometry/Extent", "esri/tasks/locator"], function (Extent, Locator) {
 		if (isNaN(search.address.split(" ", 1)) || search.address === "") {
 			search_progress.value = ".25";
-			f_search_landuse_2(search);
+			f_search_landuse(search);
 		} else {
 			var address = {"SingleLine": search.address},
 				options = {address: address, outFields: ["Addr_type", "StName", "AddNum", "Xmax", "Ymax", "Xmin", "Ymin", "DisplayX", "DisplayY", "City", "geometry"], searchExtent: M_meri.extent},
 				locator = new Locator("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
-			locator.on("address-to-locations-complete", showResults, function (evt) {
-				showResults(evt);
+			locator.on("address-to-locations-complete", function (evt) {
+				showResults(evt, search);
 			});
 			locator.outSpatialReference = M_meri.spatialReference;
 			search_progress.value = ".25";
@@ -2064,6 +2122,9 @@ function f_feature_action(funct, target, oid) {
 	case "Remove Result":
 		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
 			if (graphics_layer.graphics[x].attributes.PID === oid) {
+				delete search_results[graphics_layer.graphics[x].attributes.PID];
+				delete search_acres[graphics_layer.graphics[x].attributes.PID];
+				f_update_export_search();
 				document.getElementById("parcel_ser_info_" + oid).remove();
 				if (document.getElementById("parcelinfo_" + oid) === null && document.getElementById("parcel_ser_info_" + oid) === null) {
 					graphics_layer.remove(graphics_layer.graphics[x]);
