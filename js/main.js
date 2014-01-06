@@ -1,4 +1,4 @@
-/*global document, require, setTimeout, sessionStorage, window, navigator, location, XMLHttpRequest, Recaptcha, alert, f_startup_eris, f_ERIS_selection_exec, version*/
+/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, f_startup_eris*/
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
@@ -518,7 +518,7 @@ function f_update_export_parcel() {
 		a_export.innerHTML = "Export to Excel: [" + Object.keys(parcel_results).length + " item(s)]";
 		search_export.appendChild(a_export);
 	} else {
-		document.getElementById("search_export").innerHTML = "";
+		document.getElementById("parcel_export").innerHTML = "";
 	}
 }
 function f_update_export_search() {
@@ -579,13 +579,11 @@ function f_process_results_parcel(results, event) {
 			feature_div = "selParcel_",
 			GL_container = M_meri.getLayer("GL_parcel_selection"),
 			G_symbol = S_feature_selection,
-			object_attr = "PID",
 			GL_count,
 			buffer_li,
 			e_print,
 			e_remove,
 			a_export,
-			export_PID = [],
 			i,
 			number,
 			total_acres = 0,
@@ -625,27 +623,26 @@ function f_process_results_parcel(results, event) {
 			} else {
 				parcel_results[graphic.attributes.PID] = graphic.attributes.PID;
 			}
-			export_PID.push(graphic.attributes.PID);
 			popupTemplate = f_getPopupTemplate(graphic);
 			graphic.infoTemplate = popupTemplate;
 			GL_container.add(graphic);
 			if (event === "click") {
 				el_featureAttribs = domConstruct.create("li",
 																	 {"class": "search_parcel_container",
-																	  "id":  "parcelinfo_" + featureAttributes[object_attr]},
+																	  "id":  "parcelinfo_" + featureAttributes.PID},
 																	 "dropdown3");
 			} else if (event === "search") {
 				el_featureAttribs = domConstruct.create("li",
 																	 {"class": "search_parcel_container",
-																	  "id": "parcel_ser_info_" + featureAttributes[object_attr]}, "dropdown2");
+																	  "id": "parcel_ser_info_" + featureAttributes.PID}, "dropdown2");
 			} else {
 				el_featureAttribs = domConstruct.create("li",
 																	 {"class": "search_parcel_container owner_parcels_" + event.split("_")[1],
-																	  "id": "parcel_ser_info_" + featureAttributes[object_attr]}, "findownerparcel_" + event.split("_")[1]);
+																	  "id": "parcel_ser_info_" + featureAttributes.PID}, "findownerparcel_" + event.split("_")[1]);
 			}
 			output = domConstruct.create("ul",
 												  {"class": "ResultList SelectionResult",
-													"id": "parcelinfo_ul_" + featureAttributes[object_attr]}, el_featureAttribs);
+													"id": "parcelinfo_ul_" + featureAttributes.PID}, el_featureAttribs);
 			if (event === "click") {
 				for (attr in featureAttributes) {
 					if (featureAttributes.hasOwnProperty(attr)) {
@@ -660,13 +657,13 @@ function f_process_results_parcel(results, event) {
 				}
 			}
 			el_parcel = domConstruct.create("li",
-													  {"id": feature_div + featureAttributes[object_attr],
+													  {"id": feature_div + featureAttributes.PID,
 														"class": "dParcelItem"},
 													  output,
 													  "first");
 			el_featureToolPrint = domConstruct.create("a",
 																	{"href": "#",
-																	 "onclick": "f_printMap(" + featureAttributes[object_attr] + ");return false;",
+																	 "onclick": "f_printMap(" + featureAttributes.PID + ");return false;",
 																	 "innerHTML": "Print",
 																	 "class": "selection_a feature_tool print_a"},
 																	el_parcel);
@@ -675,11 +672,11 @@ function f_process_results_parcel(results, event) {
 																 output);
 			if (event === "click") {
 				el_viewMoreToggleLink = domConstruct.create("a",
-																		  {"id": "detail_view_a_" + featureAttributes[object_attr],
+																		  {"id": "detail_view_a_" + featureAttributes.PID,
 																			"class": "selection_a",
 																			"href": "#",
 																			"innerHTML": "-- View More --",
-																			"onClick": 'f_result_detail("parcel","' + output.id + '",' + featureAttributes[object_attr] + ");return false;"},
+																			"onClick": 'f_result_detail("parcel","' + output.id + '",' + featureAttributes.PID + ");return false;"},
 																		  el_viewMoreToggle);
 			}
 			if (event === "click") {
@@ -691,7 +688,7 @@ function f_process_results_parcel(results, event) {
 				var el_featureTool = domConstruct.create("a",
 																	  {"href": "#", "class": "selection_a feature_tool",
 																		"innerHTML": a,
-																		"onClick": 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes[object_attr] + '");return false;'},
+																		"onClick": 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes.PID + '");return false;'},
 																	  el_parcel);
 			});
 		});
@@ -1270,6 +1267,47 @@ function f_search_owner(json) {
 		});
 	}
 }
+function f_search_add_selections(graphics) {
+	"use strict";
+	var feature_div = "selParcel_";
+	require(["dojo/_base/array", "dojo/dom-construct"], function (array, domConstruct) {
+		array.forEach(graphics, function (graphic) {
+			var featureAttributes = graphic.attributes,
+				el_featureAttribs = domConstruct.create("li", {"class": "search_parcel_container", "id": "parcelinfo_" + featureAttributes.PID}, "dropdown3"),
+				output = domConstruct.create("ul", {"class": "ResultList SelectionResult", "id": "parcelinfo_ul_added_" + featureAttributes.PID}, el_featureAttribs),
+				el_parcel,
+				el_featureToolPrint,
+				el_viewMoreToggle,
+				el_viewMoreToggleLink,
+				attr;
+			for (attr in featureAttributes) {
+				if (featureAttributes.hasOwnProperty(attr)) {
+					output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
+				}
+			}
+			el_parcel = domConstruct.create("li", {"id": feature_div + featureAttributes.PID, "class": "dParcelItem"}, output, "first");
+			el_featureToolPrint = domConstruct.create("a", {"href": "./print/parcel_info.html" + featureAttributes.PID, "target": "_blank", "innerHTML": "Print", "class": "search_a feature_tool"}, el_parcel);
+			el_viewMoreToggle = domConstruct.create("li",
+																 {"class": "lSummaryToggle"},
+																 output);
+			el_viewMoreToggleLink = domConstruct.create("a",
+																	  {"id": "detail_view_a_" + featureAttributes.PID,
+																		"class": "selection_a",
+																		"href": "#",
+																		"innerHTML": "-- View More --",
+																		"onClick": 'f_result_detail("parcel","' + output.id + '",' + featureAttributes.PID + ");return false;"},
+																	  el_viewMoreToggle);
+			array.forEach(["Remove", "Zoom", "Pan", "Flash"], function (a) {
+				var el_featureTool = domConstruct.create("a",
+																	  {"href": "#",
+																		"class": "search_a feature_tool",
+																		"innerHTML": a,
+																		onclick: 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes.PID + '");return false;'},
+																	  el_parcel);
+			});
+		});
+	});
+}
 function f_process_results_buffer(results) {
 	"use strict";
 	require(["dojo/dom-construct", "dojo/_base/array", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (domConstruct, array, Color, SimpleFillSymbol, SimpleLineSymbol) {
@@ -1278,38 +1316,36 @@ function f_process_results_buffer(results) {
 																			  new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
 																										  new Color([255, 255, 0]), 3),
 																			  new Color([0, 0, 255, 0.4])),
-			link = document.getElementById("export"),
 			GL_container = M_meri.getLayer("GL_buffer_selected_parcels"),
 			GL_count,
 			G_symbol = S_feature_buffer_selection,
 			graphic,
 			popupTemplate,
-			export_PID = [],
 			i,
 			il;
 		for (i = 0, il = results.features.length; i < il; i += 1) {
 			featureAttributes = results.features[i].attributes;
-			export_PID.push(featureAttributes.PID);
+			parcel_results[featureAttributes.PID] = featureAttributes.PID;
 			graphic = results.features[i];
 			graphic.setSymbol(G_symbol);
 			popupTemplate = f_getPopupTemplate(graphic);
 			GL_container.add(graphic);
 			GL_count = GL_container.graphics.length;
 			M_meri.infoWindow.resize("300", "350");
+			f_search_add_selections([graphic]);
 		}
-		link.href = "#";
-		link.innerHTML = "Export to Excel: [" + export_PID.length + " item(s)]";
-		link.onclick  = function () {
-			f_export_excel(export_PID);
-			return false;
-		};
-		link.style.display = "block";
+		f_update_export_parcel();
 	});
 }
-function f_multi_parcel_buffer_exec(distance) {
+function e_goBack() {
+	"use strict";
+	document.getElementById("form_submit").style.display = "block";
+	document.getElementById("for_form").remove();
+}
+function f_multi_parcel_buffer_exec(distance, PID) {
 	"use strict";
 	require(["esri/geometry/Polygon", "esri/SpatialReference", "esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/GeometryService",
-             "esri/tasks/BufferParameters", "esri/graphic", "esri/graphic", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Polygon, SpatialReference, QueryTask, Query, GeometryService, BufferParameters, Graphic, Color, SimpleFillSymbol, SimpleLineSymbol) {
+             "esri/tasks/BufferParameters", "esri/graphic", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Polygon, SpatialReference, QueryTask, Query, GeometryService, BufferParameters, Graphic, Color, SimpleFillSymbol, SimpleLineSymbol) {
 		M_meri.infoWindow.hide();
 		var multiparcel_geometries = new Polygon(new SpatialReference({"wkid": 102100})),
 			S_buffer_buffer = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
@@ -1327,7 +1363,14 @@ function f_multi_parcel_buffer_exec(distance) {
 			GL_buffer_parcel = M_meri.getLayer("GL_buffer_parcel"),
 			outFields_json = f_getoutFields();
 		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
-			multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
+			if (PID !== null) {
+				if (GL_parcel_selection.graphics[m].attributes.PID === PID) {
+					multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
+					break;
+				}
+			} else {
+				multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
+			}
 		}
 		if (!isNaN(bufferDistanceTxt) || (bufferDistanceTxt !== "")) {
 			QT_parcel_selection_buffer = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
@@ -1344,20 +1387,16 @@ function f_multi_parcel_buffer_exec(distance) {
 			BP_parcel_selection.unit = GeometryService.UNIT_FOOT;
 			GeomS_parcel_buffer.buffer(BP_parcel_selection, function (geometries) {
 				var graphic = new Graphic(geometries[0], S_buffer_buffer);
+				M_meri.getLayer("GL_buffer_buffer").clear();
 				M_meri.getLayer("GL_buffer_buffer").add(graphic);
 				Q_parcel_selection_buffer.geometry = graphic.geometry;
-				Q_parcel_selection_buffer.outFields = outFields_json.parcelB;
+				Q_parcel_selection_buffer.outFields = outFields_json.parcel;
 				QT_parcel_selection_buffer.execute(Q_parcel_selection_buffer, function (fset) {
 					f_process_results_buffer(fset);
 				});
 			});
 		}
 	});
-}
-function e_goBack() {
-	"use strict";
-	document.getElementById("form_submit").style.display = "block";
-	document.getElementById("for_form").remove();
 }
 function e_load_tools() {
 	"use strict";
@@ -1495,7 +1534,7 @@ function e_load_tools() {
 				}
 			}),
 			buffer_handler = new On(new Query("#buffer_exe"), "click", function (e) {
-				f_multi_parcel_buffer_exec(document.getElementById("buffer_distance").value);
+				f_multi_parcel_buffer_exec(document.getElementById("buffer_distance").value, null);
 			}),
 			form_submit_handler,
 			forgot_pass_handler;
@@ -1987,48 +2026,6 @@ function f_result_detail(type, target_el, pid) {
 		});
 	});
 }
-function f_search_add_selections(graphics) {
-	"use strict";
-	var feature_div = "selParcel_",
-		object_attr = "PID";
-	require(["dojo/_base/array", "dojo/dom-construct"], function (array, domConstruct) {
-		array.forEach(graphics, function (graphic) {
-			var featureAttributes = graphic.attributes,
-				el_featureAttribs = domConstruct.create("li", {"class": "search_parcel_container", "id": "parcelinfo_" + featureAttributes[object_attr]}, "dropdown3"),
-				output = domConstruct.create("ul", {"class": "ResultList SelectionResult", "id": "parcelinfo_ul_added_" + featureAttributes[object_attr]}, el_featureAttribs),
-				el_parcel,
-				el_featureToolPrint,
-				el_viewMoreToggle,
-				el_viewMoreToggleLink,
-				attr;
-			for (attr in featureAttributes) {
-				if (featureAttributes.hasOwnProperty(attr)) {
-					output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
-				}
-			}
-			el_parcel = domConstruct.create("li", {"id": feature_div + featureAttributes[object_attr], "class": "dParcelItem"}, output, "first");
-			el_featureToolPrint = domConstruct.create("a", {"href": "./print/parcel_info.html" + featureAttributes[object_attr], "target": "_blank", "innerHTML": "Print", "class": "search_a feature_tool"}, el_parcel);
-			el_viewMoreToggle = domConstruct.create("li",
-																 {"class": "lSummaryToggle"},
-																 output);
-			el_viewMoreToggleLink = domConstruct.create("a",
-																	  {"id": "detail_view_a_" + featureAttributes[object_attr],
-																		"class": "selection_a",
-																		"href": "#",
-																		"innerHTML": "-- View More --",
-																		"onClick": 'f_result_detail("parcel","' + output.id + '",' + featureAttributes[object_attr] + ");return false;"},
-																	  el_viewMoreToggle);
-			array.forEach(["Remove", "Zoom", "Pan", "Flash"], function (a) {
-				var el_featureTool = domConstruct.create("a",
-																	  {"href": "#",
-																		"class": "search_a feature_tool",
-																		"innerHTML": a,
-																		onclick: 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes[object_attr] + '");return false;'},
-																	  el_parcel);
-			});
-		});
-	});
-}
 function f_feature_action(funct, target, oid) {
 	"use strict";
 	oid = parseInt(oid, 10);
@@ -2059,7 +2056,7 @@ function f_feature_action(funct, target, oid) {
 				f_search_add_selections([graphics_layer.graphics[i2]]);
 			}
 		}
-		f_multi_parcel_buffer_exec(200);
+		f_multi_parcel_buffer_exec(200, oid);
 		break;
 	case "Zoom":
 		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
@@ -2112,6 +2109,8 @@ function f_feature_action(funct, target, oid) {
 	case "Remove":
 		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
 			if (graphics_layer.graphics[x].attributes.PID === oid) {
+				delete parcel_results[graphics_layer.graphics[x].attributes.PID];
+				f_update_export_parcel();
 				document.getElementById("parcelinfo_" + oid).remove();
 				if (document.getElementById("parcelinfo_" + oid) === null && document.getElementById("parcel_ser_info_" + oid) === null) {
 					graphics_layer.remove(graphics_layer.graphics[x]);
@@ -2142,54 +2141,6 @@ function f_feature_action(funct, target, oid) {
 		break;
 	}
 	return false;
-}
-function f_multi_parcel_buffer_exec(distance) {
-	"use strict";
-	require(["esri/geometry/Polygon", "esri/SpatialReference", "esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/GeometryService",
-             "esri/tasks/BufferParameters", "esri/graphic", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Polygon, SpatialReference, QueryTask, Query, GeometryService, BufferParameters, Graphic, Color, SimpleFillSymbol, SimpleLineSymbol) {
-		M_meri.infoWindow.hide();
-		var multiparcel_geometries = new Polygon(new SpatialReference({"wkid": 102100})),
-			S_buffer_buffer = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-																new SimpleLineSymbol(SimpleFillSymbol.STYLE_SOLID,
-																							new Color([100, 100, 100]), 3),
-																new Color([255, 0, 0, 0.6])),
-			m,
-			bufferDistanceTxt = distance,
-			bufferDistance,
-			QT_parcel_selection_buffer,
-			Q_parcel_selection_buffer,
-			GeomS_parcel_buffer,
-			BP_parcel_selection,
-			GL_parcel_selection = M_meri.getLayer("GL_parcel_selection"),
-			GL_buffer_parcel = M_meri.getLayer("GL_buffer_parcel"),
-			outFields_json = f_getoutFields();
-		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
-			multiparcel_geometries.addRing(GL_parcel_selection.graphics[m].geometry.rings[0]);
-		}
-		if (!isNaN(bufferDistanceTxt) || (bufferDistanceTxt !== "")) {
-			QT_parcel_selection_buffer = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
-			Q_parcel_selection_buffer = new Query();
-			bufferDistance = bufferDistanceTxt * 1.35;
-			Q_parcel_selection_buffer.returnGeometry = true;
-			Q_parcel_selection_buffer.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
-			Q_parcel_selection_buffer.outFields = outFields_json.parcel;
-			GeomS_parcel_buffer = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
-			BP_parcel_selection = new BufferParameters();
-			BP_parcel_selection.geometries  = [multiparcel_geometries];
-			GL_buffer_parcel = GL_parcel_selection;
-			BP_parcel_selection.distances = [bufferDistance];
-			BP_parcel_selection.unit = GeometryService.UNIT_FOOT;
-			GeomS_parcel_buffer.buffer(BP_parcel_selection, function (geometries) {
-				var graphic = new Graphic(geometries[0], S_buffer_buffer);
-				M_meri.getLayer("GL_buffer_buffer").add(graphic);
-				Q_parcel_selection_buffer.geometry = graphic.geometry;
-				Q_parcel_selection_buffer.outFields = outFields_json.parcelB;
-				QT_parcel_selection_buffer.execute(Q_parcel_selection_buffer, function (fset) {
-					f_process_results_buffer(fset);
-				});
-			});
-		}
-	});
 }
 function f_deviceCheck(version) {
 	"use strict";
