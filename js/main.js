@@ -627,11 +627,17 @@ function f_process_results_parcel(results, event) {
 			graphic.infoTemplate = popupTemplate;
 			GL_container.add(graphic);
 			if (event === "click") {
+				if (document.getElementById("parcelinfo_" + featureAttributes.PID) !== null) {
+					document.getElementById("parcelinfo_" + featureAttributes.PID).remove();
+				}
 				el_featureAttribs = domConstruct.create("li",
 																	 {"class": "search_parcel_container",
 																	  "id":  "parcelinfo_" + featureAttributes.PID},
 																	 "dropdown3");
 			} else if (event === "search") {
+				if (document.getElementById("parcel_ser_info_" + featureAttributes.PID)) {
+					document.getElementById("parcel_ser_info_" + featureAttributes.PID).remove();
+				}
 				el_featureAttribs = domConstruct.create("li",
 																	 {"class": "search_parcel_container",
 																	  "id": "parcel_ser_info_" + featureAttributes.PID}, "dropdown2");
