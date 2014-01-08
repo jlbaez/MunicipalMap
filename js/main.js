@@ -1,4 +1,4 @@
-/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, f_startup_eris*/
+/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, f_startup_eris,typeof*/
 //==========================================
 // Title:  Municipal Map V.3
 // Author: Jose Baez
@@ -46,12 +46,12 @@ var DynamicLayerHost = "http://webmaps.njmeadowlands.gov",
 function f_getAliases() {
 	"use strict";
 	var aliases = {"munCodes":
-						{"205": "Carlstadt",
-						 "212": "East Rutherford",
-						 "230": "Little Ferry",
-						 "232": "Lyndhurst",
-						 "237": "Moonachie",
-						 "239": "North Arlington",
+		{"205": "Carlstadt",
+							"212": "East Rutherford",
+							"230": "Little Ferry",
+							"232": "Lyndhurst",
+							"237": "Moonachie",
+		 "239": "North Arlington",
 						 "249": "Ridgefield",
 						 "256": "Rutherford",
 						 "259": "South Hackensack",
@@ -326,32 +326,29 @@ function f_printMap(pid) {
 function fieldAlias(fieldName, dataSource) {
 	"use strict";
 	var aliases = f_getAliases();
-	dataSource = typeof (dataSource) !== 'undefined' ? dataSource : '';
+	dataSource = dataSource !== undefined ? dataSource : '';
 	aliases.fieldNames.NAME = dataSource + 'Name';
 	aliases.fieldNames.ADDRESS = dataSource + 'Address';
-	if (typeof (aliases.fieldNames[fieldName]) !== "undefined") {
+	if (aliases.fieldNames[fieldName] !== undefined) {
 		return (aliases.fieldNames[fieldName]);
-	} else {
-		return fieldName;
-	}
+	} 
+	return fieldName;
 }
 function landuseAlias(a) {
 	"use strict";
 	var aliases = f_getAliases();
-	if (typeof (aliases.landUseCodes[a]) !== "undefined") {
+	if (aliases.landUseCodes[a] !== undefined) {
 		return aliases.landUseCodes[a];
-	} else {
-		return a;
 	}
+	return a;
 }
 function zoningAlias(a) {
 	"use strict";
 	var aliases = f_getAliases();
-	if (typeof (aliases.zoneCodes[a]) !== "undefined") {
+	if (aliases.zoneCodes[a] !== undefined) {
 		return aliases.zoneCodes[a];
-	} else {
-		return a;
 	}
+	return a;
 }
 function muncodeToName(c) {
 	"use strict";
@@ -359,15 +356,14 @@ function muncodeToName(c) {
 	if (c.length === 4) {
 		c = c.substr(1, 3);
 	}
-	if (typeof (aliases.munCodes[c]) !== "undefined") {
+	if (aliases.munCodes[c] !== undefined) {
 		return aliases.munCodes[c];
-	} else {
-		return c;
 	}
+	return c;
 }
 function formatResult(fieldName, fieldValue, data) {
 	"use strict";
-	var dataSource = (typeof (data) !== 'undefined') ? data : '',
+	var dataSource = (data !== undefined) ? data : '',
 		CSS = [],
 		Result = [];
 	CSS.field = CSS.value = '';
@@ -415,8 +411,7 @@ var quals_json = [{"id": "MD",
 						 "desc": "All parcels partially in and partially out of the NJMC District"}];
 function f_getPopupTemplate(graphic) {
 	"use strict";
-	var src_link,
-		popupTemplate,
+	var popupTemplate,
 		qualifiers = {"MD": "In District",
 						  "OMD": "Out of District",
 						  "MD-OMD": "Borderline Parcels"},
@@ -475,7 +470,6 @@ function f_export_excel(event) {
 	"use strict";
 	var form = document.createElement("form"),
 		hidden,
-		index,
 		pid,
 		target;
 	if (event === "search") {
@@ -502,11 +496,9 @@ function f_export_excel(event) {
 }
 function f_update_export_parcel() {
 	"use strict";
-	if (Object.keys(parcel_results).length > 0) {
 		var a_export = document.createElement("a"),
-			search_export = document.getElementById("parcel_export"),
-			total_acres = 0,
-			pid;
+			search_export = document.getElementById("parcel_export");
+	if (Object.keys(parcel_results).length > 0) {
 		a_export.className = "selection_a";
 		a_export.href = "#";
 		a_export.style.color = "#09D";
@@ -579,16 +571,11 @@ function f_process_results_parcel(results, event) {
 			feature_div = "selParcel_",
 			GL_container = M_meri.getLayer("GL_parcel_selection"),
 			G_symbol = S_feature_selection,
-			GL_count,
 			buffer_li,
 			e_print,
 			e_remove,
-			a_export,
 			i,
-			number,
-			total_acres = 0,
-			search_export = document.getElementById("search_export");
-		GL_count = GL_container.graphics.length;
+			total_acres = 0;
 		if (document.getElementsByClassName("a_print action").length > 0) {
 			document.getElementsByClassName("a_print action")[0].remove();
 		}
@@ -604,17 +591,13 @@ function f_process_results_parcel(results, event) {
 		array.forEach(results.features, function (result) {
 			var el_featureAttribs,
 				el_parcel,
-				el_featureToolPrint,
 				el_viewMoreToggle,
-				el_viewMoreToggleLink,
 				output,
 				attr,
 				function_array,
 				featureAttributes = result.attributes,
 				graphic = result,
-				popupTemplate,
-				e_print,
-				remove;
+				popupTemplate;		
 			graphic.setSymbol(G_symbol);
 			if (event === "search") {
 				total_acres += graphic.attributes.MAP_ACRES;
@@ -667,23 +650,23 @@ function f_process_results_parcel(results, event) {
 														"class": "dParcelItem"},
 													  output,
 													  "first");
-			el_featureToolPrint = domConstruct.create("a",
-																	{"href": "#",
-																	 "onclick": "f_printMap(" + featureAttributes.PID + ");return false;",
-																	 "innerHTML": "Print",
-																	 "class": "selection_a feature_tool print_a"},
-																	el_parcel);
+			domConstruct.create("a",
+					{"href": "#",
+						"onclick": "f_printMap(" + featureAttributes.PID + ");return false;",
+						"innerHTML": "Print",
+						"class": "selection_a feature_tool print_a"},
+					el_parcel);
 			el_viewMoreToggle = domConstruct.create("li",
 																 {"class": "lSummaryToggle"},
 																 output);
 			if (event === "click") {
-				el_viewMoreToggleLink = domConstruct.create("a",
-																		  {"id": "detail_view_a_" + featureAttributes.PID,
-																			"class": "selection_a",
-																			"href": "#",
-																			"innerHTML": "-- View More --",
-																			"onClick": 'f_result_detail("parcel","' + output.id + '",' + featureAttributes.PID + ");return false;"},
-																		  el_viewMoreToggle);
+				domConstruct.create("a",
+						{"id": "detail_view_a_" + featureAttributes.PID,
+							"class": "selection_a",
+							"href": "#",
+							"innerHTML": "-- View More --",
+							"onClick": 'f_result_detail("' + output.id + '",' + featureAttributes.PID + ");return false;"},
+						el_viewMoreToggle);
 			}
 			if (event === "click") {
 				function_array = ["Remove", "Zoom", "Pan", "Flash"];
@@ -691,11 +674,11 @@ function f_process_results_parcel(results, event) {
 				function_array = ["Remove Result", "Zoom", "Pan", "Flash", "Quick Buffer", "Add to Selection"];
 			}
 			array.forEach(function_array, function (a) {
-				var el_featureTool = domConstruct.create("a",
-																	  {"href": "#", "class": "selection_a feature_tool",
-																		"innerHTML": a,
-																		"onClick": 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes.PID + '");return false;'},
-																	  el_parcel);
+				domConstruct.create("a",
+					{"href": "#", "class": "selection_a feature_tool",
+						"innerHTML": a,
+						"onClick": 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes.PID + '");return false;'},
+				  el_parcel);
 			});
 		});
 		buffer_li = document.getElementsByClassName("buffer");
@@ -961,9 +944,7 @@ function f_search_parcel_old(search, where_PID) {
 		}
 		Q_parcel_selection.where = where.join(" AND ");
 		QT_parcel_selection.execute(Q_parcel_selection, function (results) {
-			var check = 0,
-				index,
-				old_result;
+			var old_result;
 			for (index = 0; index < results.features.length; index += 1) {
 				if (old_result !== undefined) {
 					if (results.features[index].attributes.BLOCK === old_result.attributes.BLOCK && results.features[index].attributes.LOT === old_result.attributes.LOT) {
@@ -1032,12 +1013,12 @@ function f_candidate_search(where, candidate_array) {
 				point,
 				search_extent,
 				index,
-				index_length,
 				featureAttributes,
 				parcel_address,
 				candidate_address = document.getElementById("address").value.split(" ", 2)[1],
 				add_num = document.getElementById("address").value.split(" ", 1)[0],
-				outFields_json = f_getoutFields();
+				outFields_json = f_getoutFields(),
+				show = false;
 			Q_parcel_selection.outSpatialReference = {wkid: 3857};
 			Q_parcel_selection.returnGeometry = true;
 			Q_parcel_selection.outFields = outFields_json.parcel;
@@ -1053,9 +1034,7 @@ function f_candidate_search(where, candidate_array) {
 													new SpatialReference(4326));
 				Q_parcel_selection.geometry = search_extent;
 				QT_parcel_selection.execute(Q_parcel_selection, function (results) {
-					index_length = results.features.length;
 					for (index = 0; index < results.features.length; index += 1) {
-						var show = false;
 						featureAttributes = results.features[index].attributes;
 						parcel_address = featureAttributes.PROPERTY_ADDRESS.replace(/\s/g, "").toLowerCase();
 						if (parcel_address.indexOf(candidate_address) !== -1) {
@@ -1105,7 +1084,6 @@ function showResults(candidates, search) {
 		QT_landuse,
 		where_qual,
 		where_PID,
-		landuse_array,
 		score = 0,
 		candidate_array = [],
 		where_landuse,
@@ -1191,7 +1169,7 @@ function f_search_address(json) {
 		search_progress = document.getElementById("search_progress");
 	search_progress.style.display = "block";
 	search_progress.value = "0";
-	require(["esri/geometry/Extent", "esri/tasks/locator"], function (Extent, Locator) {
+	require(["esri/tasks/locator"], function (Locator) {
 		if (isNaN(search.address.split(" ", 1)) || search.address === "") {
 			search_progress.value = ".25";
 			f_search_landuse(search);
@@ -1210,16 +1188,14 @@ function f_search_address(json) {
 }
 function f_query_owners_results(results) {
 	"use strict";
-    require(["dojo/dom", "dojo/dom-construct"], function (dom, domConstruct) {
+    require(["dojo/dom-construct"], function (domConstruct) {
 		var i,
 			il,
 			featureAttributes,
 			e_li_owner,
 			e_ul_owner_attrib,
 			e_li_owner_attrib,
-			e_strong_owner_attrib,
 			e_li_owner_link,
-			e_a_owner_link,
 			att;
 		for (i = 0, il = results.features.length; i < il; i += 1) {
 			featureAttributes = results.features[i].attributes;
@@ -1238,20 +1214,20 @@ function f_query_owners_results(results) {
 					e_li_owner_attrib = domConstruct.create("li",
 																		 {"innerHTML": ": " + featureAttributes[att]},
 																		 e_ul_owner_attrib);
-					e_strong_owner_attrib = domConstruct.create("strong",
-																			  {"innerHTML": fieldAlias(att, "owner")},
-																			  e_li_owner_attrib,
-																			  "first");
+					domConstruct.create("strong",
+							{"innerHTML": fieldAlias(att, "owner")},
+							e_li_owner_attrib,
+							"first");
 				}
 			}
 			e_li_owner_link = domConstruct.create("li", null, e_ul_owner_attrib);
-			e_a_owner_link = domConstruct.create("a",
-															 {"class": "selection_a",
-															  "id": "find_" + featureAttributes.OWNID,
-															  "href": "#",
-															  "innerHTML": "Find Owner Parcels",
-															  "onClick": "f_query_owner_int_exec(" + featureAttributes.OWNID + "); return false;"},
-															 e_li_owner_link);
+			domConstruct.create("a",
+					{"class": "selection_a",
+						"id": "find_" + featureAttributes.OWNID,
+						"href": "#",
+						"innerHTML": "Find Owner Parcels",
+						"onClick": "f_query_owner_int_exec(" + featureAttributes.OWNID + "); return false;"},
+					e_li_owner_link);
 	    }
 	});
 }
@@ -1283,9 +1259,7 @@ function f_search_add_selections(graphics) {
 					el_featureAttribs = domConstruct.create("li", {"class": "search_parcel_container", "id": "parcelinfo_" + featureAttributes.PID}, "dropdown3"),
 					output = domConstruct.create("ul", {"class": "ResultList SelectionResult", "id": "parcelinfo_ul_added_" + featureAttributes.PID}, el_featureAttribs),
 					el_parcel,
-					el_featureToolPrint,
 					el_viewMoreToggle,
-					el_viewMoreToggleLink,
 					attr;
 				for (attr in featureAttributes) {
 					if (featureAttributes.hasOwnProperty(attr)) {
@@ -1293,24 +1267,18 @@ function f_search_add_selections(graphics) {
 					}
 				}
 				el_parcel = domConstruct.create("li", {"id": feature_div + featureAttributes.PID, "class": "dParcelItem"}, output, "first");
-				el_featureToolPrint = domConstruct.create("a", {"href": "./print/parcel_info.html" + featureAttributes.PID, "target": "_blank", "innerHTML": "Print", "class": "search_a feature_tool"}, el_parcel);
+				domConstruct.create("a", {"href": "./print/parcel_info.html" + featureAttributes.PID, "target": "_blank", "innerHTML": "Print", "class": "search_a feature_tool"}, el_parcel);
 				el_viewMoreToggle = domConstruct.create("li",
 																	 {"class": "lSummaryToggle"},
 																	 output);
-				el_viewMoreToggleLink = domConstruct.create("a",
-																		  {"id": "detail_view_a_" + featureAttributes.PID,
-																			"class": "selection_a",
-																			"href": "#",
-																			"innerHTML": "-- View More --",
-																			"onClick": 'f_result_detail("parcel","' + output.id + '",' + featureAttributes.PID + ");return false;"},
-																		  el_viewMoreToggle);
+				domConstruct.create("a", {"id": "detail_view_a_" + featureAttributes.PID, "class": "selection_a", "href": "#", "innerHTML": "-- View More --", "onClick": 'f_result_detail("' + output.id + '",' + featureAttributes.PID + ");return false;"}, el_viewMoreToggle);
 				array.forEach(["Remove", "Zoom", "Pan", "Flash"], function (a) {
-					var el_featureTool = domConstruct.create("a",
-																		  {"href": "#",
-																			"class": "search_a feature_tool",
-																			"innerHTML": a,
-																			onclick: 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes.PID + '");return false;'},
-																		  el_parcel);
+					domConstruct.create("a",
+						{"href": "#",
+							"class": "search_a feature_tool",
+							"innerHTML": a,
+							"onclick": 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes.PID + '");return false;'},
+					  el_parcel);
 				});
 			}
 		});
@@ -1319,17 +1287,15 @@ function f_search_add_selections(graphics) {
 function f_process_results_buffer(results) {
 	"use strict";
 	M_meri.getLayer("GL_buffer_selected_parcels").clear();
-	require(["dojo/dom-construct", "dojo/_base/array", "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (domConstruct, array, Color, SimpleFillSymbol, SimpleLineSymbol) {
+	require(["dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Color, SimpleFillSymbol, SimpleLineSymbol) {
 	    var featureAttributes,
 			S_feature_buffer_selection = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 																			  new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
 																										  new Color([255, 255, 0]), 3),
 																			  new Color([0, 0, 255, 0.4])),
 			GL_container = M_meri.getLayer("GL_buffer_selected_parcels"),
-			GL_count,
 			G_symbol = S_feature_buffer_selection,
 			graphic,
-			popupTemplate,
 			i,
 			il;
 		for (i = 0, il = results.features.length; i < il; i += 1) {
@@ -1337,9 +1303,7 @@ function f_process_results_buffer(results) {
 			parcel_results[featureAttributes.PID] = featureAttributes.PID;
 			graphic = results.features[i];
 			graphic.setSymbol(G_symbol);
-			popupTemplate = f_getPopupTemplate(graphic);
 			GL_container.add(graphic);
-			GL_count = GL_container.graphics.length;
 			M_meri.infoWindow.resize("300", "350");
 			f_search_add_selections([graphic]);
 		}
@@ -1369,7 +1333,6 @@ function f_multi_parcel_buffer_exec(distance, PID) {
 			GeomS_parcel_buffer,
 			BP_parcel_selection,
 			GL_parcel_selection = M_meri.getLayer("GL_parcel_selection"),
-			GL_buffer_parcel = M_meri.getLayer("GL_buffer_parcel"),
 			outFields_json = f_getoutFields();
 		for (m = 0; m < GL_parcel_selection.graphics.length; m += 1) {
 			if (PID !== null) {
@@ -1391,7 +1354,6 @@ function f_multi_parcel_buffer_exec(distance, PID) {
 			GeomS_parcel_buffer = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
 			BP_parcel_selection = new BufferParameters();
 			BP_parcel_selection.geometries  = [multiparcel_geometries];
-			GL_buffer_parcel = GL_parcel_selection;
 			BP_parcel_selection.distances = [bufferDistance];
 			BP_parcel_selection.unit = GeometryService.UNIT_FOOT;
 			GeomS_parcel_buffer.buffer(BP_parcel_selection, function (geometries) {
@@ -1409,14 +1371,12 @@ function f_multi_parcel_buffer_exec(distance, PID) {
 }
 function e_load_tools() {
 	"use strict";
-	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/window", "dojo/dom-class", "dojo/dom-construct", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (On, Query, domStyle, coreFx, win, domClass, domConstruct, Navigation, xhr, domForm) {
-		var pull = document.getElementById("pull"),
-			header = document.getElementsByClassName("header-container")[0],
-			map = document.getElementById("map"),
+	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/dom-class", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (on, Query, domStyle, coreFx, domClass, Navigation, xhr, domForm) {
+		var header = document.getElementsByClassName("header-container")[0],
 			nav_tabs = document.getElementById("nav_tabs"),
 			buttons = document.getElementById("buttons"),
-			logo = document.getElementById("logo"),
-			pull_handler = new On(document.getElementById("pull"), "click", function (e) {
+			logo = document.getElementById("logo");
+			on(document.getElementById("pull"), "click", function () {
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
 					header.style.left = "80%";
 					header.style.position = "absolute";
@@ -1434,54 +1394,54 @@ function e_load_tools() {
 					logo.style.visibility = "visible";
 					logo.style.width = "35%";
 				}
-			}),
-			zoomin_handler = new On(document.getElementById("zoomin"), "click", function (e) {
+			});
+			on(document.getElementById("zoomin"), "click", function () {
 				navToolbar.activate(Navigation.ZOOM_IN);
 				f_button_clicked("zoomin");
-			}),
-			zoomout_handler = new On(document.getElementById("zoomout"), "click", function (e) {
+			});
+			on(document.getElementById("zoomout"), "click", function () {
 				navToolbar.activate(Navigation.ZOOM_OUT);
 				f_button_clicked("zoomout");
-			}),
-			pan_handler = new On(document.getElementById("pan"), "click", function (e) {
+			});
+			on(document.getElementById("pan"), "click", function () {
 				navToolbar.activate(Navigation.PAN);
 				f_button_clicked("pan");
-			}),
-			extent_handler =  new On(document.getElementById("extent"), "click", function (e) {
+			});
+			on(document.getElementById("extent"), "click", function () {
 				M_meri.centerAndZoom([-74.08456781356876, 40.78364440736023], 12);
-			}),
-			previous_handler = new On(document.getElementById("previous"), "click", function (e) {
+			});
+			on(document.getElementById("previous"), "click", function () {
 				navToolbar.zoomToPrevExtent();
-			}),
-			next_handler = new On(document.getElementById("next"), "click", function (e) {
+			});
+			on(document.getElementById("next"), "click", function () {
 				navToolbar.zoomToNextExtent();
-			}),
-			indentify_handeler = new On(document.getElementById("identify"), "click", function (e) {
+			});
+			on(document.getElementById("identify"), "click", function () {
 				navToolbar.activate(Navigation.PAN);
 				tool_selected = "identify";
 				f_button_clicked("identify");
-			}),
-			parcel_handler = new On(document.getElementById("parcel"), "click", function (e) {
+			});
+			on(document.getElementById("parcel"), "click", function () {
 				f_button_clicked("parcel");
 				navToolbar.activate(Navigation.PAN);
 				tool_selected = "parcel";
-			}),
-			measure_handler = new On(document.getElementById("measure"), "click", function (e) {
+			});
+			on(document.getElementById("measure"), "click", function () {
 				navToolbar.activate(Navigation.PAN);
 				tool_selected = "pan";
 				f_button_clicked("measure");
 				f_measure_map();
-			}),
-			clear_handler = new On(document.getElementById("clear"), "click", function (e) {
+			});
+			on(document.getElementById("clear"), "click", function () {
 				f_map_clear();
-			}),
-			search_add_handler = new On(document.getElementById("search_property"), "submit", function (e) {
+			});
+			on(document.getElementById("search_property"), "submit", function () {
 				f_search_address(domForm.toJson("search_property"));
-			}),
-			search_own_handler = new On(document.getElementById("search_owner"), "click", function (e) {
+			});
+			on(document.getElementById("search_owner"), "click", function () {
 				f_search_owner(domForm.toJson("search_owner"));
-			}),
-			search_toggle_handler = new On(new Query(".search_toggle"), "click", function (e) {
+			});
+			on(new Query(".search_toggle"), "click", function (e) {
 				var toElem = e.originalTarget || e.toElement || e.srcElement;
 				if (toElem.id === "filter") {
 					if (this.style.color !== "rgb(0, 153, 221)") {
@@ -1503,8 +1463,8 @@ function e_load_tools() {
 					document.getElementById("li_property").style.display = "block";
 					document.getElementById("li_owner").style.display = "none";
 				}
-			}),
-			tab_click_handler = new On(new Query(".tab"), "click", function (e) {
+			});
+			on(new Query(".tab"), "click", function () {
 				domClass.toggle(new Query(this).parent()[0], "active");
 				new Query(this).parent().siblings().children("ul").forEach(function (node) {
 					if (domStyle.get(node, "display") === "block") {
@@ -1517,22 +1477,22 @@ function e_load_tools() {
 				} else {
 					coreFx.wipeIn({node: new Query(this).siblings()[0], duration: 100}).play();
 				}
-			}),
-			filter_handler = new On(document.getElementById("filter"), "click", function (e) {
+			});
+			on(document.getElementById("filter"), "click", function () {
 				if (domStyle.get(new Query(this).siblings()[0], "display") === "block") {
 					coreFx.wipeOut({node: new Query(this).siblings()[0], duration: 100}).play();
 				} else {
 					coreFx.wipeIn({node: new Query(this).siblings()[0], duration: 100}).play();
 				}
-			}),
-			radio_handler = new On(new Query(".radio_filter"), "change", function (e) {
+			});
+			on(new Query(".radio_filter"), "change", function () {
 				if (domStyle.get(new Query(this).siblings("ul")[0], "display") === "block") {
 					coreFx.wipeOut({node: new Query(this).siblings("ul")[0], duration: 100}).play();
 				} else {
 					coreFx.wipeIn({node: new Query(this).siblings("ul")[0], duration: 100}).play();
 				}
-			}),
-			about_handler = new On(new Query(".about_a"), "click", function (e) {
+			});
+			on(new Query(".about_a"), "click", function () {
 				new Query(this).parent().siblings().children("ul").forEach(function (node) {
 					if (domStyle.get(node, "display") === "block") {
 						coreFx.wipeOut({node: node, duration: 100}).play();
@@ -1541,21 +1501,18 @@ function e_load_tools() {
 				if (domStyle.get(new Query(this).siblings("ul")[0], "display") !== "block") {
 					coreFx.wipeIn({node: new Query(this).siblings("ul")[0], duration: 100}).play();
 				}
-			}),
-			buffer_handler = new On(new Query("#buffer_exe"), "click", function (e) {
+			});
+			on(new Query("#buffer_exe"), "click", function () {
 				f_multi_parcel_buffer_exec(document.getElementById("buffer_distance").value, null);
-			}),
-			form_submit_handler,
-			forgot_pass_handler;
+			});
 		if (document.getElementById("account_link") !== null) {
-			forgot_pass_handler = new On(document.getElementById("account_link"), "click", function (e) {
+			on(document.getElementById("account_link"), "click", function () {
 				document.getElementById("form_submit").style.display = "none";
 				var li_form = document.getElementById("li_form"),
 					forgot_form = document.createElement("form"),
 					lbl_email = document.createElement("label"),
 					input_email = document.createElement("input"),
-					goback_link = document.createElement("a"),
-					response;
+					goback_link = document.createElement("a");
 				forgot_form.id = "for_form";
 				forgot_form.action = "";
 				lbl_email.setAttribute("for", "input_email");
@@ -1569,10 +1526,10 @@ function e_load_tools() {
 				input_email.className = "input";
 				input_email.required = true;
 				input_email.autofocus = true;
-				goback_link.onclick = function (e) {
+				goback_link.onclick = function () {
 					return false;
 				};
-				forgot_form.onsubmit = function (e) {
+				forgot_form.onsubmit = function () {
 					var xmlhttp = new XMLHttpRequest();
 					xmlhttp.open("POST", "./php/functions.php", false);
 					xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -1606,7 +1563,7 @@ function e_load_tools() {
 			});
 		}
 		if (document.getElementById("form_submit") !== null) {
-			form_submit_handler = new On(document.getElementById("form_submit"), "submit", function (e) {
+			on(document.getElementById("form_submit"), "submit", function () {
 				sessionStorage.username = document.getElementById("username").value;
 				xhr('./ERIS/authenticate.php', {
 					"method": "POST",
@@ -1628,11 +1585,10 @@ function e_load_tools() {
 }
 function f_base_imagery_list_build() {
 	"use strict";
-	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, Array) {
-		var e_li_title = domConstruct.create("li", {"id": "image_overlay", "class": "layer_group_title", "innerHTML": "Image Overlay"}, "dropdown1"),
-			e_li = domConstruct.create("li", {"class": "image_layer_li"}, "dropdown1"),
+	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
+		domConstruct.create("li", {"id": "image_overlay", "class": "layer_group_title", "innerHTML": "Image Overlay"}, "dropdown1");
+		var e_li = domConstruct.create("li", {"class": "image_layer_li"}, "dropdown1"),
 			e_sel = domConstruct.create("select", {"onChange": "f_image_layer_toggle(this)", "class": "select_option"}, e_li),
-			e_opt = domConstruct.create("option", {"innerHTML": "Default", "value": ""}, e_sel),
 			imageryLayersJSON = [{"id": "IMG_1930_BW", "title": "1930 Black and White (NJDEP)"},
 										{"id": "IMG_1958_BW", "title": "1958 Black and White (NJDEP)"},
 										{"id": "IMG_1969_BW", "title": "1969 Black and White (NJMC)"},
@@ -1647,8 +1603,9 @@ function f_base_imagery_list_build() {
 										{"id": "IMG_2009_C", "title": "2009 Color (NJMC)"},
 										{"id": "IMG_2010_C", "title": "2010 Color (Hudson County)"},
 										{"id": "IMG_2012_C", "title": "2012 Color (NJDEP)"}];
-		Array.forEach(imageryLayersJSON, function (img_lyr, index) {
-			var e_opt = domConstruct.create("option", {value: img_lyr.id, innerHTML: img_lyr.title}, e_sel);
+		domConstruct.create("option", {"innerHTML": "Default", "value": ""}, e_sel);
+		array.forEach(imageryLayersJSON, function (img_lyr) {
+			domConstruct.create("option", {value: img_lyr.id, innerHTML: img_lyr.title}, e_sel);
 		});
 		domConstruct.place(e_li, "dropdown1");
 	});
@@ -1656,14 +1613,11 @@ function f_base_imagery_list_build() {
 function f_layer_list_build() {
 	"use strict";
 	require(["dojo/dom-construct", "dojo/dom-attr", "dojo/_base/array", "dojo/request/xhr"], function (domConstruct, domAttr, array, xhr) {
-		var e_li_title = domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "Flooding Scenario:"}, "dropdown1"),
-			e_li = domConstruct.create("li", null, "dropdown1"),
+		domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "Flooding Scenario:"}, "dropdown1");
+		var e_li_0 = domConstruct.create("li", null, "dropdown1"),
 			e_sel_flood,
-			e_opt_flood,
 			e_li_flood,
 			e_ul,
-			e_li2,
-			e_legend,
 			mapLayersJSON = [{"name": "Environmental", "id": "environ", "layers":
 									[{"id": 14, "name": "FEMA Panel", "vis": 1, "ident": 1, "desc": "FEMA Panel"},
 									 {"id": 25, "name": "Riparian Claim (NJDEP)", "vis": 0, "ident": 1, "desc": "Riparian Claim (NJDEP)"},
@@ -1716,14 +1670,13 @@ function f_layer_list_build() {
 		xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json", sync: true}).then(function (content) {
 			map_legend = content;
 		});
-		array.forEach(mapLayersJSON, function (group, index) {
+		array.forEach(mapLayersJSON, function (group) {
+			domConstruct.create("li", {"class": "layer_group_title", "innerHTML": group.name + ":"}, "dropdown1");
 			var e_li_legend = domConstruct.create("li", null, "dropdown4"),
-				e_li_title = domConstruct.create("li", {"class": "layer_group_title", "innerHTML": group.name + ":"}, "dropdown1"),
 				e_ul_ltitle = domConstruct.create("ul", {"class": "legend_group_title", "innerHTML": '<li class="legend_title">' + group.name + "</li>"}, e_li_legend, "firsts");
-			array.forEach(group.layers, function (layer, lyrIndex) {
+			array.forEach(group.layers, function (layer) {
 				var e_li = domConstruct.create("li", {"class": "toc_layer_li"}, "dropdown1", "last"),
-					e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check", "id": "m_layer_" + layer.id, "onclick": "f_layer_list_update();f_legend_toggle(this);f_li_highlight(this);"}, e_li),
-					e_lbl;
+					e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check", "id": "m_layer_" + layer.id, "onclick": "f_layer_list_update();f_legend_toggle(this);f_li_highlight(this);"}, e_li);
 				if (layer.vis) {
 					domAttr.set(e_chk, "checked", true);
 					domAttr.set(e_li, "class", "toc_layer_li li_checked");
@@ -1731,7 +1684,7 @@ function f_layer_list_build() {
 				if (layer.ident || (layer.id === 30)) {
 					IP_Identify_Layers.push(layer.id);
 				}
-				e_lbl = domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", innerHTML: layer.name}, e_li);
+				domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", innerHTML: layer.name}, e_li);
 				if (layer.legend !== "no") {
 					array.forEach(map_legend.layers[layer.id].legend, function (layer_legend) {
 						var legend_text = "",
@@ -1752,34 +1705,34 @@ function f_layer_list_build() {
 				domAttr.set(e_ul_ltitle, "style", "display:none");
 			}
 		});
-		e_sel_flood = domConstruct.create("select", {"onChange": "f_layer_list_flood_update(this)", "class": "select_option"}, e_li);
-		e_opt_flood = domConstruct.create("option", {"innerHTML": "No tidal surge"}, e_sel_flood);
-		array.forEach(map_layers_flooding_json.scenarios, function (scenario, index) {
-			var e_opt_flood = domConstruct.create("option", {"id": "m_layer_flood_" + scenario.lyr, "innerHTML": scenario.group + " Foot Tidal Surge"}, e_sel_flood);
+		e_sel_flood = domConstruct.create("select", {"onChange": "f_layer_list_flood_update(this)", "class": "select_option"}, e_li_0);
+		domConstruct.create("option", {"innerHTML": "No tidal surge"}, e_sel_flood);
+		array.forEach(map_layers_flooding_json.scenarios, function (scenario) {
+			domConstruct.create("option", {"id": "m_layer_flood_" + scenario.lyr, "innerHTML": scenario.group + " Foot Tidal Surge"}, e_sel_flood);
 		});
 		e_li_flood = domConstruct.create("li", null, "dropdown4");
 		e_ul = domConstruct.create("ul", {id: "flooding_leg", "class": "legend_type"}, e_li_flood);
-		e_li2 = domConstruct.create("li", {"class": "legend_title", "style": "text-decoration:underline", "innerHTML": "Flooding Scenario"}, e_ul);
-		e_legend = domConstruct.create("li", {"class": "legend_li", "id": "legend_li_18", "innerHTML": '<img src="http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer/2/images/C5A8CAC6" class="legend_img" alt="error" />Flooding due to tidal surge<br>' + '<img src="http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer/3/images/5ABA6602" class="legend_img" alt="error" />Predicted Flooding in absence of tidegates'}, e_ul);
+		domConstruct.create("li", {"class": "legend_title", "style": "text-decoration:underline", "innerHTML": "Flooding Scenario"}, e_ul);
+		domConstruct.create("li", {"class": "legend_li", "id": "legend_li_18", "innerHTML": '<img src="http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer/2/images/C5A8CAC6" class="legend_img" alt="error" />Flooding due to tidal surge<br>' + '<img src="http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer/3/images/5ABA6602" class="legend_img" alt="error" />Predicted Flooding in absence of tidegates'}, e_ul);
 	});
 }
 function f_search_munis_build() {
 	"use strict";
 	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
-		array.forEach(munis_json, function (muni, index) {
-			var e_li_muni = domConstruct.create("li", {"class": "muniCheckRow"}, "search_munis"),
-				e_chk_muni = domConstruct.create("input", {type: "checkbox", "id": "chk_muni_" + muni.muncode, "name": "s_muni_chk_item", "class": "s_muni_chk_item", "value": muni.muncode}, e_li_muni),
-				e_lbl_muni = domConstruct.create("label", {"for": "chk_muni_" + muni.muncode, "class": "search_muni_label", "innerHTML": " " + muni.mun}, e_li_muni);
+		array.forEach(munis_json, function (muni) {
+			var e_li_muni = domConstruct.create("li", {"class": "muniCheckRow"}, "search_munis");
+			domConstruct.create("input", {type: "checkbox", "id": "chk_muni_" + muni.muncode, "name": "s_muni_chk_item", "class": "s_muni_chk_item", "value": muni.muncode}, e_li_muni);
+			domConstruct.create("label", {"for": "chk_muni_" + muni.muncode, "class": "search_muni_label", "innerHTML": " " + muni.mun}, e_li_muni);
 		});
 	});
 }
 function f_search_qual_build() {
 	"use strict";
 	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
-		array.forEach(quals_json, function (qual, index) {
-			var e_li_qual = domConstruct.create("li", {"class": "qualCheckRow"}, "search_qual"),
-				e_chk_qual = domConstruct.create("input", {"type": "checkbox", "id": "chk_qual_" + qual.id, "name": "s_qual_chk_item", "class": "s_qual_chk_item", "value": qual.id}, e_li_qual),
-				e_lbl_qual = domConstruct.create("label", {"for": "chk_qual_" + qual.id, "class": "search_qual_label", "innerHTML": " " + qual.name}, e_li_qual);
+		array.forEach(quals_json, function (qual) {
+			var e_li_qual = domConstruct.create("li", {"class": "qualCheckRow"}, "search_qual");
+			domConstruct.create("label", {"for": "chk_qual_" + qual.id, "class": "search_qual_label", "innerHTML": " " + qual.name}, e_li_qual);
+			domConstruct.create("input", {"type": "checkbox", "id": "chk_qual_" + qual.id, "name": "s_qual_chk_item", "class": "s_qual_chk_item", "value": qual.id}, e_li_qual);
 		});
 	});
 }
@@ -1803,10 +1756,10 @@ function f_search_landuse_build() {
 							  {"code": "TL", "name": "Transitional Lands"}
 							 ];
 	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
-		array.forEach(landuse_json, function (landuse, index) {
-			var e_li_landuse = domConstruct.create("li", {"class": "landuseCheckRow"}, "search_landuse"),
-				e_chk_landuse = domConstruct.create("input", {type: "checkbox", "id": "chk_landuse_" + landuse.code, "class": "s_landuse_chk_item", "name": "s_landuse_chk_item", "value": landuse.code}, e_li_landuse),
-				e_lbl_landuse = domConstruct.create("label", {"for": "chk_landuse_" + landuse.code, "class": "search_landuse_label", "innerHTML": " " + landuse.name}, e_li_landuse);
+		array.forEach(landuse_json, function (landuse) {
+			var e_li_landuse = domConstruct.create("li", {"class": "landuseCheckRow"}, "search_landuse");
+			domConstruct.create("label", {"for": "chk_landuse_" + landuse.code, "class": "search_landuse_label", "innerHTML": " " + landuse.name}, e_li_landuse);
+			domConstruct.create("input", {type: "checkbox", "id": "chk_landuse_" + landuse.code, "class": "s_landuse_chk_item", "name": "s_landuse_chk_item", "value": landuse.code}, e_li_landuse);
 		});
 	});
 }
@@ -1894,13 +1847,11 @@ function f_query_owner_int_exec(ownerid) {
 	"use strict";
 	require(["esri/tasks/QueryTask", "esri/tasks/RelationshipQuery", "esri/tasks/query"], function (QueryTask, RelationshipQuery, Query) {
 		var findparcels = document.getElementById("find_" + ownerid),
-			GV_current_ownerid,
 			QT_owner_int,
 			Q_owner_int,
 			QT_parcel_selection,
 			outFields_json = f_getoutFields();
 		if (findparcels.innerHTML === "Find Owner Parcels") {
-			GV_current_ownerid = ownerid;
 			QT_owner_int = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/8");
 			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
 			Q_owner_int = new Query();
@@ -1954,9 +1905,9 @@ function f_query_owner_int_exec(ownerid) {
 		}
 	});
 }
-function f_result_detail(type, target_el, pid) {
+function f_result_detail(target_el, pid) {
 	"use strict";
-	require(["esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/RelationshipQuery", "dojo/dom-construct"], function (QueryTask, Query, RelationshipQuery, domConstruct) {
+	require(["esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/RelationshipQuery"], function (QueryTask, Query, RelationshipQuery) {
 		var QT_det_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/9"),
 			Q_det_landuse = new Query(),
 			QT_det_zoning = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/7"),
@@ -2046,7 +1997,6 @@ function f_feature_action(funct, target, oid) {
 		i2,
 		x,
 		graphic,
-		x2,
 		index;
 	switch (funct) {
 	case "Add to Selection":
@@ -2186,7 +2136,7 @@ function f_firefoxfix() {
 }
 function f_startup() {
 	"use strict";
-	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton", "esri/dijit/Scalebar", "esri/dijit/Legend"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup, LocateButton, Scalebar, Legend) {
+	require(["esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton", "esri/dijit/Scalebar", "esri/dijit/Legend"], function (Navigation, GeometryService, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, on, Measurement, config, PopupMobile, Popup, LocateButton, scalebar, Legend) {
 		config.defaults.io.alwaysUseProxy = false;
 		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
 		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
@@ -2198,8 +2148,7 @@ function f_startup() {
 			GL_parcel_selection = new GraphicsLayer({opacity: 0.60, id: "GL_parcel_selection"}),
 			GL_buffer_buffer = new GraphicsLayer({opacity: 0.60, id: "GL_buffer_buffer"}),
 			GL_buffer_parcel = new GraphicsLayer({opacity: 0.60, id: "GL_buffer_parcel"}),
-			GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60, id: "GL_buffer_selected_parcels"}),
-			scalebar;
+			GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60, id: "GL_buffer_selected_parcels"});
 		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 			infowindow = new PopupMobile(null, e_info);
 		} else {
@@ -2218,7 +2167,7 @@ function f_startup() {
 										 minZoom: 12,
 										 infoWindow: infowindow
 										});
-		scalebar = new Scalebar({
+		scalebar({
 			map: M_meri,
 			attachTo: "bottom-left"
 		});
@@ -2232,7 +2181,7 @@ function f_startup() {
 		on(M_meri, "click", function (e) {
 			f_map_click_handler(e);
 		});
-		on.once(M_meri, "load", function (e) {
+		on.once(M_meri, "load", function () {
 			LD_flooding.setDPI(72, false);
 			M_meri.addLayers([LD_flooding, LD_button]);
 			M_meri.addLayer(GL_parcel_selection);
@@ -2245,7 +2194,7 @@ function f_startup() {
 			e_load_tools();
 			checkERIS();
 		});
-		on.once(LD_button, "load", function (e) {
+		on.once(LD_button, "load", function () {
 			f_base_imagery_list_build();
 			f_layer_list_build();
 			f_search_munis_build();
