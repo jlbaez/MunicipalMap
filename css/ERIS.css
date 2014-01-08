@@ -262,6 +262,10 @@ input[type=checkbox]:checked + label
 	font-family: Verdana;
 	font-size: 8px;
 }
+.dropdown4
+{
+	position:absolute !important;
+}
 .filter
 {
 	cursor: pointer;
