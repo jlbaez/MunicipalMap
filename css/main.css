@@ -25,6 +25,12 @@ nav ul
 	margin: 0;
 	padding: 0
 }
+.esriScalebarLabel
+{
+	color: #FFF;
+	font-family: Verdana;
+	font-size: 8px;
+}
 nav a 
 {
 	color: #777;

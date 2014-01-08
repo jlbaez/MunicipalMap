@@ -771,6 +771,7 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
+			console.log(identifyResults);
 			var e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 				e_tbody = domConstruct.create("tbody", null, e_table);
 			array.forEach(identifyResults, function (identifyResult) {
@@ -2186,7 +2187,7 @@ function f_firefoxfix() {
 }
 function f_startup() {
 	"use strict";
-	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup, LocateButton) {
+	require(["esri/tasks/geometry", "esri/tasks/query", "esri/layers/FeatureLayer", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/tasks/locator", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "esri/geometry/Point", "dojo/dom-construct", "esri/tasks/QueryTask", "esri/tasks/query", "esri/SpatialReference", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton", "esri/dijit/Scalebar"], function (geometry, query, FeatureLayer, IdentifyTask, IdentifyParameters, Navigation, GeometryService, Locator, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, Point, domConstruct, QueryTask, Query, SpatialReference, on, Measurement, config, PopupMobile, Popup, LocateButton, Scalebar) {
 		config.defaults.io.alwaysUseProxy = false;
 		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
 		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
@@ -2198,7 +2199,8 @@ function f_startup() {
 			GL_parcel_selection = new GraphicsLayer({opacity: 0.60, id: "GL_parcel_selection"}),
 			GL_buffer_buffer = new GraphicsLayer({opacity: 0.60, id: "GL_buffer_buffer"}),
 			GL_buffer_parcel = new GraphicsLayer({opacity: 0.60, id: "GL_buffer_parcel"}),
-			GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60, id: "GL_buffer_selected_parcels"});
+			GL_buffer_selected_parcels = new GraphicsLayer({opacity: 0.60, id: "GL_buffer_selected_parcels"}),
+			scalebar;
 		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 			infowindow = new PopupMobile(null, e_info);
 		} else {
@@ -2217,6 +2219,10 @@ function f_startup() {
 										 minZoom: 12,
 										 infoWindow: infowindow
 										});
+		scalebar = new Scalebar({
+			map: M_meri,
+			attachTo: "bottom-left"
+		});
 		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 			locateButton = new LocateButton({
 				map: M_meri,
@@ -2228,7 +2234,7 @@ function f_startup() {
 			f_map_click_handler(e);
 		});
 		on.once(M_meri, "load", function (e) {
-			LD_flooding.setDPI(7, false);
+			LD_flooding.setDPI(72, false);
 			M_meri.addLayers([LD_flooding, LD_button]);
 			M_meri.addLayer(GL_parcel_selection);
 			M_meri.addLayer(GL_buffer_selected_parcels);

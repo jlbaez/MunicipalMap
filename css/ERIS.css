@@ -256,6 +256,12 @@ input[type=checkbox]:checked + label
 {
 	box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
 }
+.esriScalebarLabel
+{
+	color: #FFF;
+	font-family: Verdana;
+	font-size: 8px;
+}
 .filter
 {
 	cursor: pointer;
