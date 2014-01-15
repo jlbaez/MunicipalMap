@@ -5,16 +5,17 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<meta name="mobile-web-app-capable" content="yes">
-		<link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/tundra/tundra.css">
-		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
-		<link rel="stylesheet" href="css/normalize.min.css">
+    <meta name="author" content="Jose Baez - Intern Web Developer">
+    <link rel="stylesheet" href="css/normalize.min.css">
+		<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/tundra/tundra.css">
+		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
 		<link rel="stylesheet" href="css/ERIS.css">
 		<link rel="apple-touch-icon" href="css/img/map-logo-57x57.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="css/img/map-logo-72x72.png">
 		<link rel="apple-touch-icon" sizes="114x114" href="css/img/map-logo-114x114.png">
 	</head>
 	<body>
-		<noscript>Sorry, but in order to use Municipal Map you need Javscript enabled</noscript>
+		<noscript>Sorry, but in order to use Municipal Map you need JavaScript enabled</noscript>
 		<div id = "body">
 			<div class="header-container" style="display:none;">
 				<header class="wrapper clearfix">
@@ -65,7 +66,9 @@
 							</li>
 							<li>
 								<a href="javascript:void(0);" id="legend" class="tab">Legend</a>
-								<ul id="dropdown4" class="dropdown main dropdown4" style="display:none"></ul>
+								<ul id="dropdown4" class="dropdown main dropdown4" style="display:none">
+                  <li id="legend_li"></li>
+                </ul>
 							</li>
 							<li>
 								<a href="javascript:void(0);" id="search" class="tab">Search</a>

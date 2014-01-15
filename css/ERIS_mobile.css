@@ -185,6 +185,11 @@ nav a:hover
 {
 	background-image: url("img/pointerbottom.png");
 }
+.toc_layer_label
+{
+	display: block;
+	width: 100%;
+}
 .buttons
 {
 	float:left;

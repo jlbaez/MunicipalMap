@@ -42,7 +42,9 @@ var DynamicLayerHost = "http://webmaps.njmeadowlands.gov",
 	locateButton,
 	search_results = [],
 	search_acres = [],
-	parcel_results = [];
+	legendDigit,
+	parcel_results = [],
+	legendLayers = [];
 function f_getAliases() {
 	"use strict";
 	var aliases = {"munCodes":
@@ -830,6 +832,7 @@ function f_map_clear() {
 	document.getElementById("rdo_muni_searchAll").click();
 	document.getElementById("rdo_qual_searchAll").click();
 	document.getElementById("rdo_landuse_searchAll").click();
+	document.getElementById("search_progress").style.display = "none";
 	M_meri.getLayer("GL_parcel_selection").clear();
 	M_meri.getLayer("GL_buffer_parcel").clear();
 	M_meri.getLayer("GL_buffer_buffer").clear();
@@ -1612,12 +1615,10 @@ function f_base_imagery_list_build() {
 }
 function f_layer_list_build() {
 	"use strict";
-	require(["dojo/dom-construct", "dojo/dom-attr", "dojo/_base/array", "dojo/request/xhr"], function (domConstruct, domAttr, array, xhr) {
+	require(["dojo/dom-construct", "dojo/dom-attr", "dojo/_base/array"], function (domConstruct, domAttr, array) {
 		domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "Flooding Scenario:"}, "dropdown1");
 		var e_li_0 = domConstruct.create("li", null, "dropdown1"),
 			e_sel_flood,
-			e_li_flood,
-			e_ul,
 			mapLayersJSON = [{"name": "Environmental", "id": "environ", "layers":
 									[{"id": 14, "name": "FEMA Panel", "vis": 1, "ident": 1, "desc": "FEMA Panel"},
 									 {"id": 25, "name": "Riparian Claim (NJDEP)", "vis": 0, "ident": 1, "desc": "Riparian Claim (NJDEP)"},
@@ -1626,7 +1627,7 @@ function f_layer_list_build() {
 									 {"id": 33, "name": "Seismic Soil Class", "vis": 0, "ident": 1, "desc": "Seisemic Soil Class"}]},
 								  {"name": "Hydro", "id": "hydro", "layers":
 									[{"id": 1, "name": "Tidegates", "vis": 1, "ident": 1, "desc": "Tidegates"},
-									 {"id": 2, "name": "Creek Names", "vis": 1, "ident": 0, "desc": "Creek Names", "legend": "no"},
+									 {"id": 2, "name": "Creek Names", "vis": 1, "ident": 0, "desc": "Creek Names"},
 									 {"id": 13, "name": "Drainage", "vis": 1, "ident": 1, "desc": "Drainage"},
 									 {"id": 23, "name": "Hydro Lines - Wetland Edge", "vis": 1, "ident": 1, "desc": "Hydro Lines - Wetland Edge"},
 									 {"id": 24, "name": "Waterways", "vis": 0, "ident": 0, "desc": "Waterways"}]},
@@ -1654,10 +1655,10 @@ function f_layer_list_build() {
 									 {"id": 15, "name": "Fence Lines", "vis": 0, "ident": 1, "desc": "Fence Lines"},
 									 {"id": 16, "name": "Contour Lines", "vis": 0, "ident": 1, "desc": "Contour Lines"}]},
 								  {"name": "Transportation", "id": "trans", "layers":
-									[{"id": 12, "name": "DOT Roads", "vis": 1, "ident": 1, "desc": "DOT Roads", "legend": "no"},
+									[{"id": 12, "name": "DOT Roads", "vis": 1, "ident": 1, "desc": "DOT Roads"},
 									 {"id": 19, "name": "Bridges - Overpass", "vis": 1, "ident": 0, "desc": "Bridges - Overpass"},
 									 {"id": 17, "name": "Rails", "vis": 1, "ident": 1, "desc": "Rails"},
-									 {"id": 18, "name": "Roads ROW", "vis": 1, "ident": 1, "desc": "Roads ROW", "legend": "no"}]}],
+									 {"id": 18, "name": "Roads ROW", "vis": 1, "ident": 1, "desc": "Roads ROW"}]}],
 			map_layers_flooding_json = {"title": "Flooding Scenarios",
 												 "title_tgf": "Predicted Flooding in absence of tidegates",
 												 "title_surge": "Storm Surge",
@@ -1665,18 +1666,12 @@ function f_layer_list_build() {
 																	{"group": 7, "lyr": 2, "vis": 0},
 																	{"group": 6, "lyr": 3, "vis": 0},
 																	{"group": 5, "lyr": 4, "vis": 0},
-																	{"group": 4, "lyr": 5, "vis": 0}]},
-			map_legend;
-		xhr(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/legend?f=json", {handleAs: "json", sync: true}).then(function (content) {
-			map_legend = content;
-		});
+																	{"group": 4, "lyr": 5, "vis": 0}]};
 		array.forEach(mapLayersJSON, function (group) {
 			domConstruct.create("li", {"class": "layer_group_title", "innerHTML": group.name + ":"}, "dropdown1");
-			var e_li_legend = domConstruct.create("li", null, "dropdown4"),
-				e_ul_ltitle = domConstruct.create("ul", {"class": "legend_group_title", "innerHTML": '<li class="legend_title">' + group.name + "</li>"}, e_li_legend, "firsts");
 			array.forEach(group.layers, function (layer) {
 				var e_li = domConstruct.create("li", {"class": "toc_layer_li"}, "dropdown1", "last"),
-					e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check", "id": "m_layer_" + layer.id, "onclick": "f_layer_list_update();f_legend_toggle(this);f_li_highlight(this);"}, e_li);
+					e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check", "id": "m_layer_" + layer.id, "onclick": "f_layer_list_update();f_legend_toggle();f_li_highlight(this);"}, e_li);
 				if (layer.vis) {
 					domAttr.set(e_chk, "checked", true);
 					domAttr.set(e_li, "class", "toc_layer_li li_checked");
@@ -1685,35 +1680,13 @@ function f_layer_list_build() {
 					IP_Identify_Layers.push(layer.id);
 				}
 				domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", innerHTML: layer.name}, e_li);
-				if (layer.legend !== "no") {
-					array.forEach(map_legend.layers[layer.id].legend, function (layer_legend) {
-						var legend_text = "",
-							e_legend;
-						if (layer_legend.label !== "") {
-							legend_text = layer_legend.label;
-						} else {
-							legend_text = layer.name;
-						}
-						e_legend = domConstruct.create("li", {"class": "legend_li legend_li_" + layer.id, "innerHTML": '<img src="' + DynamicLayerHost + '/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer/1/images/' + layer_legend.url + '" class="legend_img" alt="error" />' + legend_text}, e_ul_ltitle, "last");
-						if (layer.vis !== 1) {
-							domAttr.set(e_legend, "style", "display:none");
-						}
-					});
-				}
 			});
-			if (e_ul_ltitle.childNodes.length < 2) {
-				domAttr.set(e_ul_ltitle, "style", "display:none");
-			}
 		});
-		e_sel_flood = domConstruct.create("select", {"onChange": "f_layer_list_flood_update(this)", "class": "select_option"}, e_li_0);
+		e_sel_flood = domConstruct.create("select", {"onChange": "f_layer_list_flood_update(this);f_legend_toggle();", "class": "select_option"}, e_li_0);
 		domConstruct.create("option", {"innerHTML": "No tidal surge"}, e_sel_flood);
 		array.forEach(map_layers_flooding_json.scenarios, function (scenario) {
 			domConstruct.create("option", {"id": "m_layer_flood_" + scenario.lyr, "innerHTML": scenario.group + " Foot Tidal Surge"}, e_sel_flood);
 		});
-		e_li_flood = domConstruct.create("li", null, "dropdown4");
-		e_ul = domConstruct.create("ul", {id: "flooding_leg", "class": "legend_type"}, e_li_flood);
-		domConstruct.create("li", {"class": "legend_title", "style": "text-decoration:underline", "innerHTML": "Flooding Scenario"}, e_ul);
-		domConstruct.create("li", {"class": "legend_li", "id": "legend_li_18", "innerHTML": '<img src="http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer/2/images/C5A8CAC6" class="legend_img" alt="error" />Flooding due to tidal surge<br>' + '<img src="http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Flooding/Flooding_Scenarios/MapServer/3/images/5ABA6602" class="legend_img" alt="error" />Predicted Flooding in absence of tidegates'}, e_ul);
 	});
 }
 function f_search_munis_build() {
@@ -1821,19 +1794,9 @@ function f_layer_list_flood_update(sel) {
 		M_meri.getLayer("LD_flooding").setVisibleLayers([inputs.substring(inputs.lastIndexOf("_") + 1, inputs.length)]);
 	}
 }
-function f_legend_toggle(layer) {
+function f_legend_toggle() {
 	"use strict";
-	var x = layer.id,
-		clas = (x.substring(x.lastIndexOf("_") + 1, x.length));
-	require(["dojo/query"], function (query) {
-		query(".legend_li_" + clas).forEach(function (node) {
-			if (node.style.display === "none") {
-				node.style.display = "block";
-			} else {
-				node.style.display = "none";
-			}
-		});
-	});
+	legendDigit.refresh();
 }
 function f_hide_owner_parcels(ownerid) {
 	"use strict";
@@ -2121,18 +2084,8 @@ function checkERIS() {
 	"use strict";
 	if (typeof f_startup_eris === 'function') {
 		f_startup_eris();
+		legendDigit.refresh();
 	}
-}
-function f_firefoxfix() {
-	"use strict";
-	require(["dojo/on"], function (on) {
-		if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-			on.once(M_meri, "zoom-end", function () {
-				M_meri.setZoom(12);
-			});
-			M_meri.setZoom(14);
-		}
-	});
 }
 function f_startup() {
 	"use strict";
@@ -2200,18 +2153,17 @@ function f_startup() {
 			f_search_munis_build();
 			f_search_qual_build();
 			f_search_landuse_build();
+			legendLayers.push({layer: LD_button, title: "Map Layers", hideLayers: [2, 12, 18]});
+			legendLayers.push({layer: LD_flooding, title: "Flooding Layers"});
 			//turns off building layer when ERIS is loaded
 			if (typeof f_startup_eris === 'function') {
 				document.getElementById("m_layer_26").checked = false;
 			}
-			/*var legendDigit = new Legend({
+			legendDigit = new Legend({
 				map: M_meri,
-				layerInfos: {layer: M_meri.getLayer("LD_button")}
-			}, "dropdown4");
-			legendDigit.startup();*/
-			//The map doesn't seem to load on firefox until it zooms
-			//this zooms in and then immediatily zooms out to fix it
-			//f_firefoxfix();
+				layerInfos: legendLayers
+			}, "legend_li");
+			legendDigit.startup();
 		});
 	});
 }

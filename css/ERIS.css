@@ -135,6 +135,11 @@ nav a:hover
 {
 	list-style-type: none;
 }
+.toc_layer_label
+{
+	display:block;
+	width: 100%;
+}
 .ResultList 
 {
 	top: 2px;
@@ -264,6 +269,7 @@ input[type=checkbox]:checked + label
 }
 .dropdown4
 {
+	min-width: 200px;
 	position:absolute !important;
 }
 .filter

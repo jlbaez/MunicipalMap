@@ -216,6 +216,7 @@ nav a:hover
 }
 .dropdown4
 {
+	min-width: 200px;
 	position: absolute !important;
 }
 input[type=checkbox]:checked + label 
@@ -449,6 +450,11 @@ secondary:hover, secondary:focus, .secondary:hover, .secondary:focus
 .filter
 {
 	transition: none;
+}
+.toc_layer_label
+{
+	display:block;
+	width: 100%;
 }
 @media only screen
 {
