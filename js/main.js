@@ -45,6 +45,78 @@ var DynamicLayerHost = "http://webmaps.njmeadowlands.gov",
 	legendDigit,
 	parcel_results = [],
 	legendLayers = [];
+function f_getLayerInfo() {
+	var json = [],
+		env = ["FEMA PANEL", "RIPARIAN CLAIM (NJDEP)", "FEMA (100-YR FLOOD)", "WETLANDS (DEP)", "SEISMIC SOIL CLASS"],
+		hyd = ["TIDEGATES", "CREEK NAMES", "DRAINAGE", "HYDRO LINES/ WETLAND EDGE", "WATERWAYS"],
+		inf = ["STORMWATER CATCHBASIN", "STORMWATER MANHOLE", "STORMWATER OUTFALL", "STORMWATER LINE", "SANITARY MANHOLE", "SANITARY LINES", "HYDRANTS"],
+		pol = ["DISTRICT LINE", "MUNICIPAL BOUNDARY", "BLOCK LIMIT", "PARCEL LINES", "ENCUMBERANCE", "BUILDINGS", "CENSUS BLOCK 2010", "VOTING DISTRICTS 2010", "LAND USE", "ZONING"],
+		topo = ["SPOT ELEVATIONS", "FENCE LINE", "CONTOUR LINES"],
+		tra = ["DOT ROADS", "BRIDGES/ OVERPASS", "RAILS", "ROADS ROW"];
+	json.push({
+		name: "Environmental",
+		layers: []
+	});
+	json.push({
+		name: "Hydro",
+		layers: []
+	});
+	json.push({
+		name: "Infrastructure/Utilities",
+		layers: []
+	});
+	json.push({
+		name: "Political/Jurisdiction",
+		layers: []
+	});
+	json.push({
+		name: "Topographic & Planimetrics",
+		layers: []
+	});
+	json.push({
+		name: "Transportation",
+		layers: []
+	});
+	require(["dojo/request/xhr"], function (xhr) {
+		xhr("http://webmaps.njmeadowlands.gov/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer?f=json&pretty=true", {
+			handleAs: "json",
+			sync: true}).then(function (data) {
+				var index = 0,
+					identify = ["DISTRICT LINE", "CREEK NAMES", "WATERWAYS", "MUNICIPAL BOUNDARY", "BRIDGES/ OVERPASS", "BLOCK LIMIT", "PARCEL LINES", "ENCUMBERANCE", "CENSUS BLOCK 2010", "BRIDGES/ OVERPASS"],
+					bool,
+					index2;
+				for (index = 0; index < data.layers.length; index += 1) {
+					if (identify.indexOf(data.layers[index].name) > -1) {
+						bool = 0;
+					} else {
+						bool = 1;
+					}
+					if (env.indexOf(data.layers[index].name) > -1) {
+						index2 = 0;
+					} else if (hyd.indexOf(data.layers[index].name) > -1) {
+						index2 = 1;
+					} else if (inf.indexOf(data.layers[index].name) > -1) {
+						index2 = 2;
+					} else if (pol.indexOf(data.layers[index].name) > -1) {
+						index2 = 3;
+					} else if (topo.indexOf(data.layers[index].name) > -1) {
+						index2 = 4;
+					} else if (tra.indexOf(data.layers[index].name) > -1) {
+						index2 = 5;
+					} else {
+						index2 = 0;
+					}
+					json[index2].layers.push({
+						id: data.layers[index].id,
+						name: data.layers[index].name,
+						vis: data.layers[index].defaultVisibility,
+						ident: bool
+					});
+				}
+		});
+	});
+	return json;
+}
 function f_getAliases() {
 	"use strict";
 	var aliases = {"munCodes":
@@ -755,7 +827,9 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.mapExtent = M_meri.extent;
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
+		console.log(IP_Map_All);
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
+			console.log(identifyResults);
 			var e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
 				e_tbody = domConstruct.create("tbody", null, e_table);
 			array.forEach(identifyResults, function (identifyResult) {
@@ -1619,46 +1693,7 @@ function f_layer_list_build() {
 		domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "Flooding Scenario:"}, "dropdown1");
 		var e_li_0 = domConstruct.create("li", null, "dropdown1"),
 			e_sel_flood,
-			mapLayersJSON = [{"name": "Environmental", "id": "environ", "layers":
-									[{"id": 14, "name": "FEMA Panel", "vis": 1, "ident": 1, "desc": "FEMA Panel"},
-									 {"id": 25, "name": "Riparian Claim (NJDEP)", "vis": 0, "ident": 1, "desc": "Riparian Claim (NJDEP)"},
-									 {"id": 27, "name": "FEMA (100-YR FLOOD)", "vis": 0, "ident": 1, "desc": "FEMA (100-YR FLOOD)"},
-									 {"id": 28, "name": "Wetlands (DEP)", "vis": 0, "ident": 1, "desc": "Wetlands (DEP)"},
-									 {"id": 33, "name": "Seismic Soil Class", "vis": 0, "ident": 1, "desc": "Seisemic Soil Class"}]},
-								  {"name": "Hydro", "id": "hydro", "layers":
-									[{"id": 1, "name": "Tidegates", "vis": 1, "ident": 1, "desc": "Tidegates"},
-									 {"id": 2, "name": "Creek Names", "vis": 1, "ident": 0, "desc": "Creek Names"},
-									 {"id": 13, "name": "Drainage", "vis": 1, "ident": 1, "desc": "Drainage"},
-									 {"id": 23, "name": "Hydro Lines - Wetland Edge", "vis": 1, "ident": 1, "desc": "Hydro Lines - Wetland Edge"},
-									 {"id": 24, "name": "Waterways", "vis": 0, "ident": 0, "desc": "Waterways"}]},
-								  {"name": "Infrastructure/Utilities", "id": "inf_util", "layers":
-									[{"id": 5, "name": "Stormwater Catchbasins", "vis": 0, "ident": 1, "desc": "Stormwater Catchbasins"},
-									 {"id": 6, "name": "Stormwater Manholes", "vis": 0, "ident": 1, "desc": "Stormwater Manholes"},
-									 {"id": 7, "name": "Stormwater Outfalls", "vis": 0, "ident": 1, "desc": "Stormwater Outfalls"},
-									 {"id": 8, "name": "Stormwater Lines", "vis": 0, "ident": 1, "desc": "Stormwater Lines"},
-									 {"id": 9, "name": "Sanitary Manhole", "vis": 0, "ident": 1, "desc": "Sanitary Manhole"},
-									 {"id": 10, "name": "Sanitary Lines", "vis": 0, "ident": 1, "desc": "Sanitary Lines"},
-									 {"id": 11, "name": "Hydrants", "vis": 1, "ident": 1, "desc": "Hydrants"}]},
-								  {"name": "Political/Jurisdiction", "id": "planning_cad", "layers":
-									[{"id": 3, "name": "NJMC District", "vis": 1, "ident": 0, "desc": "NJMC District"},
-									 {"id": 4, "name": "Municipal Boundaries", "vis": 1, "ident": 0, "desc": "Municipal Boundaries"},
-									 {"id": 20, "name": "Block Limit", "vis": 1, "ident": 0, "desc": "Block Limit"},
-									 {"id": 21, "name": "Parcel Lines", "vis": 1, "ident": 0, "desc": "Parcel Lines"},
-									 {"id": 26, "name": "Buildings", "vis": 1, "ident": 1, "desc": "Buildings"},
-									 {"id": 31, "name": "Land Use", "vis": 0, "ident": 1, "desc": "Land Use"},
-									 {"id": 32, "name": "Zoning", "vis": 0, "ident": 1, "desc": "Zoning"},
-									 {"id": 22, "name": "Encumbrance/Easements", "vis": 0, "ident": 1, "desc": "Encumbrance/Easements"},
-									 {"id": 30, "name": "Census Blocks 2010", "vis": 0, "ident": 0, "desc": "Census Blocks 2010"},
-									 {"id" : 29, "name": "Voting Districts 2010", "vis": 0, "ident": 1, "desc": "Voting Districts 2010"}]},
-								  {"name": "Topographic & Planimetrics", "id": "topo_plan", "layers":
-									[{"id": 0, "name": "Spot Elevations", "vis": 0, "ident": 1, "desc": "Spot Elevations"},
-									 {"id": 15, "name": "Fence Lines", "vis": 0, "ident": 1, "desc": "Fence Lines"},
-									 {"id": 16, "name": "Contour Lines", "vis": 0, "ident": 1, "desc": "Contour Lines"}]},
-								  {"name": "Transportation", "id": "trans", "layers":
-									[{"id": 12, "name": "DOT Roads", "vis": 1, "ident": 1, "desc": "DOT Roads"},
-									 {"id": 19, "name": "Bridges - Overpass", "vis": 1, "ident": 0, "desc": "Bridges - Overpass"},
-									 {"id": 17, "name": "Rails", "vis": 1, "ident": 1, "desc": "Rails"},
-									 {"id": 18, "name": "Roads ROW", "vis": 1, "ident": 1, "desc": "Roads ROW"}]}],
+			mapLayersJSON = f_getLayerInfo(),
 			map_layers_flooding_json = {"title": "Flooding Scenarios",
 												 "title_tgf": "Predicted Flooding in absence of tidegates",
 												 "title_surge": "Storm Surge",
@@ -1667,6 +1702,7 @@ function f_layer_list_build() {
 																	{"group": 6, "lyr": 3, "vis": 0},
 																	{"group": 5, "lyr": 4, "vis": 0},
 																	{"group": 4, "lyr": 5, "vis": 0}]};
+		console.log(mapLayersJSON);
 		array.forEach(mapLayersJSON, function (group) {
 			domConstruct.create("li", {"class": "layer_group_title", "innerHTML": group.name + ":"}, "dropdown1");
 			array.forEach(group.layers, function (layer) {
@@ -1679,7 +1715,7 @@ function f_layer_list_build() {
 				if (layer.ident || (layer.id === 30)) {
 					IP_Identify_Layers.push(layer.id);
 				}
-				domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", innerHTML: layer.name}, e_li);
+				domConstruct.create("label", {"for": "m_layer_" + layer.id, "class": "toc_layer_label", innerHTML: layer.name.toLowerCase()}, e_li);
 			});
 		});
 		e_sel_flood = domConstruct.create("select", {"onChange": "f_layer_list_flood_update(this);f_legend_toggle();", "class": "select_option"}, e_li_0);
