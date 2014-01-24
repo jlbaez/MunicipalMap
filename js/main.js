@@ -1269,43 +1269,63 @@ function f_map_identify_exec(click_evt) {
 			index1,
 			index2,
 			next_arrow = document.getElementsByClassName("titleButton arrow")[0],
-			identify_fields_json2 = [],
-			identify_fields_json = {14: ["FIRM_PAN"],
-											25: ["TMAPNUM", "STATUS "],
-											27: ["FLD_ZONE", "FLOODWAY", "STATIC_BFE", "SFHA_TF"],
-											28: ["LABEL07", "TYPE07", "ACRES", "LU07"],
-											1: ["MUNICIPALITY", "TIDEGATE_NAME", "GPSPOINT_TYPE", "ELEVATION", "DATE_OBS", "TYPE_OF_TIDE_GATE", "TYPE_OF_GATE", "FUNCTIONALITY", "MAINTENANCEREQUIRED"],
-											13: ["TYPE"],
-											23: ["TYPE"],
-											5: ["FacilityID", "Municipality", "MaintainedBy", "CBType", "ReceivingWater"],
-											6: ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"],
-											7: ["FacilityID", "Municipality", "MaintainedBy", "Diameter", "ReceivingWater"],
-											8: ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"],
-											9: ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"],
-											10: ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"],
-											11: ["ID", "STREET", "LOCATION1", "LOCATION2", "ACCESS_", "PIPE_DIAMETER", "PIPEDIAMETER_VALUE"],
-											26: ["BID", "FACILITY_NAME", "BUILDING_LOCATION", "TOTALBLDG_SF"],
-											31: ["LandUse_Code"],
-											32: ["Zone_Code"],
-											22: ["ENCUMBRANCETYPE", "ENCUMBRANCEOWNER", "ENCUMBRANCEDESCRIPTION"],
-											29: ["NAME10"],
-											30: ["TRACTCE10", "BLOCKCE10", "POPULATION"],
-											0: ["ELEVATION"],
-											15: ["Elevation", "Type"],
-											16: ["ELEVATION"],
-											12: ["SLD_NAME"],
-											17: ["Elevation", "Type"],
-											18: ["Elevation", "Type"],
-											33: ["UNIT"]};
+			identify_fields_json = {};
 		for (index1 = 0; index1 < layers_json.length; index1 +=1) {
 			for	(index2 = 0; index2 < layers_json[index1].layers.length; index2 +=1) {
-				console.log(layers_json[index1].layers[index2].name.toLowerCase());
-				if (layers_json[index1].layers[index2].name.toLowerCase() === "spot elevation") {
-					identify_fields_json2[layers_json[index1].layers[index2].id] = ["ELEVATION"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "fema panel") {
-					console.log("here");
-					identify_fields_json2[layers_json[index1].layers[index2].id] = ["FIRM_PAN"];
-//					identify_fields_json2.splice(layers_json[index1].layers[index2].id, 1, ["FIRM_PAN"]);
+				if (layers_json[index1].layers[index2].name.toLowerCase() === "fema panel") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["FIRM_PAN"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "riparian claim (njdep)") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["TMAPNUM", "STATUS "];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "fema (100-yr flood)") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["FLD_ZONE", "FLOODWAY", "STATIC_BFE", "SFHA_TF"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "wetlands (dep)") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["LABEL07", "TYPE07", "ACRES", "LU07"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "seismic soil class") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["UNIT"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "tidegates") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["MUNICIPALITY", "TIDEGATE_NAME", "GPSPOINT_TYPE", "ELEVATION", "DATE_OBS", "TYPE_OF_TIDE_GATE", "TYPE_OF_GATE", "FUNCTIONALITY", "MAINTENANCEREQUIRED"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "drainage") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["TYPE"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "hydro lines/ wetland edge") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["TYPE"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "stormwater catchbasin") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "CBType", "ReceivingWater"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "stormwater manhole") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "stormwater outfall") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Diameter", "ReceivingWater"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "stormwater line") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "sanitary manhole") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "sanitary lines") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "hydrants") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["ID", "STREET", "LOCATION1", "LOCATION2", "ACCESS_", "PIPE_DIAMETER", "PIPEDIAMETER_VALUE"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "encumberance") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["ENCUMBRANCETYPE", "ENCUMBRANCEOWNER", "ENCUMBRANCEDESCRIPTION"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "buildings") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["BID", "FACILITY_NAME", "BUILDING_LOCATION", "TOTALBLDG_SF"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "voting districts 2010") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["NAME10"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "census block 2010") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["TRACTCE10", "BLOCKCE10", "POPULATION"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "land use") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["LandUse_Code"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "zoning") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["Zone_Code"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "spot elevations") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["ELEVATION"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "fence line") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["Elevation", "Type"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "contour lines") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["ELEVATION"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "dot roads") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["SLD_NAME"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "rails") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["Elevation", "Type"];
+				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "roads row") {
+					identify_fields_json[layers_json[index1].layers[index2].id] = ["Elevation", "Type"];
 				}
 			}	
 		}
@@ -1321,7 +1341,7 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.mapExtent = M_meri.extent;
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
-		console.log(identify_fields_json2);
+		console.log(identify_fields_json);
 		console.log(identify_fields_json);
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
 			var e_table = document.createElement("table"),
