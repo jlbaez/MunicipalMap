@@ -139,6 +139,7 @@ nav a:hover
 {
 	display:block;
 	width: 100%;
+	text-transform: capitalize;
 }
 .ResultList 
 {

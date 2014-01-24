@@ -455,6 +455,7 @@ secondary:hover, secondary:focus, .secondary:hover, .secondary:focus
 {
 	display:block;
 	width: 100%;
+	text-transform: capitalize;
 }
 @media only screen
 {
@@ -569,6 +570,10 @@ button, .button
 .esriPopup .maximize
 {
 	display: none;
+}
+.select_option
+{
+	text-transform: capitalize;
 }
 /* ==========================================================================
    Media Queries
