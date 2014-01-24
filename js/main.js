@@ -2398,15 +2398,15 @@ function f_startup() {
 			f_search_landuse_build();
 			legendLayers.push({layer: LD_button, title: "Map Layers", hideLayers: [2, 12, 18]});
 			legendLayers.push({layer: LD_flooding, title: "Flooding Layers"});
-			//turns off building layer when ERIS is loaded
-			if (typeof f_startup_eris === 'function') {
-				document.getElementById("m_layer_26").checked = false;
-			}
 			legendDigit = new Legend({
 				map: M_meri,
 				layerInfos: legendLayers
 			}, "legend_li");
 			legendDigit.startup();
+			//turns off building layer when ERIS is loaded
+			if (typeof f_startup_eris === 'function') {
+				document.getElementById("m_layer_26").checked = false;
+			}
 		});
 	});
 }

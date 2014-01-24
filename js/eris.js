@@ -14,23 +14,27 @@ function f_get_ERIS_Layers() {
 	json.push({
 		layers: [],
 		tables: [],
+		ident: ""
 	});
 	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/?f=json&pretty=true", false);
 	xmlhttp.send();
 	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 		data = JSON.parse(xmlhttp.responseText);
 		for (index = 0; index < data.layers.length; index += 1) {
-				json[0].layers.push({
-					id: data.layers[index].id,
-					name: data.layers[index].name,
-					vis: data.layers[index].defaultVisibility
-				});
+			json[0].layers.push({
+				id: data.layers[index].id,
+				name: data.layers[index].name,
+				vis: data.layers[index].defaultVisibility
+			});
+			if (data.layers[index].name.toLowerCase() === "building rtk") {
+				json[0].ident = data.layers[index].id;
+			}
 		}
 		for (index = 0; index < data.tables.length; index += 1) {
-				json[0].tables.push({
-					id: data.tables[index].id,
-					name: data.tables[index].name,
-				});
+			json[0].tables.push({
+				id: data.tables[index].id,
+				name: data.tables[index].name,
+			});
 		}
 		return json;
 	}
@@ -169,9 +173,9 @@ function f_ERIS_selection_exec(map_event) {
 	"use strict";
 	document.getElementById("map_container").style.cursor = "progress";
 	require(["esri/tasks/query", "esri/tasks/QueryTask", "esri/tasks/RelationshipQuery"], function (Query, QueryTask, RelationshipQuery) {
-		var QT_ERIS_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/3"),
-			QT_ERIS_BIDtoINTERMEDIATE = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/6"),
-			QT_Q_RTK_IDS = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/6"),
+		var QT_ERIS_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers[0].ident),
+			QT_ERIS_BIDtoINTERMEDIATE = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers[0].tables[ERIS_layers[0].tables.length - 1].id),
+			QT_Q_RTK_IDS = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers[0].tables[ERIS_layers[0].tables.length - 1].id),
 			Q_ERIS_selection = new Query(),
 			Q_ERIS_BIDtoINTERMEDIATE = new Query(),
 			Q_RTK_IDS = new RelationshipQuery(),
@@ -187,7 +191,6 @@ function f_ERIS_selection_exec(map_event) {
 		QT_ERIS_selection.execute(Q_ERIS_selection, function (results) {
 			var bid = results.features[0].attributes.BID;
 			Q_ERIS_BIDtoINTERMEDIATE.text = bid;
-			console.log(Q_ERIS_BIDtoINTERMEDIATE);
 			QT_ERIS_BIDtoINTERMEDIATE.executeForIds(Q_ERIS_BIDtoINTERMEDIATE, function (results) {
 				if (results) {
 					var ERIS_LINK = 'http://apps.njmeadowlands.gov/ERIS/?b=' + bid + '&a=planning';
@@ -244,20 +247,7 @@ function f_ERIS_list_update(checkbox) {
 	if (LD_visible.length === 0) {
 			LD_visible.push(-1);
 	}
-	/*require(["dojo/query"], function (query) {
-		var inputs = query(".ERIS_layer"),
-			ERIS_visible = [];
-		require(["dojo/_base/array"], function (array) {
-			array.forEach(inputs, function (input) {
-				if (input.checked) {
-					ERIS_visible.push(input.id.replace("ERIS_layer_", ""));
-				}
-			});
-		});
-		if (ERIS_visible.length === 0) {
-			ERIS_visible.push(-1);
-		}*/
-		M_meri.getLayer("ERIS_base").setVisibleLayers(LD_visible);
+	M_meri.getLayer("ERIS_base").setVisibleLayers(LD_visible);
 }
 function f_add_ERIS_layer_update(e_chk) {
 	e_chk.addEventListener("change", function(e) {
