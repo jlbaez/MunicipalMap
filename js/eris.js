@@ -42,13 +42,13 @@ function f_get_ERIS_Layers() {
 ERIS_layers = f_get_ERIS_Layers();
 function f_load_ERIS_tools() {
 	"use strict";
-	require(["dojo/on", "esri/toolbars/navigation", "dojo/domReady!"], function (on, Navigation) {
-		on(document.getElementById("ERIS"), "click", function () {
+	require(["esri/toolbars/navigation", "dojo/domReady!"], function (Navigation) {
+		document.getElementById("ERIS").addEventListener("click", function () {
 			navToolbar.activate(Navigation.PAN);
 			tool_selected = 'ERIS_Identify';
 			f_button_clicked("ERIS");
 		});
-		on(document.getElementById("form_logoff"), "submit", function () {
+		document.getElementById("form_logoff").addEventListener("submit", function () {
 				sessionStorage.clear();
 				document.cookie = "NJMC_MERI_ERIS" + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain=.njmeadowlands.gov';
 				document.cookie = "NJMC_MERI_ERIS" + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain=localhost';
@@ -81,7 +81,6 @@ function f_urlExists(url) {
 }
 function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 	"use strict";
-	require(["dojo/dom-construct"], function (domConstruct) {
 		var	ONCE_FLDS_RTK = ["FACILITY_NAME", "PHYSICAL_ADDRESS", "PHYSICAL_CITY", "PHYSICAL_ZIP", "COMPANY_CONTACT", "CONTACT_PHONE", "OFFICIAL_CONTACT", "OFFICIAL_PHONE", "EMERGENCY_CONTACT", "EMERGENCY_PHONE"],
 			MAIN_RTK = ["CAS_NUMBER", "LOCATION"],
 			featureAttributes,
@@ -96,15 +95,29 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			exclude = [],
 			att,
 			featureSet,
-			el_popup_content = domConstruct.create("div", {"class": "esriViewPopup"}),
-			el_popup_view = domConstruct.create("div", {"class": "mainSection"}, el_popup_content),
-			e_table = domConstruct.create("table", {"class": "attrTable ident_table", "cellspacing": "0px", "cellpadding": "0px"}, el_popup_view),
-			e_tr,
-			e_tbody = domConstruct.create("tbody", null, e_table),
+			el_popup_content = document.createElement("div"),
+			el_popup_view = document.createElement("div"),
+			e_table = document.createElement("table"),
+			e_tr = document.createElement("tr"),
+			e_tbody = document.createElement("tbody"),
+			e_td = document.createElement("td"),
 			next_arrow = document.getElementsByClassName("titleButton arrow")[0],
-			aliases = f_getAliases();
-		e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
-		domConstruct.create("td", {"class": "attrValue", "innerHTML": '<a href="' + ERIS_LINK + '" target="_blank">View Building Info</a>'}, e_tr);
+			aliases = f_getAliases(),
+			e_tr2,
+			e_tr3;
+		el_popup_content.className = "esriViewPopup";
+		el_popup_view.className = "mainSection";
+		el_popup_content.appendChild(el_popup_view);
+		e_table.className = "attrTable ident_table";
+		e_table.cellSpacing = "0";
+		e_table.cellPadding = "0";
+		el_popup_view.appendChild(e_table);
+		e_table.appendChild(e_tbody);
+		e_tr.style.verticalAlign = "top";
+		e_tbody.appendChild(e_tr);
+		e_td.className = "attrValue";
+		e_td.innerHTML = '<a href="' + ERIS_LINK + '" target="_blank">View Building Info</a>';
+		e_tr.appendChild(e_td);
 		for (featureSet in featureSets) {
 			if (featureSets.hasOwnProperty(featureSet)) {
 				substance_no = [];
@@ -121,10 +134,12 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 								substance_no.push({"SUBSTANCE_NO": featureAttributes[att]});
 							}
 							if (inArray(ONCE_FLDS_RTK, att) && featureAttributes[att] !== null && !inArray(exclude, att)) {
-								e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
+								e_tr2 = document.createElement("tr");
+								e_tr2.style.verticalAlign = "top";
+								e_tbody.appendChild(e_tr2);
 								exclude.push(att);
-								domConstruct.create("td", {"class": "attrName", "innerHTML": aliases.fieldNames[att] + ":"}, e_tr);
-								domConstruct.create("td", {"class": "attrValue", "innerHTML": featureAttributes[att]}, e_tr);
+								e_tr2.innerHTML = '<td class="attrName">' + aliases.fieldNames[att] + ':</td>';
+								e_tr2.innerHTML += '<td class="attrValue">' + featureAttributes[att] + '</td>';
 							}
 							if (!inArray(ONCE_FLDS_RTK, att)) {
 								if (inArray(MAIN_RTK, att)) {
@@ -135,24 +150,28 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 					}
 				}
 				for (index = 0; index < substance_name.length; index += 1) {
-					e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
+					e_tr2 = document.createElement("tr");
+					e_tr2.style.verticalAlign = "top";
+					e_tbody.appendChild(e_tr2);
 					if (f_urlExists('http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
-						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
-					} else {
-						domConstruct.create("td", {"class": "attrName", "innerHTML": '<a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>'}, e_tr);
+						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>';
+						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>';
 					}
 					for (index2 = old_index; index2 < old_index + 1; index2 += 2) {
 						if (record_main[index2] !== "") {
-							e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
-							domConstruct.create("td", {"class": "attrName", "innerHTML": 'CAS Number:'}, e_tr);
-							domConstruct.create("td", {"class": "attrValue", "innerHTML": record_main[index2]}, e_tr);
+							e_tr3 = document.createElement("tr");
+							e_tr3.style.verticalAlign = "top";
+							e_tbody.appendChild(e_tr3);
+							e_tr3.innerHTML = '<td class="attrName">CAS Number:</td>';
+							e_tr3.innerHTML += '<td class="attrValue">' + record_main[index2] + '</td>';
 						}
 						if (record_main[index2 + 1] !== "") {
-							e_tr = domConstruct.create("tr", {"valign": "top"}, e_tbody);
-							domConstruct.create("td", {"class": "attrName", "innerHTML": 'Location:'}, e_tr);
-							domConstruct.create("td", {"class": "attrValue", "innerHTML": record_main[index2 + 1]}, e_tr);
+							e_tr3 = document.createElement("tr");
+							e_tr3.style.verticalAlign = "top";
+							e_tbody.appendChild(e_tr3);
+							e_tr3.innerHTML += '<td class="attrName">Location:</td>';
+							e_tr3.innerHTML += '<td class="attrValue">' + record_main[index2 + 1] + '</td>';
 						}
-						
 					}
 					old_index = index2;
 				}
@@ -167,7 +186,6 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
 			document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 		}
-	});
 }
 function f_ERIS_selection_exec(map_event) {
 	"use strict";
