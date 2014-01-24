@@ -1,10 +1,41 @@
-/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location, alert, f_getAliases, formatResult, M_meri, DynamicLayerHost, tool_selected: true, f_parcel_selection_exec, f_map_identify_exec, navToolbar, f_button_clicked, f_li_highlight, f_deviceCheck, Navigation, legendLayers, f_legend_toggle*/
+/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location, alert, f_getAliases, formatResult, M_meri, DynamicLayerHost, tool_selected: true, f_parcel_selection_exec, f_map_identify_exec, navToolbar, f_button_clicked, f_deviceCheck, Navigation, legendLayers, legendDigit*/
 //==========================================
 // Title:  Municipal Map ERIS V.3
 // Author: Jose Baez
 // Date:   11 Nov 2013
 //=========================================
-var ERIS = true;
+var ERIS = true,
+	ERIS_layers;
+function f_get_ERIS_Layers() {
+	var xmlhttp = new XMLHttpRequest(),
+		data,
+		index,
+		json = [];
+	json.push({
+		layers: [],
+		tables: [],
+	});
+	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/?f=json&pretty=true", false);
+	xmlhttp.send();
+	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+		data = JSON.parse(xmlhttp.responseText);
+		for (index = 0; index < data.layers.length; index += 1) {
+				json[0].layers.push({
+					id: data.layers[index].id,
+					name: data.layers[index].name,
+					vis: data.layers[index].defaultVisibility
+				});
+		}
+		for (index = 0; index < data.tables.length; index += 1) {
+				json[0].tables.push({
+					id: data.tables[index].id,
+					name: data.tables[index].name,
+				});
+		}
+		return json;
+	}
+}
+ERIS_layers = f_get_ERIS_Layers();
 function f_load_ERIS_tools() {
 	"use strict";
 	require(["dojo/on", "esri/toolbars/navigation", "dojo/domReady!"], function (on, Navigation) {
@@ -199,9 +230,21 @@ function f_map_click_handler_ERIS(evt_click) {
 		break;
 	}
 }
-function f_ESRI_list_update() {
+function f_ERIS_list_update(checkbox) {
 	"use strict";
-	require(["dojo/query"], function (query) {
+	var LD_visible = M_meri.getLayer("ERIS_base").visibleLayers;
+	if (checkbox.checked) {
+		checkbox.parentNode.parentNode.className = "toc_layer_li li_checked";
+		LD_visible.push(parseInt(checkbox.value, 10));
+	} else {
+		checkbox.parentNode.parentNode.className = "toc_layer_li";
+		console.log(LD_visible.indexOf(parseInt(checkbox.value, 10)));
+		LD_visible.splice(LD_visible.indexOf(parseInt(checkbox.value, 10)), 1);
+	}
+	if (LD_visible.length === 0) {
+			LD_visible.push(-1);
+	}
+	/*require(["dojo/query"], function (query) {
 		var inputs = query(".ERIS_layer"),
 			ERIS_visible = [];
 		require(["dojo/_base/array"], function (array) {
@@ -213,37 +256,47 @@ function f_ESRI_list_update() {
 		});
 		if (ERIS_visible.length === 0) {
 			ERIS_visible.push(-1);
-		}
-		M_meri.getLayer("ERIS_base").setVisibleLayers(ERIS_visible);
+		}*/
+		M_meri.getLayer("ERIS_base").setVisibleLayers(LD_visible);
+}
+function f_add_ERIS_layer_update(e_chk) {
+	e_chk.addEventListener("change", function(e) {
+		f_ERIS_list_update(this);
+		legendDigit.refresh();
+		e.preventDefault();
 	});
 }
 function f_ERIS_list_build() {
 	"use strict";
-	require(["dojo/dom-construct", "dojo/dom-attr", "dojo/_base/array"], function (domConstruct, domAttr, array) {
-		domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "ERIS Layers:"}, "dropdown1");
-		var map_layers_ERIS_json = {"name": "ERIS",
-											 "id": "ERIS",
-											 "layers": [{"id": "4", "name": "Mile Markers", "vis": 1, "ident": 0, "desc": "Mile Markers"},
-															{"id": "1", "name": "KNOX Boxes", "vis": 1, "ident": 1, "desc": "KNOX Boxes"},
-															{"id": "2", "name": "Boat Launches", "vis": 1, "ident": 1, "desc": "Boat Launches"},
-															{"id": "3", "name": "Building RTK", "vis": 1, "ident": 0, "desc": "Building RTK"},
-															{"id": "0", "name": "Emergency Facilities", "vis": 1, "ident": 1, "desc": "Boat Launches"}]
-											};
-		array.forEach(map_layers_ERIS_json.layers, function (layer) {
-			var e_li = domConstruct.create("li", {"class": "toc_layer_li"}, "dropdown1", "last"),
-				e_chk = domConstruct.create("input", {"type": "checkbox", "class": "ERIS_layer_check ERIS_layer", "id": "ERIS_layer_" + layer.id}, e_li);
-			e_chk.onclick = function () {
-				f_ESRI_list_update();
-				f_legend_toggle();
-				f_li_highlight(this);
-			};
-			if (layer.vis) {
-				domAttr.set(e_chk, "checked", "checked");
-				domAttr.set(e_li, "class", "toc_layer_li li_checked");
-			}
-			domConstruct.create("label", {"for": "ERIS_layer_" + layer.id, "class": "toc_layer_label", "title": layer.descs, innerHTML: layer.name}, e_li);
-		});
-	});
+	var li = document.createElement("li"),
+		index,
+		dropdown1 = document.getElementById("dropdown1"),
+		layers_json = ERIS_layers[0].layers,
+		e_li,
+		e_chk,
+		e_la;
+	li.className = "layer_group_title";
+	li.innerHTML = "ERIS Layers:";
+	dropdown1.appendChild(li);
+	for (index = 0; index <layers_json.length; index += 1) {
+		e_li = document.createElement("li");
+		e_chk = document.createElement("input");
+		e_la = document.createElement("label");
+		e_li.className = "toc_layer_li";
+		e_chk.type = "checkbox";
+		e_chk.className = "ERIS_layer_check ERIS_layer";
+		e_chk.value = layers_json[index].id;
+		f_add_ERIS_layer_update(e_chk);
+		if (layers_json[index].vis) {
+			e_chk.checked = true;
+			e_li.className = "toc_layer_li li_checked";
+		}
+		e_la.className = "toc_layer_label";
+		e_la.innerHTML = layers_json[index].name.toLowerCase();
+		e_la.appendChild(e_chk);
+		e_li.appendChild(e_la);
+		dropdown1.appendChild(e_li);
+		}
 }
 function f_startup_eris() {
 	"use strict";

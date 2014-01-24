@@ -1341,8 +1341,6 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.mapExtent = M_meri.extent;
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
-		console.log(identify_fields_json);
-		console.log(identify_fields_json);
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
 			var e_table = document.createElement("table"),
 				e_tbody = document.createElement("tbody"),
