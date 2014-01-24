@@ -124,20 +124,20 @@ function f_getLayerInfo() {
 layers_json = f_getLayerInfo();
 function f_getFloodInfo() {
 	var index = 0,
-		json = [];
-	require(["dojo/request/xhr"], function (xhr) {
-			xhr(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer?f=json&pretty=true", {
-				handleAs: "json",
-				sync: true}).then(function (data) {
-					for(index = 1; index < data.layers.length; index += 1)
-					{
-						json.push({
-							name: data.layers[index].name.toLowerCase(),
-							id: data.layers[index].id
-						});
-					}
+		json = [],
+		xmlhttp = new XMLHttpRequest(),
+		data;
+	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer?f=json&pretty=true", false);
+	xmlhttp.send();
+	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+		data = JSON.parse(xmlhttp.responseText);
+		for(index = 1; index < data.layers.length; index += 1) {
+			json.push({
+				name: data.layers[index].name.toLowerCase(),
+				id: data.layers[index].id
 			});
-	});
+		}
+	}
 	return json;
 }
 function f_getAliases() {
@@ -512,16 +512,18 @@ function f_getPopupTemplate(graphic) {
 		qualifiers = {"MD": "In District",
 						  "OMD": "Out of District",
 						  "MD-OMD": "Borderline Parcels"},
-		attributes = graphic.attributes;
-	require(["esri/dijit/PopupTemplate", "dojo/request/xhr"], function (PopupTemplate, xhr) {
-		xhr('./php/functions.php', {
-			"method": "POST",
-			"data": {
-				"PID": graphic.attributes.PID,
-				"function": "getPhoto"
-			},
-			"sync": true
-		}).then(function (data) {
+		attributes = graphic.attributes,
+		xmlhttp = new XMLHttpRequest(),
+		data;
+	xmlhttp.open("POST", './php/functions.php', false);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send("PID=" + graphic.attributes.PID + "&function=getPhoto");
+	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+		data = xmlhttp.responseText.replace(/\r?\n/g, "");
+		console.log(data);
+	}
+	
+	require(["esri/dijit/PopupTemplate"], function (PopupTemplate) {
 			var e_parent = document.createElement("div"),
 				e_tbody = document.createElement("tbody"),
 				e_table = document.createElement("table"),
@@ -574,7 +576,6 @@ function f_getPopupTemplate(graphic) {
 				}]
 			});
 			e_parent.remove();
-		});
 	});
 	return popupTemplate;
 }
