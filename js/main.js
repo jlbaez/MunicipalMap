@@ -1867,15 +1867,31 @@ function f_add_filter_listener(filter) {
 	filter.addEventListener("change", function () {
 		var target = this.parentNode.getElementsByTagName("ul")[0];
 		require(["dojo/fx"], function (coreFx) {
-			console.log(target);
-			console.log(window.getComputedStyle(target).display);
 		if (window.getComputedStyle(target).display === "block") {
-			console.log("show");
 			coreFx.wipeOut({node: target, duration: 100}).play();
 		} else {
-			console.log("hide");
 			coreFx.wipeIn({node: target, duration: 100}).play();
 		}
+		});
+	});
+}
+function f_add_about_listener(link) {
+	link.addEventListener("click", function () {
+		var target = this.parentNode.parentNode.getElementsByClassName("about_ul"),
+			length = target.length,
+			index,
+			node,
+			target2 = this.parentNode.getElementsByTagName("ul")[0];
+		require(["dojo/fx"], function (coreFx) {
+		for(index = 0; index < length; index += 1) {
+			node = target[index];
+			if (window.getComputedStyle(node).display === "block") {
+				coreFx.wipeOut({node: node, duration: 100}).play();
+			}
+		}
+		if (window.getComputedStyle(target2).display !== "block") {
+			coreFx.wipeIn({node: target2, duration: 100}).play();
+		}		
 		});
 	});
 }
@@ -2034,9 +2050,12 @@ function e_load_tools() {
 			for(index = 0; index < length; index += 1) {
 				f_add_filter_listener(target[index]);
 			}
-			target = document.getElementByClassName("about_a");
-			console.log(target);
-			on(new Query(".about_a"), "click", function () {
+			target = document.getElementsByClassName("about_a");
+			length = target.length;
+			for(index = 0; index <length; index += 1) {
+				f_add_about_listener(target[index]);
+			}
+			/*on(new Query(".about_a"), "click", function () {
 				new Query(this).parent().siblings().children("ul").forEach(function (node) {
 					if (domStyle.get(node, "display") === "block") {
 						coreFx.wipeOut({node: node, duration: 100}).play();
@@ -2045,7 +2064,7 @@ function e_load_tools() {
 				if (domStyle.get(new Query(this).siblings("ul")[0], "display") !== "block") {
 					coreFx.wipeIn({node: new Query(this).siblings("ul")[0], duration: 100}).play();
 				}
-			});
+			});*/
 			document.getElementById("buffer_exe").addEventListener("click", function () {
 				f_multi_parcel_buffer_exec(document.getElementById("buffer_distance").value, null);
 			});
