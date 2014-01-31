@@ -1933,7 +1933,7 @@ function f_add_tab_listener(tab) {
 }
 function e_load_tools() {
 	"use strict";
-	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (on, Query, domStyle, coreFx, Navigation, xhr, domForm) {
+	require(["dojo/on", "dojo/fx", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (on, coreFx, Navigation, xhr, domForm) {
 		var header = document.getElementsByClassName("header-container")[0],
 			nav_tabs = document.getElementById("nav_tabs"),
 			buttons = document.getElementById("buttons"),
@@ -2039,10 +2039,11 @@ function e_load_tools() {
 				f_add_tab_listener(target[index]);
 			}
 			on(document.getElementById("filter"), "click", function () {
-				if (domStyle.get(new Query(this).siblings()[0], "display") === "block") {
-					coreFx.wipeOut({node: new Query(this).siblings()[0], duration: 100}).play();
+				var target2 = this.parentNode.getElementsByTagName("ul")[0];
+				if (window.getComputedStyle(target2).display === "block") {
+					coreFx.wipeOut({node: target2, duration: 100}).play();
 				} else {
-					coreFx.wipeIn({node: new Query(this).siblings()[0], duration: 100}).play();
+					coreFx.wipeIn({node: target2, duration: 100}).play();
 				}
 			});
 			target = document.getElementsByClassName("radio_filter");
@@ -2055,16 +2056,6 @@ function e_load_tools() {
 			for(index = 0; index <length; index += 1) {
 				f_add_about_listener(target[index]);
 			}
-			/*on(new Query(".about_a"), "click", function () {
-				new Query(this).parent().siblings().children("ul").forEach(function (node) {
-					if (domStyle.get(node, "display") === "block") {
-						coreFx.wipeOut({node: node, duration: 100}).play();
-					}
-				});
-				if (domStyle.get(new Query(this).siblings("ul")[0], "display") !== "block") {
-					coreFx.wipeIn({node: new Query(this).siblings("ul")[0], duration: 100}).play();
-				}
-			});*/
 			document.getElementById("buffer_exe").addEventListener("click", function () {
 				f_multi_parcel_buffer_exec(document.getElementById("buffer_distance").value, null);
 			});
