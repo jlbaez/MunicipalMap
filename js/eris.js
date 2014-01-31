@@ -285,7 +285,7 @@ function f_ERIS_list_build() {
 		e_la;
 	li.className = "layer_group_title";
 	li.innerHTML = "ERIS Layers:";
-	dropdown1.insertBefore(li, dropdown1.getElementsByTagName("layer_group_title")[0]);
+	dropdown1.appendChild(li);
 	for (index = 0; index <layers_json.length; index += 1) {
 		e_li = document.createElement("li");
 		e_chk = document.createElement("input");

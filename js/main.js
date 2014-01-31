@@ -124,20 +124,20 @@ function f_getLayerInfo() {
 layers_json = f_getLayerInfo();
 function f_getFloodInfo() {
 	var index = 0,
-		json = [],
-		xmlhttp = new XMLHttpRequest(),
-		data;
-	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer?f=json&pretty=true", false);
-	xmlhttp.send();
-	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-		data = JSON.parse(xmlhttp.responseText);
-		for(index = 1; index < data.layers.length; index += 1) {
-			json.push({
-				name: data.layers[index].name.toLowerCase(),
-				id: data.layers[index].id
+		json = [];
+	require(["dojo/request/xhr"], function (xhr) {
+			xhr(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer?f=json&pretty=true", {
+				handleAs: "json",
+				sync: true}).then(function (data) {
+					for(index = 1; index < data.layers.length; index += 1)
+					{
+						json.push({
+							name: data.layers[index].name.toLowerCase(),
+							id: data.layers[index].id
+						});
+					}
 			});
-		}
-	}
+	});
 	return json;
 }
 function f_getAliases() {
@@ -512,18 +512,16 @@ function f_getPopupTemplate(graphic) {
 		qualifiers = {"MD": "In District",
 						  "OMD": "Out of District",
 						  "MD-OMD": "Borderline Parcels"},
-		attributes = graphic.attributes,
-		xmlhttp = new XMLHttpRequest(),
-		data;
-	xmlhttp.open("POST", './php/functions.php', false);
-	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xmlhttp.send("PID=" + graphic.attributes.PID + "&function=getPhoto");
-	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-		data = xmlhttp.responseText.replace(/\r?\n/g, "");
-		console.log(data);
-	}
-	
-	require(["esri/dijit/PopupTemplate"], function (PopupTemplate) {
+		attributes = graphic.attributes;
+	require(["esri/dijit/PopupTemplate", "dojo/request/xhr"], function (PopupTemplate, xhr) {
+		xhr('./php/functions.php', {
+			"method": "POST",
+			"data": {
+				"PID": graphic.attributes.PID,
+				"function": "getPhoto"
+			},
+			"sync": true
+		}).then(function (data) {
 			var e_parent = document.createElement("div"),
 				e_tbody = document.createElement("tbody"),
 				e_table = document.createElement("table"),
@@ -576,6 +574,7 @@ function f_getPopupTemplate(graphic) {
 				}]
 			});
 			e_parent.remove();
+		});
 	});
 	return popupTemplate;
 }
@@ -1870,8 +1869,11 @@ function e_load_tools() {
 		var header = document.getElementsByClassName("header-container")[0],
 			nav_tabs = document.getElementById("nav_tabs"),
 			buttons = document.getElementById("buttons"),
-			logo = document.getElementById("logo");
-			on(document.getElementById("pull"), "click", function () {
+			logo = document.getElementById("logo"),
+			target,
+			index,
+			length;
+			document.getElementById("pull").addEventListener("click", function () {
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
 					header.style.left = "80%";
 					header.style.position = "absolute";
@@ -1890,50 +1892,50 @@ function e_load_tools() {
 					logo.style.width = "35%";
 				}
 			});
-			on(document.getElementById("zoomin"), "click", function () {
+			document.getElementById("zoomin").addEventListener("click", function () {
 				navToolbar.activate(Navigation.ZOOM_IN);
 				f_button_clicked("zoomin");
 			});
-			on(document.getElementById("zoomout"), "click", function () {
+			document.getElementById("zoomout").addEventListener("click", function () {
 				navToolbar.activate(Navigation.ZOOM_OUT);
 				f_button_clicked("zoomout");
 			});
-			on(document.getElementById("pan"), "click", function () {
+			document.getElementById("pan").addEventListener("click", function () {
 				navToolbar.activate(Navigation.PAN);
 				f_button_clicked("pan");
 			});
-			on(document.getElementById("extent"), "click", function () {
+			document.getElementById("extent").addEventListener("click", function () {
 				M_meri.centerAndZoom([-74.08456781356876, 40.78364440736023], 12);
 			});
-			on(document.getElementById("previous"), "click", function () {
+			document.getElementById("previous").addEventListener("click", function () {
 				navToolbar.zoomToPrevExtent();
 			});
-			on(document.getElementById("next"), "click", function () {
+			document.getElementById("next").addEventListener("click", function () {
 				navToolbar.zoomToNextExtent();
 			});
-			on(document.getElementById("identify"), "click", function () {
+			document.getElementById("identify").addEventListener("click", function () {
 				navToolbar.activate(Navigation.PAN);
 				tool_selected = "identify";
 				f_button_clicked("identify");
 			});
-			on(document.getElementById("parcel"), "click", function () {
+			document.getElementById("parcel").addEventListener("click", function () {
 				f_button_clicked("parcel");
 				navToolbar.activate(Navigation.PAN);
 				tool_selected = "parcel";
 			});
-			on(document.getElementById("measure"), "click", function () {
+			document.getElementById("measure").addEventListener("click", function () {
 				navToolbar.activate(Navigation.PAN);
 				tool_selected = "pan";
 				f_button_clicked("measure");
 				f_measure_map();
 			});
-			on(document.getElementById("clear"), "click", function () {
+			document.getElementById("clear").addEventListener("click", function () {
 				f_map_clear();
 			});
-			on(document.getElementById("search_property"), "submit", function () {
+			document.getElementById("search_property").addEventListener("submit", function () {
 				f_search_address(domForm.toJson("search_property"));
 			});
-			on(document.getElementById("search_owner"), "click", function () {
+			document.getElementById("search_owner").addEventListener("click", function () {
 				f_search_owner(domForm.toJson("search_owner"));
 			});
 			on(new Query(".search_toggle"), "click", function (e) {
@@ -1959,6 +1961,11 @@ function e_load_tools() {
 					document.getElementById("li_owner").style.display = "none";
 				}
 			});
+			target = document.getElementsByClassName("tab");
+			length = target.length;
+			for(index = 0; index < length; index += 1) {
+				f_add_tab_listener(target[index]);
+			}
 			on(new Query(".tab"), "click", function () {
 				domClass.toggle(new Query(this).parent()[0], "active");
 				new Query(this).parent().siblings().children("ul").forEach(function (node) {
