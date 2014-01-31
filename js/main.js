@@ -1864,6 +1864,20 @@ function e_goBack() {
 	document.getElementById("for_form").remove();
 }
 function f_add_filter_listener(filter) {
+	filter.addEventListener("change", function () {
+		var target = this.parentNode.getElementsByTagName("ul")[0];
+		require(["dojo/fx"], function (coreFx) {
+			console.log(target);
+			console.log(window.getComputedStyle(target).display);
+		if (window.getComputedStyle(target).display === "block") {
+			console.log("show");
+			coreFx.wipeOut({node: target, duration: 100}).play();
+		} else {
+			console.log("hide");
+			coreFx.wipeIn({node: target, duration: 100}).play();
+		}
+		});
+	});
 }
 function f_add_tab_listener(tab) {
 	tab.addEventListener("click", function(e) {
@@ -2017,16 +2031,11 @@ function e_load_tools() {
 			});
 			target = document.getElementsByClassName("radio_filter");
 			length = target.length;
-			for(index = 0; target < length; index += 1) {
+			for(index = 0; index < length; index += 1) {
 				f_add_filter_listener(target[index]);
 			}
-			on(new Query(".radio_filter"), "change", function () {
-				if (domStyle.get(new Query(this).siblings("ul")[0], "display") === "block") {
-					coreFx.wipeOut({node: new Query(this).siblings("ul")[0], duration: 100}).play();
-				} else {
-					coreFx.wipeIn({node: new Query(this).siblings("ul")[0], duration: 100}).play();
-				}
-			});
+			target = document.getElementByClassName("about_a");
+			console.log(target);
 			on(new Query(".about_a"), "click", function () {
 				new Query(this).parent().siblings().children("ul").forEach(function (node) {
 					if (domStyle.get(node, "display") === "block") {
