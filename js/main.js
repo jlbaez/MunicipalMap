@@ -1863,9 +1863,45 @@ function e_goBack() {
 	document.getElementById("form_submit").style.display = "block";
 	document.getElementById("for_form").remove();
 }
+function f_add_tab_listener(tab) {
+	tab.addEventListener("click", function(e) {
+		var target,
+			index,
+			length,
+			node,
+			target2;
+		target = this.parentNode;
+		if(target.className === "active") {
+			console.log("here");
+			target.removeAttribute("class");
+		} else {
+			target.className = "active";
+		}
+		target = this.parentNode.parentNode.getElementsByClassName("dropdown main");
+		target2 = this.parentNode.getElementsByTagName("ul")[0];
+		length = target.length;
+		require(["dojo/fx"], function(coreFx) {
+		for(index = 0; index <length; index += 1) {
+			node = target[index];
+			if (node !== target2) {
+				if(window.getComputedStyle(node).display === "block") {
+					node.parentNode.classList.toggle("active");
+					coreFx.wipeOut({node: node, duration: 100}).play();
+				}
+			}
+		}
+		if (window.getComputedStyle(target2).display === "block") {
+			coreFx.wipeOut({node: target2, duration: 100}).play();
+		} else {
+			coreFx.wipeIn({node: target2, duration: 100}).play();
+		}
+		});
+		e.preventDefault();
+	});
+}
 function e_load_tools() {
 	"use strict";
-	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "dojo/dom-class", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (on, Query, domStyle, coreFx, domClass, Navigation, xhr, domForm) {
+	require(["dojo/on", "dojo/query", "dojo/dom-style", "dojo/fx", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (on, Query, domStyle, coreFx, Navigation, xhr, domForm) {
 		var header = document.getElementsByClassName("header-container")[0],
 			nav_tabs = document.getElementById("nav_tabs"),
 			buttons = document.getElementById("buttons"),
@@ -1966,20 +2002,6 @@ function e_load_tools() {
 			for(index = 0; index < length; index += 1) {
 				f_add_tab_listener(target[index]);
 			}
-			on(new Query(".tab"), "click", function () {
-				domClass.toggle(new Query(this).parent()[0], "active");
-				new Query(this).parent().siblings().children("ul").forEach(function (node) {
-					if (domStyle.get(node, "display") === "block") {
-						domClass.toggle(new Query(node).parent()[0], "active");
-						coreFx.wipeOut({node: node, duration: 100}).play();
-					}
-				});
-				if (domStyle.get(new Query(this).siblings()[0], "display") === "block") {
-					coreFx.wipeOut({node: new Query(this).siblings()[0], duration: 100}).play();
-				} else {
-					coreFx.wipeIn({node: new Query(this).siblings()[0], duration: 100}).play();
-				}
-			});
 			on(document.getElementById("filter"), "click", function () {
 				if (domStyle.get(new Query(this).siblings()[0], "display") === "block") {
 					coreFx.wipeOut({node: new Query(this).siblings()[0], duration: 100}).play();
