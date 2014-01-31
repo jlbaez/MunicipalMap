@@ -1931,6 +1931,29 @@ function f_add_tab_listener(tab) {
 		e.preventDefault();
 	});
 }
+function f_base_map_toggle(sel) {
+	"use strict";
+	var base_map = sel.options[sel.selectedIndex].value;
+	if (base_map !== "") {
+		M_meri.setBasemap(base_map);
+	} else {
+		M_meri.setBasemap("satellite");
+	}
+}
+function f_image_layer_toggle(sel) {
+	"use strict";
+	var img_layer = sel.options[sel.selectedIndex].value,
+		IL_buttonmap = M_meri.getLayer("IL_buttonmap");
+	if (IL_buttonmap !== undefined) {
+		M_meri.removeLayer(IL_buttonmap);
+	}
+	if (img_layer !== "") {
+		require(["esri/layers/ArcGISImageServiceLayer"], function (ArcGISImageServiceLayer) {
+			IL_buttonmap = new ArcGISImageServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Imagery/" + img_layer + "/ImageServer", {id: "IL_buttonmap"});
+			M_meri.addLayer(IL_buttonmap, 1);
+		});
+	}
+}
 function e_load_tools() {
 	"use strict";
 	require(["dojo/on", "dojo/fx", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (on, coreFx, Navigation, xhr, domForm) {
@@ -2059,6 +2082,12 @@ function e_load_tools() {
 			document.getElementById("buffer_exe").addEventListener("click", function () {
 				f_multi_parcel_buffer_exec(document.getElementById("buffer_distance").value, null);
 			});
+			document.getElementById("basemap_overlay").addEventListener("change", function () {
+				f_base_map_toggle(this);
+			});
+			document.getElementById("image_overlay").addEventListener("change", function() {
+				f_image_layer_toggle(this);
+			});
 		if (document.getElementById("account_link") !== null) {
 			on(document.getElementById("account_link"), "click", function () {
 				document.getElementById("form_submit").style.display = "none";
@@ -2135,33 +2164,6 @@ function e_load_tools() {
 				});
 			});
 		}
-	});
-}
-function f_base_imagery_list_build() {
-	"use strict";
-	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
-		domConstruct.create("li", {"id": "image_overlay", "class": "layer_group_title", "innerHTML": "Image Overlay"}, "dropdown1");
-		var e_li = domConstruct.create("li", {"class": "image_layer_li"}, "dropdown1"),
-			e_sel = domConstruct.create("select", {"onChange": "f_image_layer_toggle(this)", "class": "select_option"}, e_li),
-			imageryLayersJSON = [{"id": "IMG_1930_BW", "title": "1930 Black and White (NJDEP)"},
-										{"id": "IMG_1958_BW", "title": "1958 Black and White (NJDEP)"},
-										{"id": "IMG_1969_BW", "title": "1969 Black and White (NJMC)"},
-										{"id": "IMG_1978_BW", "title": "1978 Black and White (NJMC)"},
-										{"id": "IMG_1985_BW", "title": "1985 Black and White (NJMC)"},
-										{"id": "IMG_1992_BW", "title": "1992 Black and White (NJMC)"},
-										{"id": "IMG_1995-97_CIR", "title": "1995-97 Color Infrared (NJDEP)"},
-										{"id": "IMG_2001_C", "title": "2001 Color (NJMC)"},
-										{"id": "IMG_2002_BW", "title": "2002 Black and White (NJMC)"},
-										{"id": "IMG_2002_C", "title": "2002 Color Infrared (NJDEP)"},
-										{"id": "IMG_2008_C", "title": "2008 Color (NJDEP)"},
-										{"id": "IMG_2009_C", "title": "2009 Color (NJMC)"},
-										{"id": "IMG_2010_C", "title": "2010 Color (Hudson County)"},
-										{"id": "IMG_2012_C", "title": "2012 Color (NJDEP)"}];
-		domConstruct.create("option", {"innerHTML": "Default", "value": ""}, e_sel);
-		array.forEach(imageryLayersJSON, function (img_lyr) {
-			domConstruct.create("option", {value: img_lyr.id, innerHTML: img_lyr.title}, e_sel);
-		});
-		domConstruct.place(e_li, "dropdown1");
 	});
 }
 function f_hide_owner_parcels(ownerid) {
@@ -2281,29 +2283,6 @@ function f_search_landuse_build() {
 			domConstruct.create("input", {type: "checkbox", "id": "chk_landuse_" + landuse.code, "class": "s_landuse_chk_item", "name": "s_landuse_chk_item", "value": landuse.code}, e_li_landuse);
 		});
 	});
-}
-function f_image_layer_toggle(sel) {
-	"use strict";
-	var img_layer = sel.options[sel.selectedIndex].value,
-		IL_buttonmap = M_meri.getLayer("IL_buttonmap");
-	if (IL_buttonmap !== undefined) {
-		M_meri.removeLayer(IL_buttonmap);
-	}
-	if (img_layer !== "") {
-		require(["esri/layers/ArcGISImageServiceLayer"], function (ArcGISImageServiceLayer) {
-			IL_buttonmap = new ArcGISImageServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Imagery/" + img_layer + "/ImageServer", {id: "IL_buttonmap"});
-			M_meri.addLayer(IL_buttonmap, 1);
-		});
-	}
-}
-function f_base_map_toggle(sel) {
-	"use strict";
-	var base_map = sel.options[sel.selectedIndex].value;
-	if (base_map !== "") {
-		M_meri.setBasemap(base_map);
-	} else {
-		M_meri.setBasemap("satellite");
-	}
 }
 function f_query_owner_int_exec(ownerid) {
 	"use strict";
@@ -2451,7 +2430,6 @@ function f_startup() {
 			checkERIS();
 		});
 		on.once(LD_button, "load", function () {
-			f_base_imagery_list_build();
 			f_layer_list_build();
 			f_search_munis_build();
 			f_search_qual_build();

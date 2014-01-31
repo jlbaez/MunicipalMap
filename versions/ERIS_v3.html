@@ -44,10 +44,10 @@
 							<li>
 								<a href="javascript:void(0);" id="layers" class="tab">Layers</a>
 								<ul id="dropdown1" class=" dropdown main dropdown1" style="display:none">
-									<li class="layer_title">Basemap Imagery</li>
+									<li class="layer_title">Map Layers</li>
 									<li class="layer_group_title">BaseMap:</li>
 									<li>
-										<select class="image_layer_div select_option" onchange="f_base_map_toggle(this)">
+										<select class="image_layer_div select_option" id="basemap_overlay">
 											<option value="satellite">Default</option>
 											<option value="streets">Streets</option>
 											<option value="hybrid">Hybrid</option>
@@ -57,6 +57,26 @@
 											<option value="osm">Osm</option>
 										</select>
 									</li>
+									<li class="layer_group_title">Image Overlay</li>
+									<li class="image_layer_li">
+										<select id="image_overlay" class="select_option">
+											<option value="">Default</option>
+											<option value="IMG_1930_BW">1930 Black and White (NJDEP)</option>
+											<option value="IMG_1958_BW">1958 Black and White (NJDEP)</option>
+											<option value="IMG_1969_BW">1969 Black and White (NJMC)</option>
+											<option value="IMG_1978_BW">1978 Black and White (NJMC)</option>
+											<option value="IMG_1985_BW">1985 Black and White (NJMC)</option>
+											<option value="IMG_1992_BW">1992 Black and White (NJMC)</option>
+											<option value="IMG_1995-97_CIR">1995-97 Color Infrared (NJDEP)</option>
+											<option value="IMG_2001_C">2001 Color (NJMC)</option>
+											<option value="IMG_2002_BW">2002 Black and White (NJMC)</option>
+											<option value="IMG_2002_C">2002 Color Infrared (NJDEP)</option>
+											<option value="IMG_2008_C">2008 Color (NJDEP)</option>
+											<option value="IMG_2009_C">2009 Color (NJMC)</option>
+											<option value="IMG_2010_C">2010 Color (Hudson County)</option>
+											<option value="IMG_2012_C">2012 Color (NJDEP)</option>
+										</select>
+									</li>										
 								</ul>
 								<ul id="dropdown0" style="display:none">
 									<li>
