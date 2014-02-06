@@ -756,22 +756,40 @@ function f_result_detail(target_el, pid) {
 }
 function f_search_add_selections(graphics) {
 	"use strict";
-	var feature_div = "selParcel_";
+	var feature_div = "selParcel_",
+		dropdown3 = document.getElementById("dropdown3"),
+		index,
+		length = graphics.length,
+		graphic,
+		featureAttributes,
+		el_featureAttribs,
+		output,
+		el_parcel,
+		el_viewMoreToggle,
+		attr;
 	require(["dojo/_base/array", "dojo/dom-construct"], function (array, domConstruct) {
-		array.forEach(graphics, function (graphic) {
-			if (document.getElementById("parcelinfo_" + graphic.attributes.PID) === null) {
-				var featureAttributes = graphic.attributes,
-					el_featureAttribs = domConstruct.create("li", {"class": "search_parcel_container", "id": "parcelinfo_" + featureAttributes.PID}, "dropdown3"),
-					output = domConstruct.create("ul", {"class": "ResultList SelectionResult", "id": "parcelinfo_ul_added_" + featureAttributes.PID}, el_featureAttribs),
-					el_parcel,
-					el_viewMoreToggle,
-					attr;
-				for (attr in featureAttributes) {
-					if (featureAttributes.hasOwnProperty(attr)) {
-						output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
-					}
+	for(index = 0; index < length; index += 1) {
+		graphic = graphics[index];
+		if (document.getElementById("parcelinfo_" + graphic.attributes.PID) === null) {
+			featureAttributes = graphic.attributes;
+			el_featureAttribs = document.createElement("li");
+			el_featureAttribs.className = "search_parcel_container";
+			el_featureAttribs.id = "parcelinfo_" + featureAttributes.PID;
+			output = document.createElement("ul");
+			output.className = "ResultList SelectionResult";
+			output.id = "parcelinfo_ul_added_" + featureAttributes.PID;
+			el_featureAttribs.appendChild(output);
+			dropdown3.appendChild(el_featureAttribs);
+			console.log(featureAttributes);
+			for (attr in featureAttributes) {
+				if (featureAttributes.hasOwnProperty(attr)) {
+					output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
 				}
-				el_parcel = domConstruct.create("li", {"id": feature_div + featureAttributes.PID, "class": "dParcelItem"}, output, "first");
+			}
+			el_parcel = document.createElement("li");
+			el_parcel.id = feature_div + featureAttributes.PID;
+			el_parcel.className = "dParcelItem";
+			output.appendChild(el_parcel);
 				domConstruct.create("a", {"href": "./print/parcel_info.html" + featureAttributes.PID, "target": "_blank", "innerHTML": "Print", "class": "search_a feature_tool"}, el_parcel);
 				el_viewMoreToggle = domConstruct.create("li",
 																	 {"class": "lSummaryToggle"},
@@ -786,7 +804,7 @@ function f_search_add_selections(graphics) {
 					  el_parcel);
 				});
 			}
-		});
+		}
 	});
 }
 function f_process_results_buffer(results) {
@@ -1778,7 +1796,6 @@ function f_search_address(json) {
 		search_progress = document.getElementById("search_progress");
 	search_progress.style.display = "block";
 	search_progress.value = "0";
-	console.log(search);
 	require(["esri/tasks/locator"], function (Locator) {
 		if (isNaN(search.address.split(" ", 1)) || search.address === "") {
 			search_progress.value = ".25";
