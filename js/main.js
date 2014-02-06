@@ -1904,7 +1904,6 @@ function f_add_tab_listener(tab) {
 			target2;
 		target = this.parentNode;
 		if(target.className === "active") {
-			console.log("here");
 			target.removeAttribute("class");
 		} else {
 			target.className = "active";
@@ -2199,43 +2198,76 @@ function f_layer_flood_update(sel) {
 		M_meri.getLayer("LD_flooding").setVisibleLayers([feet]);
 	}
 }
+function f_add_layer_handler(chk) {
+	chk.addEventListener("change", function () {
+		f_layer_list_update(this);
+		legendDigit.refresh();
+	});
+}
 function f_layer_list_build() {
 	"use strict";
-	require(["dojo/dom-construct", "dojo/dom-attr", "dojo/_base/array"], function (domConstruct, domAttr, array) {
-		domConstruct.create("li", {"class": "layer_group_title", "innerHTML": "Flooding Scenario:"}, "dropdown1");
-		var e_li_0 = domConstruct.create("li", null, "dropdown1"),
-			e_sel_flood,
-			mapLayersJSON = layers_json,
-			map_layers_flooding_json = f_getFloodInfo();
-		array.forEach(mapLayersJSON, function (group) {
-			domConstruct.create("li", {"class": "layer_group_title", "innerHTML": group.name + ":"}, "dropdown1");
-			array.forEach(group.layers, function (layer) {
-				var e_li = domConstruct.create("li", {"class": "toc_layer_li"}, "dropdown1", "last"),
-					e_label =domConstruct.create("label", {"class": "toc_layer_label", innerHTML: layer.name.toLowerCase()}, e_li),
-					e_chk = domConstruct.create("input", {"type": "checkbox", "class": "toc_layer_check", "value": layer.id}, e_label);
-				e_chk.addEventListener("click", function () {
-					f_layer_list_update(this);
-					legendDigit.refresh();
-				});
-				if (layer.vis) {
-					domAttr.set(e_chk, "checked", true);
-					domAttr.set(e_li, "class", "toc_layer_li li_checked");
-				}
-				if (layer.ident || (layer.id === 30)) {
-					IP_Identify_Layers.push(layer.id);
-				}
-			});
-		});
-		e_sel_flood = domConstruct.create("select", {"class": "select_option"}, e_li_0);
-		e_sel_flood.addEventListener("change", function () {
-			f_layer_flood_update(this);
-			legendDigit.refresh();
-		});
-		domConstruct.create("option", {"value": 0, "innerHTML": "No tidal surge"}, e_sel_flood);
-		array.forEach(map_layers_flooding_json, function (scenario) {
-			domConstruct.create("option", {"value": scenario.id, "innerHTML": scenario.name}, e_sel_flood);
-		});
+	var dropdown1 = document.getElementById("dropdown1"),
+		e_li_0 = document.createElement("li"),
+		e_sel_flood,
+		mapLayersJSON = layers_json,
+		map_layers_flooding_json = f_getFloodInfo(),
+		e_li,
+		e_label,
+		e_chk,
+		e_title,
+		index1,
+		index2,
+		length1,
+		length2,
+		scenario,
+		group,
+		layer;
+	dropdown1.appendChild(e_li_0);
+	e_sel_flood = document.createElement("select");
+	e_sel_flood.className = "select_option";
+	e_li_0.appendChild(e_sel_flood);
+	e_sel_flood.addEventListener("change", function () {
+		f_layer_flood_update(this);
+		legendDigit.refresh();
 	});
+	e_sel_flood.innerHTML = '<option value="0">No tidal surge</option>';
+	length1 = map_layers_flooding_json.length;
+	for(index1 = 0; index1 < length1; index1 += 1) {
+	scenario = map_layers_flooding_json[index1];
+		e_sel_flood.innerHTML += '<option value="' + scenario.id + '">' + scenario.name + '</option>';
+	}
+	length1 = mapLayersJSON.length;
+	for(index1 = 0; index1 < length1; index1 += 1) {
+		group = mapLayersJSON[index1];
+		e_title = document.createElement("li");
+		e_title.innerHTML = group.name;
+		e_title.className = "layer_group_title";
+		dropdown1.appendChild(e_title);
+		length2 = group.layers.length;
+		for(index2 = 0; index2 < length2; index2 += 1) {
+			layer = group.layers[index2];
+			e_li = document.createElement("li");
+			e_li.className = "toc_layer_li";
+			dropdown1.appendChild(e_li);
+			e_label = document.createElement("label");
+			e_label.className =  "toc_layer_label";
+			e_label.innerHTML = layer.name.toLowerCase();
+			e_li.appendChild(e_label);
+			e_chk = document.createElement("input");
+			e_chk.type = "checkbox";
+			e_chk.className =  "toc_layer_check";
+			e_chk.value = layer.id;
+			e_label.appendChild(e_chk);
+			f_add_layer_handler(e_chk);
+			if (layer.vis) {
+				e_chk.checked = true;
+				e_li.className = "toc_layer_li li_checked";
+			}
+			if (layer.ident || (layer.id === 30)) {
+				IP_Identify_Layers.push(layer.id);
+			}
+		}
+	}
 }
 function f_search_munis_build() {
 	"use strict";
