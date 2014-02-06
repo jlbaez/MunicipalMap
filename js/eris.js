@@ -304,18 +304,15 @@ function f_ERIS_list_build() {
 		e_la.appendChild(e_chk);
 		e_li.appendChild(e_la);
 		dropdown1.appendChild(e_li);
-		}
+	}
 }
 function f_startup_eris() {
 	"use strict";
 	document.getElementById("useraccount").innerHTML = sessionStorage.username;
-	require(["esri/layers/ArcGISDynamicMapServiceLayer", "dojo/on", "dojo/domReady!"], function (ArcGISDynamicMapServiceLayer, on) {
+	require(["esri/layers/ArcGISDynamicMapServiceLayer", "dojo/domReady!"], function (ArcGISDynamicMapServiceLayer) {
 		var ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1, id: "ERIS_base"});
 		M_meri.addLayer(ERIS_base);
-		M_meri.getLayer("LD_button").setVisibleLayers(["1", "2", "3", "4", "11", "12", "13", "14", "17", "18", "19", "20", "21"]);
-		on.once(ERIS_base, "load", function () {
-			f_ERIS_list_build();
-		});
+		f_ERIS_list_build();
 		f_load_ERIS_tools();
 		legendLayers.push({layer: ERIS_base, title: "ERIS Layers"});
 	});

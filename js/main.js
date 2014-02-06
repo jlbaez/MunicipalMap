@@ -45,7 +45,8 @@ var DynamicLayerHost = "http://webmaps.njmeadowlands.gov",
 	legendDigit,
 	parcel_results = [],
 	legendLayers = [],
-	layers_json;
+	layers_json,
+	isERIS = false;
 function f_getLayerInfo() {
 	var json = [],
 		env = ["FEMA PANEL", "RIPARIAN CLAIM (NJDEP)", "FEMA (100-YR FLOOD)", "WETLANDS (DEP)", "SEISMIC SOIL CLASS"],
@@ -124,20 +125,21 @@ function f_getLayerInfo() {
 layers_json = f_getLayerInfo();
 function f_getFloodInfo() {
 	var index = 0,
-		json = [];
-	require(["dojo/request/xhr"], function (xhr) {
-			xhr(DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer?f=json&pretty=true", {
-				handleAs: "json",
-				sync: true}).then(function (data) {
-					for(index = 1; index < data.layers.length; index += 1)
-					{
-						json.push({
-							name: data.layers[index].name.toLowerCase(),
-							id: data.layers[index].id
-						});
-					}
+		json = [],
+		xmlhttp = new XMLHttpRequest(),
+		data;
+	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer?f=json&pretty=true", false);
+	xmlhttp.send();
+	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+		data = JSON.parse(xmlhttp.responseText);
+		for(index = 1; index < data.layers.length; index += 1)
+		{
+			json.push({
+				name: data.layers[index].name.toLowerCase(),
+				id: data.layers[index].id
 			});
-	});
+		}
+	}	
 	return json;
 }
 function f_getAliases() {
@@ -512,23 +514,22 @@ function f_getPopupTemplate(graphic) {
 		qualifiers = {"MD": "In District",
 						  "OMD": "Out of District",
 						  "MD-OMD": "Borderline Parcels"},
-		attributes = graphic.attributes;
-	require(["esri/dijit/PopupTemplate", "dojo/request/xhr"], function (PopupTemplate, xhr) {
-		xhr('./php/functions.php', {
-			"method": "POST",
-			"data": {
-				"PID": graphic.attributes.PID,
-				"function": "getPhoto"
-			},
-			"sync": true
-		}).then(function (data) {
-			var e_parent = document.createElement("div"),
-				e_tbody = document.createElement("tbody"),
-				e_table = document.createElement("table"),
-				attr,
-				e_tr,
-				e_td,
-				aliases = f_getAliases();
+		attributes = graphic.attributes,
+		xmlhttp = new XMLHttpRequest(),
+		data,
+		e_parent = document.createElement("div"),
+		e_tbody = document.createElement("tbody"),
+		e_table = document.createElement("table"),
+		attr,
+		e_tr,
+		e_td,
+		aliases = f_getAliases();
+	xmlhttp.open("POST",'./php/functions.php', false);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.send("PID=" + graphic.attributes.PID + "&function=getPhoto");
+	console.log("PID=" + graphic.attributes.PID + "&function=getPhoto");
+	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+		data = xmlhttp.responseText.trim();
 			e_table.className = "attrTable";
 			e_table.cellSpacing = "0";
 			e_table.cellPadding = "0";
@@ -560,6 +561,8 @@ function f_getPopupTemplate(graphic) {
 					}
 				}
 			}
+			console.log(data);
+		require(["esri/dijit/PopupTemplate"], function (PopupTemplate) {
 			popupTemplate = new PopupTemplate({
 				title: "{PROPERTY_ADDRESS}",
 				description: e_parent.innerHTML,
@@ -575,7 +578,7 @@ function f_getPopupTemplate(graphic) {
 			});
 			e_parent.remove();
 		});
-	});
+	}
 	return popupTemplate;
 }
 function f_export_excel(event) {
@@ -1778,6 +1781,7 @@ function f_search_address(json) {
 		search_progress = document.getElementById("search_progress");
 	search_progress.style.display = "block";
 	search_progress.value = "0";
+	console.log(search);
 	require(["esri/tasks/locator"], function (Locator) {
 		if (isNaN(search.address.split(" ", 1)) || search.address === "") {
 			search_progress.value = ".25";
@@ -2022,8 +2026,9 @@ function e_load_tools() {
 			document.getElementById("clear").addEventListener("click", function () {
 				f_map_clear();
 			});
-			document.getElementById("search_property").addEventListener("submit", function () {
+			document.getElementById("search_property").addEventListener("submit", function (e) {
 				f_search_address(domForm.toJson("search_property"));
+				e.preventDefault();
 			});
 			document.getElementById("search_owner").addEventListener("click", function () {
 				f_search_owner(domForm.toJson("search_owner"));
@@ -2236,6 +2241,9 @@ function f_layer_list_build() {
 	scenario = map_layers_flooding_json[index1];
 		e_sel_flood.innerHTML += '<option value="' + scenario.id + '">' + scenario.name + '</option>';
 	}
+	if(isERIS) {
+		f_startup_eris();
+	}
 	length1 = mapLayersJSON.length;
 	for(index1 = 0; index1 < length1; index1 += 1) {
 		group = mapLayersJSON[index1];
@@ -2268,53 +2276,6 @@ function f_layer_list_build() {
 			}
 		}
 	}
-}
-function f_search_munis_build() {
-	"use strict";
-	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
-		array.forEach(munis_json, function (muni) {
-			var e_li_muni = domConstruct.create("li", {"class": "muniCheckRow"}, "search_munis");
-			domConstruct.create("input", {type: "checkbox", "id": "chk_muni_" + muni.muncode, "name": "s_muni_chk_item", "class": "s_muni_chk_item", "value": muni.muncode}, e_li_muni);
-			domConstruct.create("label", {"for": "chk_muni_" + muni.muncode, "class": "search_muni_label", "innerHTML": " " + muni.mun}, e_li_muni);
-		});
-	});
-}
-function f_search_qual_build() {
-	"use strict";
-	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
-		array.forEach(quals_json, function (qual) {
-			var e_li_qual = domConstruct.create("li", {"class": "qualCheckRow"}, "search_qual");
-			domConstruct.create("label", {"for": "chk_qual_" + qual.id, "class": "search_qual_label", "innerHTML": " " + qual.name}, e_li_qual);
-			domConstruct.create("input", {"type": "checkbox", "id": "chk_qual_" + qual.id, "name": "s_qual_chk_item", "class": "s_qual_chk_item", "value": qual.id}, e_li_qual);
-		});
-	});
-}
-function f_search_landuse_build() {
-	"use strict";
-	var landuse_json = [{"code": "CO", "name": "Commercial Office"},
-							  {"code": "CR", "name": "Commercial Retail"},
-							  {"code": "HM", "name": "Hotels and Motels"},
-							  {"code": "IND", "name": "Industrial"},
-							  {"code": "ICC", "name": "Industrial Commercial Complex"},
-							  {"code": "PQP", "name": "Public/Quasi Public Services"},
-							  {"code": "RL", "name": "Recreational Land"},
-							  {"code": "RES", "name": "Residential"},
-							  {"code": "TRS", "name": "Transportation"},
-							  {"code": "WAT", "name": "Water"},
-							  {"code": "WET", "name": "Wetlands"},
-							  {"code": "000", "name": "Unclassified"},
-							  {"code": "CU", "name": "Communication Utility"},
-							  {"code": "MU", "name": "Multiple Uses"},
-							  {"code": "VAC", "name": "Open Lands"},
-							  {"code": "TL", "name": "Transitional Lands"}
-							 ];
-	require(["dojo/dom-construct", "dojo/_base/array"], function (domConstruct, array) {
-		array.forEach(landuse_json, function (landuse) {
-			var e_li_landuse = domConstruct.create("li", {"class": "landuseCheckRow"}, "search_landuse");
-			domConstruct.create("label", {"for": "chk_landuse_" + landuse.code, "class": "search_landuse_label", "innerHTML": " " + landuse.name}, e_li_landuse);
-			domConstruct.create("input", {type: "checkbox", "id": "chk_landuse_" + landuse.code, "class": "s_landuse_chk_item", "name": "s_landuse_chk_item", "value": landuse.code}, e_li_landuse);
-		});
-	});
 }
 function f_query_owner_int_exec(ownerid) {
 	"use strict";
@@ -2397,8 +2358,7 @@ function f_deviceCheck(version) {
 function checkERIS() {
 	"use strict";
 	if (typeof f_startup_eris === 'function') {
-		f_startup_eris();
-		legendDigit.refresh();
+		isERIS = true;
 	}
 }
 function f_startup() {
@@ -2463,9 +2423,6 @@ function f_startup() {
 		});
 		on.once(LD_button, "load", function () {
 			f_layer_list_build();
-			f_search_munis_build();
-			f_search_qual_build();
-			f_search_landuse_build();
 			legendLayers.push({layer: LD_button, title: "Map Layers", hideLayers: [2, 12, 18]});
 			legendLayers.push({layer: LD_flooding, title: "Flooding Layers"});
 			legendDigit = new Legend({
@@ -2473,10 +2430,6 @@ function f_startup() {
 				layerInfos: legendLayers
 			}, "legend_li");
 			legendDigit.startup();
-			//turns off building layer when ERIS is loaded
-			if (typeof f_startup_eris === 'function') {
-				document.getElementById("m_layer_26").checked = false;
-			}
 		});
 	});
 }

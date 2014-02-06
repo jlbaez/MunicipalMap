@@ -77,6 +77,7 @@
 											<option value="IMG_2012_C">2012 Color (NJDEP)</option>
 										</select>
 									</li>										
+									<li class="layer_group_title">Flooding Scenario</li>
 								</ul>
 								<ul id="dropdown0" style="display:none">
 									<li>
@@ -98,7 +99,7 @@
 										<a href="javascript:void(0);" id="owner_toggle" class="search_toggle">Owner</a>
 									</li>
 									<li id="li_property">
-										<form id="search_property" onsubmit="return false;">
+										<form id="search_property">
 											<label for="address">Address:</label>
 											<input type="text" id="address" class="input" name="address">
 											<label class="label_adj" for="block">Block:</label>
@@ -107,30 +108,196 @@
 											<input class="input_adj" type="text" id="lot" name="lot">
 											<ul class="filters">
 												<li class="property_li">
-													<a href="javascript:void(0);" id="filter" class="search_toggle filter">
-														Search Options & Filters (+)
-													</a>
+													<a href="javascript:void(0);" id="filter" class="search_toggle filter">Search Options & Filters (+)</a>
 													<ul class=" dropdown filters" style="display:none;">
 														<li class="li_filter">
 															<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchAll" value="no" checked="checked" />
 															<label for="rdo_muni_searchAll">All Municipalities</label>
 															<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchSelect" value="yes">
 															<label for="rdo_muni_searchSelect">Selected Municipalities</label>
-															<ul id="search_munis" class=" dropdown filters search_item" style="display:none;"></ul>
+																<ul id="search_munis" class="dropdown filters search_item" style="display:none;">
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">Carlstadt
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0205">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">East Rutherford
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0212">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label for="chk_muni_0906" class="search_muni_label">Jersey City
+																		<input type="checkbox" id="chk_muni_0906" name="s_muni_chk_item" class="s_muni_chk_item" value="0906">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label  class="search_muni_label">Kearny
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0907">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">Little Ferry
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0230">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">Lyndhurst
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0232">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">Moonachie
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0237">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">North Arlington
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0239">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label for="chk_muni_0908" class="search_muni_label">North Bergen
+																		<input type="checkbox" id="chk_muni_0908" name="s_muni_chk_item" class="s_muni_chk_item" value="0908">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">Ridgefield
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0249">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">Rutherford
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0256">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label class="search_muni_label">Secaucus
+																		<input type="checkbox" name="s_muni_chk_item" class="s_muni_chk_item" value="0909">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label for="chk_muni_0259" class="search_muni_label">South Hackensack
+																		<input type="checkbox" id="chk_muni_0259" name="s_muni_chk_item" class="s_muni_chk_item" value="0259">
+																	</label>
+																</li>
+																<li class="muniCheckRow">
+																	<label for="chk_muni_0262" class="search_muni_label">Teterboro
+																		<input type="checkbox" id="chk_muni_0262" name="s_muni_chk_item" class="s_muni_chk_item" value="0262">
+																	</label>
+																</li>
+															</ul>
 														</li>
 														<li class="li_filter">
 															<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchAll" value="no" checked="checked" />
 															<label for="rdo_qual_searchAll">All Parcels</label>
 															<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchSelect" value="yes">
 															<label for="rdo_qual_searchSelect">Designated Parcels</label>
-															<ul id="search_qual" class=" dropdown filters search_item" style="display:none;"></ul>
+															<ul id="search_qual" class="dropdown filters search_item" style="display:none;">
+																<li class="qualCheckRow">
+																	<label class="search_qual_label">In District
+																		<input type="checkbox" name="s_qual_chk_item" class="s_qual_chk_item" value="MD">
+																	</label>
+																</li>
+																<li class="qualCheckRow">
+																	<label class="search_qual_label">Out of District
+																		<input type="checkbox" name="s_qual_chk_item" class="s_qual_chk_item" value="OMD">
+																	</label>
+																</li>
+																<li class="qualCheckRow">
+																<label class="search_qual_label">Borderline Parcels
+																	<input type="checkbox" name="s_qual_chk_item" class="s_qual_chk_item" value="MD-OMD">
+																</label>
+																</li>
+															</ul>
 														</li>
 														<li class="li_filter">
 															<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchAll" value="no" checked="checked" />
 															<label for="rdo_landuse_searchAll">All Land Uses</label>
 															<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchSelect" value="yes">
 															<label for="rdo_landuse_searchSelect">Selected Land Uses</label>
-															<ul id="search_landuse" class=" dropdown filters search_item" style="display:none;"></ul>
+															<ul id="search_landuse" class="dropdown filters search_item" style="display:none;">
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Commercial Office
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="CO">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Commercial Retail
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="CR">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Hotels and Motels
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="HM">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Industrial
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="IND">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Industrial Commercial Complex
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="ICC">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Public/Quasi Public Services
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="PQP">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Recreational Land
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="RL">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Residential
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="RES">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Transportation
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="TRS">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Water
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="WAT">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																<label class="search_landuse_label">Wetlands
+																	<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="WET">
+																</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Unclassified
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="000">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Communication Utility
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="CU">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Multiple Uses
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="MU">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label">Open Lands
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="VAC">
+																	</label>
+																</li>
+																<li class="landuseCheckRow">
+																	<label class="search_landuse_label"> Transitional Lands
+																		<input type="checkbox" class="s_landuse_chk_item" name="s_landuse_chk_item" value="TL">
+																	</label>
+																</li>
+															</ul>
 														</li>
 													</ul>
 												</li>
