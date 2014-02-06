@@ -524,44 +524,41 @@ function f_getPopupTemplate(graphic) {
 		e_tr,
 		e_td,
 		aliases = f_getAliases();
+	e_table.className = "attrTable";
+	e_table.cellSpacing = "0";
+	e_table.cellPadding = "0";
+	e_parent.appendChild(e_table);
+	e_table.appendChild(e_tbody);
+	for (attr in attributes) {
+		if (attributes.hasOwnProperty(attr)) {
+			if (attributes[attr] !== null) {
+				e_tr = document.createElement("tr");
+				e_tr.style.verticalAlign = "top";
+				e_tbody.appendChild(e_tr);
+				e_td = document.createElement("td");
+				e_td.className = "attrName";
+				e_td.innerHTML = aliases.fieldNames[attr] + ":";
+				e_tr.appendChild(e_td);
+				e_td = document.createElement("td");
+				e_td.className = "attrValue";
+				if (attr === "MUN_CODE") {
+					e_td.innerHTML = aliases.munCodes[attributes[attr].substring(1, attributes[attr].length)];
+				} else if (attr === "PID") {
+					e_td.innerHTML = attributes[attr];
+				} else if (attr === "QUALIFIER") {
+					e_td.innerHTML = qualifiers[attributes[attr]];
+				} else {
+					e_td.innerHTML = attributes[attr];
+				}
+				e_tr.appendChild(e_td);
+			}
+		}
+	}
 	xmlhttp.open("POST",'./php/functions.php', false);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	xmlhttp.send("PID=" + graphic.attributes.PID + "&function=getPhoto");
-	console.log("PID=" + graphic.attributes.PID + "&function=getPhoto");
 	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 		data = xmlhttp.responseText.trim();
-			e_table.className = "attrTable";
-			e_table.cellSpacing = "0";
-			e_table.cellPadding = "0";
-			e_parent.appendChild(e_table);
-			e_table.appendChild(e_tbody);
-			for (attr in attributes) {
-				if (attributes.hasOwnProperty(attr)) {
-					if (attributes[attr] !== null) {
-						e_tr = document.createElement("tr");
-						e_tr.style.verticalAlign = "top";
-						e_tbody.appendChild(e_tr);
-						e_td = document.createElement("td");
-						e_td.className = "attrName";
-						e_td.innerHTML = aliases.fieldNames[attr] + ":";
-						e_tr.appendChild(e_td);
-						e_td = document.createElement("td");
-							e_td.className = "attrValue";
-						if (attr === "MUN_CODE") {
-							e_td.innerHTML = aliases.munCodes[attributes[attr].substring(1, attributes[attr].length)];
-						} else if (attr === "PID") {
-							e_td.innerHTML = attributes[attr];
-						} else if (attr === "QUALIFIER") {
-							e_td.innerHTML = qualifiers[attributes[attr]];
-						} else {
-							e_td.innerHTML = attributes[attr];
-						}
-						e_tr.appendChild(e_td);
-
-					}
-				}
-			}
-			console.log(data);
 		require(["esri/dijit/PopupTemplate"], function (PopupTemplate) {
 			popupTemplate = new PopupTemplate({
 				title: "{PROPERTY_ADDRESS}",
