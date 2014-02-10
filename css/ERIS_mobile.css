@@ -679,6 +679,16 @@ ul
 {
   visibility: hidden;
 }
+.animate
+{
+	transition: max-height .25s ease 0s;
+}
+.hidden
+{
+	max-height: 0;
+	padding: 0;
+	overflow: hidden;
+}
 /* ==========================================================================
    Media Queries
    ========================================================================== */

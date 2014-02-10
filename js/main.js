@@ -1948,13 +1948,14 @@ function e_goBack() {
 function f_add_filter_listener(filter) {
 	filter.addEventListener("change", function () {
 		var target = this.parentNode.getElementsByTagName("ul")[0];
-		require(["dojo/fx"], function (coreFx) {
-		if (window.getComputedStyle(target).display === "block") {
+		target.classList.toggle("hidden");
+		/*require(["dojo/fx"], function (coreFx) {
+		//if (window.getComputedStyle(target).display === "block") {
 			coreFx.wipeOut({node: target, duration: 100}).play();
 		} else {
 			coreFx.wipeIn({node: target, duration: 100}).play();
 		}
-		});
+		});*/
 	});
 }
 function f_add_about_listener(link) {
@@ -1964,17 +1965,15 @@ function f_add_about_listener(link) {
 			index,
 			node,
 			target2 = this.parentNode.getElementsByTagName("ul")[0];
-		require(["dojo/fx"], function (coreFx) {
 		for(index = 0; index < length; index += 1) {
 			node = target[index];
-			if (window.getComputedStyle(node).display === "block") {
-				coreFx.wipeOut({node: node, duration: 100}).play();
+			if (!node.classList.contains("hidden")) {
+				node.classList.add("hidden");
 			}
 		}
-		if (window.getComputedStyle(target2).display !== "block") {
-			coreFx.wipeIn({node: target2, duration: 100}).play();
+		if (target2.classList.contains("hidden")) {
+			target2.classList.remove("hidden");
 		}		
-		});
 	});
 }
 function f_add_tab_listener(tab) {
