@@ -5,6 +5,9 @@
 		<title>NJMC Parcel Map - Dynamic Map Service</title>
 		<link rel="stylesheet" type="text/css" href="../css/parcel_info.css" />
 		<script src="http://js.arcgis.com/3.6compact/"></script>
+<script>
+			var PID = <?php echo $_GET['PID']; ?>;
+		</script>
 		<script src="../js/parcel_info.js"></script>
 	</head>
 	<body>

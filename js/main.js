@@ -754,11 +754,83 @@ function f_result_detail(target_el, pid) {
 		});
 	});
 }
+function f_feature_action2(funct, target, oid) {
+	"use strict";
+	oid = parseInt(oid, 10);
+	var graphics_layer = M_meri.getLayer("GL_parcel_selection"),
+		x,
+		graphic,
+		index;
+	switch (funct) {
+	case "Zoom":
+		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
+			
+			graphic = graphics_layer.graphics[x];
+			if (graphic.attributes.PID === oid) {
+				M_meri.setExtent(graphic.geometry.getExtent().expand(1.3), true);
+				break;
+			}
+		}
+		break;
+	case "Pan":
+		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
+			graphic = graphics_layer.graphics[x];
+			if (graphic.attributes.PID === oid) {
+				M_meri.centerAt(graphic.geometry.getExtent().getCenter());
+				break;
+			}
+		}
+		break;
+	case "Flash":
+		require(["dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Color, SimpleFillSymbol, SimpleLineSymbol) {
+			for (x = 0; x < graphics_layer.graphics.length; x += 1) {
+				if (graphics_layer.graphics[x].attributes.PID === oid) {
+					index = x;
+					break;
+				}
+			}
+			var divParcel = document.getElementById(target),
+				divFlashColor = new Color([52, 83, 130, 0.95]),
+				curSymbol = graphics_layer.graphics[index].symbol,
+				flashSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT, divFlashColor, 2), new Color([0, 255, 36, 0.5]));
+			divParcel.scrollIntoView();
+			graphics_layer.graphics[index].setSymbol(flashSymbol);
+			divParcel.style.backgroundColor = new Color([0, 255, 36, 0.5]);
+			setTimeout(function () {
+				graphics_layer.graphics[index].setSymbol(curSymbol);
+				divParcel.style.backgroundColor = "";
+				setTimeout(function () {
+					graphics_layer.graphics[index].setSymbol(flashSymbol);
+					divParcel.style.backgroundColor = new Color([0, 255, 36, 0.5]);
+					setTimeout(function () {
+						graphics_layer.graphics[index].setSymbol(curSymbol);
+						divParcel.style.backgroundColor = "";
+					}, 750);
+				}, 750);
+			}, 750);
+		});
+		break;
+	case "Remove":
+		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
+			if (graphics_layer.graphics[x].attributes.PID === oid) {
+				delete parcel_results[graphics_layer.graphics[x].attributes.PID];
+				f_update_export_parcel();
+				document.getElementById("parcelinfo_" + oid).remove();
+				if (document.getElementById("parcelinfo_" + oid) === null && document.getElementById("parcel_ser_info_" + oid) === null) {
+					graphics_layer.remove(graphics_layer.graphics[x]);
+				}
+			}
+		}
+		break;
+	}
+	return false;
+}
 function f_search_add_selections(graphics) {
 	"use strict";
-	var feature_div = "selParcel_",
+	var feature_div = "qselParcel_",
 		dropdown3 = document.getElementById("dropdown3"),
 		index,
+		index2,
 		length = graphics.length,
 		graphic,
 		featureAttributes,
@@ -766,8 +838,8 @@ function f_search_add_selections(graphics) {
 		output,
 		el_parcel,
 		el_viewMoreToggle,
-		attr;
-	require(["dojo/_base/array", "dojo/dom-construct"], function (array, domConstruct) {
+		attr,
+		actions = ["Remove", "Zoom", "Pan", "Flash"];
 	for(index = 0; index < length; index += 1) {
 		graphic = graphics[index];
 		if (document.getElementById("parcelinfo_" + graphic.attributes.PID) === null) {
@@ -780,32 +852,25 @@ function f_search_add_selections(graphics) {
 			output.id = "parcelinfo_ul_added_" + featureAttributes.PID;
 			el_featureAttribs.appendChild(output);
 			dropdown3.appendChild(el_featureAttribs);
-			console.log(featureAttributes);
+			el_parcel = document.createElement("li");
+			el_parcel.id = feature_div + featureAttributes.PID;
+			el_parcel.className = "dParcelItem";
+			output.appendChild(el_parcel);
+			el_parcel.innerHTML += '<a href="./print/parcel_info.php?PID=' + featureAttributes.PID + '" target="_blank" class="search_a feature_tool">Print</a>';
+			for(index2 = 0; index2 < actions.length; index2 += 1) {
+				el_parcel.innerHTML += '<a href="#" class="search_a feature_tool" onclick=\'f_feature_action("' + actions[index2] + '","' + output.id + '","' + featureAttributes.PID + '");return false;\'>' + actions[index2] + '</a>';
+			}
 			for (attr in featureAttributes) {
 				if (featureAttributes.hasOwnProperty(attr)) {
 					output.innerHTML += formatResult(attr, featureAttributes[attr], "selection");
 				}
 			}
-			el_parcel = document.createElement("li");
-			el_parcel.id = feature_div + featureAttributes.PID;
-			el_parcel.className = "dParcelItem";
-			output.appendChild(el_parcel);
-				domConstruct.create("a", {"href": "./print/parcel_info.html" + featureAttributes.PID, "target": "_blank", "innerHTML": "Print", "class": "search_a feature_tool"}, el_parcel);
-				el_viewMoreToggle = domConstruct.create("li",
-																	 {"class": "lSummaryToggle"},
-																	 output);
-				domConstruct.create("a", {"id": "detail_view_a_" + featureAttributes.PID, "class": "selection_a", "href": "#", "innerHTML": "-- View More --", "onClick": 'f_result_detail("' + output.id + '",' + featureAttributes.PID + ");return false;"}, el_viewMoreToggle);
-				array.forEach(["Remove", "Zoom", "Pan", "Flash"], function (a) {
-					domConstruct.create("a",
-						{"href": "#",
-							"class": "search_a feature_tool",
-							"innerHTML": a,
-							"onclick": 'f_feature_action("' + a + '","' + output.id + '","' + featureAttributes.PID + '");return false;'},
-					  el_parcel);
-				});
-			}
+			el_viewMoreToggle = document.createElement("li");
+			el_viewMoreToggle.className = "lSummaryToggle";
+			output.appendChild(el_viewMoreToggle);
+			el_viewMoreToggle.innerHTML = '<a id="detail_view_a_' + featureAttributes.PID + '" class="selection_a" href="#" onclick=\'f_result_detail("' + output.id + '","' + featureAttributes.PID + '");return false;\'>-- View More --</a>';
 		}
-	});
+	}
 }
 function f_process_results_buffer(results) {
 	"use strict";

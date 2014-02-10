@@ -1,6 +1,6 @@
-/*global require, sessionStorage, document*/
 /*
  * Municipal Map V.3 8/2013
+ * Last Editted: 2/7/2014
  * Jose Baez
  */
 var map,
@@ -9,7 +9,7 @@ var map,
 	Q_Census,
 	QT_Census,
 	image = "",
-	parcel_id = sessionStorage.getItem('printPID'),
+	parcel_id = PID,
 	parcel_OID,
 	dynamicMapServiceLayer,
 	map,
