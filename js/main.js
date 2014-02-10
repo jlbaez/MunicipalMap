@@ -1492,13 +1492,10 @@ function f_map_click_handler(evt_click) {
 }
 function f_button_clicked(id) {
 	"use strict";
-	var G_button_clicked = document.getElementsByClassName("button_clicked")[0];
-	require(["dojo/dom-class"], function (domClass) {
-		if (G_button_clicked !== "") {
-			domClass.remove(G_button_clicked, "button_clicked");
-			domClass.add(id, "button_clicked");
-		}
-	});
+	var G_button_clicked = document.getElementsByClassName("button_clicked")[0],
+		element = document.getElementById(id);
+	element.classList.toggle("button_clicked");
+	G_button_clicked.classList.toggle("button_clicked");
 	G_button_clicked = id;
 }
 function f_measure_map() {
