@@ -383,6 +383,10 @@ function f_getAliases() {
 						 "STATUS ": "Status",
 						 "FacilityID": "Facility ID",
 						 "UNIT": "Seismic Soil Class",
+						 "OWNID": "Owner ID",
+						 "ownerName": "Owner Name",
+						 "ownerAddress": "Owner Address",
+						 "ZIPCODE": "Zip Code",
 						 "Zone_Code": "Zoning"}};
 	return aliases;
 }
@@ -1782,10 +1786,13 @@ function showResults(candidates, search) {
 		where_PID,
 		score = 0,
 		candidate_array = [],
+		array,
 		where_landuse,
 		i,
+		index,
+		candidate,
 		il;
-	require(["esri/tasks/query", "esri/tasks/QueryTask", "dojo/_base/array"], function (Query, QueryTask, array) {
+	require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 		Q_landuse = new Query();
 		Q_landuse.returnGeometry = false;
 		Q_landuse.outFields = ["PID"];
@@ -1820,12 +1827,14 @@ function showResults(candidates, search) {
 				where.push(where_qual);
 			}
 		}
-		array.forEach(candidates.addresses, function (candidate) {
+		array = candidates.addresses;
+		for(index = 0; index < array.length; index += 1) {
+			candidate = array[index];
 			if (candidate.score >= score && (candidate.attributes.Addr_type === "StreetAddress" || candidate.attributes.Addr_type === "PointAddress") && muni.indexOf(candidate.attributes.City) > -1) {
 				score = candidate.score;
 				candidate_array.unshift(candidate);
 			}
-		});
+		}
 		if (search.rdo_landuse_searchSelect === "yes") {
 			if (search.s_landuse_chk_item.length > 0) {
 				where_landuse = "where LANDUSE_CODE IN (";
@@ -1884,48 +1893,36 @@ function f_search_address(json) {
 }
 function f_query_owners_results(results) {
 	"use strict";
-    require(["dojo/dom-construct"], function (domConstruct) {
-		var i,
-			il,
-			featureAttributes,
-			e_li_owner,
-			e_ul_owner_attrib,
-			e_li_owner_attrib,
-			e_li_owner_link,
-			att;
-		for (i = 0, il = results.features.length; i < il; i += 1) {
-			featureAttributes = results.features[i].attributes;
-			e_li_owner = domConstruct.create("li",
-														{"id": "r_owner_" + featureAttributes.OWNID,
-														 "class": "search_owner_container owner_li",
-														 "style": "display: block;"
-														},
-														"dropdown2");
-			e_ul_owner_attrib = domConstruct.create("ul",
-																 {"class": "ResultList",
-																  "id": "findownerparcel_" + featureAttributes.OWNID},
-																 e_li_owner);
-			for (att in featureAttributes) {
-				if (featureAttributes.hasOwnProperty(att)) {
-					e_li_owner_attrib = domConstruct.create("li",
-																		 {"innerHTML": ": " + featureAttributes[att]},
-																		 e_ul_owner_attrib);
-					domConstruct.create("strong",
-							{"innerHTML": fieldAlias(att, "owner")},
-							e_li_owner_attrib,
-							"first");
-				}
+	var i,
+		il,
+		featureAttributes,
+		dropdown2 = document.getElementById("dropdown2"),
+		e_li_owner,
+		e_ul_owner_attrib,
+		e_li_owner_link,
+		string,
+		att;
+	for (i = 0, il = results.features.length; i < il; i += 1) {
+		featureAttributes = results.features[i].attributes;
+		e_li_owner = document.createElement("li");
+		e_li_owner.id = "r_owner_" + featureAttributes.OWNID;
+		e_li_owner.className = "search_owner_container owner_li";
+		e_li_owner.style.display = "block";
+		dropdown2.appendChild(e_li_owner);
+		e_ul_owner_attrib = document.createElement("ul");
+		e_ul_owner_attrib.className = "ResultList";
+		e_ul_owner_attrib.id = "findownerparcel_" + featureAttributes.OWNID;
+		e_li_owner.appendChild(e_ul_owner_attrib);
+		for (att in featureAttributes) {
+			if (featureAttributes.hasOwnProperty(att)) {
+				e_ul_owner_attrib.innerHTML += '<li><strong>' + fieldAlias(att, "owner") + '</strong>' + featureAttributes[att] + '</li>';
 			}
-			e_li_owner_link = domConstruct.create("li", null, e_ul_owner_attrib);
-			domConstruct.create("a",
-					{"class": "selection_a",
-						"id": "find_" + featureAttributes.OWNID,
-						"href": "#",
-						"innerHTML": "Find Owner Parcels",
-						"onClick": "f_query_owner_int_exec(" + featureAttributes.OWNID + "); return false;"},
-					e_li_owner_link);
-	    }
-	});
+		}
+		e_li_owner_link = document.createElement("li");
+		e_ul_owner_attrib.appendChild(e_li_owner_link);
+		string = '<a id="find_' + featureAttributes.OWNID + '" class="selection_a" href="#" onclick="f_query_owner_int_exec(\'' + featureAttributes.OWNID + '\');return false;">Find Owner Parcels</a>';
+		e_li_owner_link.innerHTML = string;
+	}
 }
 function f_search_owner(json) {
 	"use strict";
