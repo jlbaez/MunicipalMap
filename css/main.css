@@ -577,12 +577,13 @@ button, .button
 }
 .animate
 {
-	transition: max-height .35s ease 0s;
+	transition: max-height .25s ease 0s;
 }
 .hidden
 {
-	padding: 0;
 	max-height: 0;
+	padding: 0;
+	overflow: hidden;
 }
 /* ==========================================================================
    Media Queries

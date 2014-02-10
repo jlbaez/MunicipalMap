@@ -1504,7 +1504,7 @@ function f_button_clicked(id) {
 }
 function f_measure_map() {
 	"use strict";
-	document.getElementById("dropdown0").style.display = "block";
+	document.getElementById("dropdown0").classList.remove("hidden");
 }
 function f_map_clear() {
 	"use strict";
@@ -1572,10 +1572,8 @@ function f_map_clear() {
 		array[index].style.display = "none";
 	}
   document.getElementById("buffer_distance").value = 200;
-	if (dropdown0.style.display === "block") {
-		require(["dojo/fx"], function (coreFx) {
-			coreFx.wipeOut({node: dropdown0, duration: 100}).play();
-		});
+	if (!dropdown0.classList.contains("hidden")) {
+		dropdown0.classList.add("hidden");
 	}
 }
 function f_search_parcel_old(search, where_PID) {
@@ -1995,22 +1993,16 @@ function f_add_tab_listener(tab) {
 		target = this.parentNode.parentNode.getElementsByClassName("dropdown main");
 		target2 = this.parentNode.getElementsByTagName("ul")[0];
 		length = target.length;
-		require(["dojo/fx"], function(coreFx) {
 		for(index = 0; index <length; index += 1) {
 			node = target[index];
 			if (node !== target2) {
-				if(window.getComputedStyle(node).display === "block") {
+				if(!node.classList.contains("hidden")) {
 					node.parentNode.classList.toggle("active");
-					coreFx.wipeOut({node: node, duration: 100}).play();
+					node.classList.toggle("hidden");
 				}
 			}
 		}
-		if (window.getComputedStyle(target2).display === "block") {
-			coreFx.wipeOut({node: target2, duration: 100}).play();
-		} else {
-			coreFx.wipeIn({node: target2, duration: 100}).play();
-		}
-		});
+		target2.classList.toggle("hidden");
 		e.preventDefault();
 	});
 }
