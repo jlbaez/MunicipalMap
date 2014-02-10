@@ -2039,7 +2039,7 @@ function f_image_layer_toggle(sel) {
 }
 function e_load_tools() {
 	"use strict";
-	require(["dojo/on", "dojo/fx", "esri/toolbars/navigation", "dojo/request/xhr", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (on, coreFx, Navigation, xhr, domForm) {
+	require(["esri/toolbars/navigation", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (Navigation, domForm) {
 		var header = document.getElementsByClassName("header-container")[0],
 			nav_tabs = document.getElementById("nav_tabs"),
 			buttons = document.getElementById("buttons"),
@@ -2148,21 +2148,6 @@ function e_load_tools() {
 			document.getElementById("filter").addEventListener("click", function () {
 				var target2 = this.parentNode.getElementsByTagName("ul")[0];
 				target2.classList.toggle("hidden");
-				target2.classList.toggle("animate");
-				//target2.style.transition = "max-height 0.8s";
-				/*if (window.getComputedStyle(target2).height === "0") {
-					target2.classList
-					target2.style.height = "0";
-					//target2.style.display = "none";
-					//target2.classList.add("animated", "flipOutY");
-					//target2.style.display = "none";
-					//coreFx.wipeOut({node: target2, duration: 100}).play();
-				} else {
-					//target2.style.display = "block";
-					target2.style.height = "auto";
-					//target2.classList.add("animated", "slideInDown");
-					//coreFx.wipeIn({node: target2, duration: 100}).play();
-				}*/
 			});
 			target = document.getElementsByClassName("radio_filter");
 			length = target.length;
@@ -2184,7 +2169,7 @@ function e_load_tools() {
 				f_image_layer_toggle(this);
 			});
 		if (document.getElementById("account_link") !== null) {
-			on(document.getElementById("account_link"), "click", function () {
+			document.getElementById("account_link").addEventListener("click", function () {
 				document.getElementById("form_submit").style.display = "none";
 				var li_form = document.getElementById("li_form"),
 					forgot_form = document.createElement("form"),
@@ -2241,22 +2226,22 @@ function e_load_tools() {
 			});
 		}
 		if (document.getElementById("form_submit") !== null) {
-			on(document.getElementById("form_submit"), "submit", function () {
-				sessionStorage.username = document.getElementById("username").value;
-				xhr('./ERIS/authenticate.php', {
-					"method": "POST",
-					"data": {
-						"userName": document.getElementById("username").value,
-						"password": document.getElementById("password").value
-					},
-					"sync": true
-				}).then(function (data) {
+			document.getElementById("form_submit").addEventListener("submit", function () {
+				var xmlhttp = new XMLHttpRequest(),
+					data;
+				xmlhttp.open("POST", './ERIS/authenticate.php', false);
+				xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+				xmlhttp.send("userName=" + document.getElementById("username").value + "&password=" + document.getElementById("password").value);
+				if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+					console.log(xmlhttp.responseText);
+					data = xmlhttp.responseText.trim();	
 					if (data === "true") {
+						sessionStorage.username = document.getElementById("username").value;
 						location.reload();
 					} else {
 						document.getElementById("login_response").innerHTML = "Wrong login Credentials";
 					}
-				});
+				}
 			});
 		}
 	});
