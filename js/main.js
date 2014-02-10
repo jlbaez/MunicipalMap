@@ -1507,7 +1507,10 @@ function f_map_clear() {
 	if (locateButton !== undefined) {
 		locateButton.clear();
 	}
-	var dropdown0 = document.getElementById("dropdown0");
+	var dropdown0 = document.getElementById("dropdown0"),
+		index,
+		length,
+		array;
 	search_results = [];
 	parcel_results = [];
 	search_acres = [];
@@ -1529,38 +1532,42 @@ function f_map_clear() {
 	measurementDijit.setTool("location", false);
 	measurementDijit.setTool("area", false);
 	measurementDijit.setTool("distance", false);
-	require(["dojo/query", "dojo/dom-construct"], function (query, domConstruct) {
-		query("input[type=text]").forEach(function (node) {
-			if (node.value !== "") {
-				node.value = "";
-			}
-		});
-		query(".muniCheckRow > input[type=checkbox]:checked").forEach(function (node) {
-			if (node.checked) {
-				node.checked = false;
-			}
-		});
-		query(".qualCheckRow > input[type=checkbox]:checked").forEach(function (node) {
-			if (node.checked) {
-				node.checked = false;
-			}
-		});
-		query(".landuseCheckRow > input[type=checkbox]:checked").forEach(function (node) {
-			if (node.checked) {
-				node.checked = false;
-			}
-		});
-		query(".search_parcel_container").forEach(function (node) {
-			domConstruct.destroy(node);
-		});
-		query(".search_owner_container").forEach(function (node) {
-			domConstruct.destroy(node);
-		});
-		query(".buffer").forEach(function (node) {
-			node.style.display = "none";
-		});
-        document.getElementById("buffer_distance").value = 200;
-	});
+	array = document.querySelectorAll("input[type=text]");
+	length = array.length;
+	for(index = 0; index < length; index += 1) {
+		array[index].value = "";
+	}
+	array = document.getElementsByClassName('s_muni_chk_item');
+	length = array.length;
+	for(index = 0; index < length; index += 1) {
+		array[index].checked = false;
+	}
+	array = document.getElementsByClassName('s_qual_chk_item');
+	length = array.length;
+	for(index = 0; index < length; index += 1) {
+		array[index].checked = false;
+	}
+	array = document.getElementsByClassName('s_landuse_chk_item');
+	length = array.length;
+	for(index = 0; index < length; index += 1) {
+		array[index].checked = false;
+	}
+	array = document.getElementsByClassName('search_parcel_container');
+	for(index = 0; index < array.length; index += 1) {
+		array[index].remove();
+		index += -1;
+	}
+	array = document.getElementsByClassName('search_owner_container');
+	for(index = 0; index < array.length; index += 1) {
+		array[index].remove();
+		index += -1;
+	}
+	array = document.getElementsByClassName('buffer');
+	length = array.length;
+	for(index = 0; index < length; index += 1) {
+		array[index].style.display = "none";
+	}
+  document.getElementById("buffer_distance").value = 200;
 	if (dropdown0.style.display === "block") {
 		require(["dojo/fx"], function (coreFx) {
 			coreFx.wipeOut({node: dropdown0, duration: 100}).play();
