@@ -758,77 +758,6 @@ function f_result_detail(target_el, pid) {
 		});
 	});
 }
-function f_feature_action2(funct, target, oid) {
-	"use strict";
-	oid = parseInt(oid, 10);
-	var graphics_layer = M_meri.getLayer("GL_parcel_selection"),
-		x,
-		graphic,
-		index;
-	switch (funct) {
-	case "Zoom":
-		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
-			
-			graphic = graphics_layer.graphics[x];
-			if (graphic.attributes.PID === oid) {
-				M_meri.setExtent(graphic.geometry.getExtent().expand(1.3), true);
-				break;
-			}
-		}
-		break;
-	case "Pan":
-		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
-			graphic = graphics_layer.graphics[x];
-			if (graphic.attributes.PID === oid) {
-				M_meri.centerAt(graphic.geometry.getExtent().getCenter());
-				break;
-			}
-		}
-		break;
-	case "Flash":
-		require(["dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Color, SimpleFillSymbol, SimpleLineSymbol) {
-			for (x = 0; x < graphics_layer.graphics.length; x += 1) {
-				if (graphics_layer.graphics[x].attributes.PID === oid) {
-					index = x;
-					break;
-				}
-			}
-			var divParcel = document.getElementById(target),
-				divFlashColor = new Color([52, 83, 130, 0.95]),
-				curSymbol = graphics_layer.graphics[index].symbol,
-				flashSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT, divFlashColor, 2), new Color([0, 255, 36, 0.5]));
-			divParcel.scrollIntoView();
-			graphics_layer.graphics[index].setSymbol(flashSymbol);
-			divParcel.style.backgroundColor = new Color([0, 255, 36, 0.5]);
-			setTimeout(function () {
-				graphics_layer.graphics[index].setSymbol(curSymbol);
-				divParcel.style.backgroundColor = "";
-				setTimeout(function () {
-					graphics_layer.graphics[index].setSymbol(flashSymbol);
-					divParcel.style.backgroundColor = new Color([0, 255, 36, 0.5]);
-					setTimeout(function () {
-						graphics_layer.graphics[index].setSymbol(curSymbol);
-						divParcel.style.backgroundColor = "";
-					}, 750);
-				}, 750);
-			}, 750);
-		});
-		break;
-	case "Remove":
-		for (x = 0; x < graphics_layer.graphics.length; x += 1) {
-			if (graphics_layer.graphics[x].attributes.PID === oid) {
-				delete parcel_results[graphics_layer.graphics[x].attributes.PID];
-				f_update_export_parcel();
-				document.getElementById("parcelinfo_" + oid).remove();
-				if (document.getElementById("parcelinfo_" + oid) === null && document.getElementById("parcel_ser_info_" + oid) === null) {
-					graphics_layer.remove(graphics_layer.graphics[x]);
-				}
-			}
-		}
-		break;
-	}
-	return false;
-}
 function f_search_add_selections(graphics) {
 	"use strict";
 	var feature_div = "qselParcel_",
@@ -1421,7 +1350,7 @@ function f_map_identify_exec(click_evt) {
 		el_popup_content.appendChild(el_popup_view);
 		IP_Map_All.tolerance = 3;
 		IP_Map_All.returnGeometry = true;
-		IP_Map_All.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
+		IP_Map_All.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE;
 		IP_Map_All.width  = M_meri.width;
 		IP_Map_All.height = M_meri.height;
 		IP_Map_All.geometry = click_evt.mapPoint;
@@ -1429,6 +1358,7 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
+			console.log(identifyResults);
 			var e_table = document.createElement("table"),
 				e_tbody = document.createElement("tbody"),
 				identifyResult,
@@ -1949,13 +1879,6 @@ function f_add_filter_listener(filter) {
 	filter.addEventListener("change", function () {
 		var target = this.parentNode.getElementsByTagName("ul")[0];
 		target.classList.toggle("hidden");
-		/*require(["dojo/fx"], function (coreFx) {
-		//if (window.getComputedStyle(target).display === "block") {
-			coreFx.wipeOut({node: target, duration: 100}).play();
-		} else {
-			coreFx.wipeIn({node: target, duration: 100}).play();
-		}
-		});*/
 	});
 }
 function f_add_about_listener(link) {
@@ -2030,7 +1953,7 @@ function f_image_layer_toggle(sel) {
 }
 function e_load_tools() {
 	"use strict";
-	require(["esri/toolbars/navigation", "dojo/dom-form", "dojo/NodeList-traverse", "dojo/domReady!"], function (Navigation, domForm) {
+	require(["esri/toolbars/navigation", "dojo/dom-form"], function (Navigation, domForm) {
 		var header = document.getElementsByClassName("header-container")[0],
 			nav_tabs = document.getElementById("nav_tabs"),
 			buttons = document.getElementById("buttons"),
