@@ -2145,13 +2145,24 @@ function e_load_tools() {
 			for(index = 0; index < length; index += 1) {
 				f_add_tab_listener(target[index]);
 			}
-			on(document.getElementById("filter"), "click", function () {
+			document.getElementById("filter").addEventListener("click", function () {
 				var target2 = this.parentNode.getElementsByTagName("ul")[0];
-				if (window.getComputedStyle(target2).display === "block") {
-					coreFx.wipeOut({node: target2, duration: 100}).play();
+				target2.classList.toggle("hidden");
+				target2.classList.toggle("animate");
+				//target2.style.transition = "max-height 0.8s";
+				/*if (window.getComputedStyle(target2).height === "0") {
+					target2.classList
+					target2.style.height = "0";
+					//target2.style.display = "none";
+					//target2.classList.add("animated", "flipOutY");
+					//target2.style.display = "none";
+					//coreFx.wipeOut({node: target2, duration: 100}).play();
 				} else {
-					coreFx.wipeIn({node: target2, duration: 100}).play();
-				}
+					//target2.style.display = "block";
+					target2.style.height = "auto";
+					//target2.classList.add("animated", "slideInDown");
+					//coreFx.wipeIn({node: target2, duration: 100}).play();
+				}*/
 			});
 			target = document.getElementsByClassName("radio_filter");
 			length = target.length;

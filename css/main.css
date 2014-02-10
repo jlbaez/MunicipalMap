@@ -575,6 +575,15 @@ button, .button
 {
 	text-transform: capitalize;
 }
+.animate
+{
+	transition: max-height .35s ease 0s;
+}
+.hidden
+{
+	padding: 0;
+	max-height: 0;
+}
 /* ==========================================================================
    Media Queries
    ========================================================================== */
