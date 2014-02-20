@@ -21,5 +21,5 @@ if(validateERIS()){
 	$AUTH = true;
 	$Load = 'ERIS_v3';
 }
-require_once('versions/'.$Load.'.html');
+require_once('versions/'.$Load.'.php');
 ?>
