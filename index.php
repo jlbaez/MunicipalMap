@@ -19,7 +19,8 @@ if(isset($_GET['version'])){
 require_once('ERIS/validate.php');
 if(validateERIS()){
 	$AUTH = true;
-	$Load = 'ERIS_v31';
+	//$Load = 'ERIS_v31';
+	$Load = 'municipal_2013_v31';
 }
 require_once('versions/'.$Load.'.php');
 ?>

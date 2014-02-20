@@ -423,8 +423,7 @@ function f_getoutFields() {
 }
 function f_printMap(pid) {
 	"use strict";
-	sessionStorage.setItem('printPID', pid);
-	window.open("print/parcel_info.html", "_blank");
+	window.open("print/parcel_info.php?PID=" + pid, "_blank");
 }
 function fieldAlias(fieldName, dataSource) {
 	"use strict";

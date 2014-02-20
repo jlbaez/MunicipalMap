@@ -1,3 +1,11 @@
+<?php
+require_once('./ERIS/validate.php');
+$isERIS = false;
+if(!validateERIS())
+{
+	$isERIS = true;
+}
+?>
 <!DOCTYPE html>
 <html class="no-js">
 	<head>
@@ -6,13 +14,24 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="author" content="Jose Baez - Intern Web Developer">
-    <link rel="stylesheet" href="css/normalize.min.css">
+		<link rel="stylesheet" href="css/normalize.min.css">
 		<link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/tundra/tundra.css">
 		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+<?php if ($isERIS): ?>
 		<link rel="stylesheet" href="css/main.css">
+<?php else: ?>
+		<link rel="stylesheet" href="css/ERIS.css">
+<?php endif ?>
 		<link rel="apple-touch-icon" href="css/img/map-logo-57x57.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="css/img/map-logo-72x72.png">
 		<link rel="apple-touch-icon" sizes="114x114" href="css/img/map-logo-114x114.png">
+		<script>
+<?php if(!$isERIS): ?>
+			var ERIS = true;
+<?php else: ?>
+			var ERIS = false;
+<?php endif ?>
+		</script>
 	</head>
 	<body>
 		<noscript>Sorry, but in order to use Municipal Map you need JavaScript enabled</noscript>
@@ -20,7 +39,11 @@
 			<div class="header-container" style="display:none">
 				<header class="wrapper clearfix">
 					<a href="javascript:void(0);" id="pull" class="pull"></a>
+<?php if ($isERIS): ?>
 					<img class="logo" id="logo" src="css/img/logo_municipal_map.png" alt="Municipal Map">
+<?php else: ?>
+					<img class="logo" id="logo" src="css/img/logo_ERIS.png" alt="Municipal Map">
+<?php endif ?>
 					<nav id="buttons" class="navbar buttons">
 						<ul class="ul_buttons">
 							<li class="button_row">
@@ -33,6 +56,9 @@
 								<button id="identify" title="Identify" class="identify tiny secondary toolbutton"></button>
 								<button id="parcel" title="Parcel Select" class="parcel tiny secondary toolbutton"></button>
 								<button id="measure" title="Measure" class="measure tiny secondary toolbutton"></button>
+<?php if (!$isERIS): ?>
+								<button id="ERIS" title="ERIS" class="ERIS tiny secondary toolbutton"></button>
+<?php endif ?>
 								<button id="locate" title="Get Location" class="locate tiny secondary toolbutton"></button>
 								<button id="clear" title="Clear Map" class="clear tiny secondary toolbutton"></button>
 							</li>
@@ -336,6 +362,7 @@
 							<li>
 								<a href="javascript:void(0);" id="account" class="tab">Account</a>
 								<ul id="dropdown5" class="dropdown main animate hidden">
+<?php if ($isERIS): ?>
 									<li id="li_form">
 										<form id="form_submit" action="null" onsubmit="return false;" method="post">
 											<label for="username">User Name:</label>
@@ -347,6 +374,15 @@
 											<input type="submit" class="small button" value="LogIn"> 
 										</form>
 									</li>
+<?php else: ?>
+									<li>
+										<form id="form_logoff" action="null" onsubmit="return false;" method="post">
+											<div>Hi there,</div><div id="useraccount"></div>
+											<div>Would you like to logoff?</div>
+											<input type="submit" class="small button" value="Log Off"> 
+										</form>
+									</li>
+<?php endif ?>
 								</ul>
 							</li>
 							<li>
@@ -446,5 +482,8 @@
     <script src="http://js.arcgis.com/3.8/"></script>
 		<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 		<script src="js/main.js"></script>
+<?php if (!$isERIS): ?>
+		<script src="js/ERIS.js"></script>;
+<?php endif ?>
 	</body>
 </html>
