@@ -61,7 +61,7 @@ return $random_string;
 /////////////////
 //vars
 $password = $userName = NULL;
-$output = "false";
+$output = '{"response": false}';
 if(isset($_POST['userName'])){
 	$userName = $_POST['userName'];
 }
@@ -71,7 +71,7 @@ if(isset($_POST['password'])){
 
 if($userName && $password){
 	if(authenticate($userName, $password)){
-		$output = "true";
+		$output = '{"response": true, "username": "'.$userName.'"}';
 	};
 }
 //exit with output

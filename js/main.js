@@ -1,4 +1,4 @@
-/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, f_startup_eris,typeof*/
+/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, f_startup_eris,typeof, FormData*/
 //==========================================
 // Title:  Municipal Map V.31
 // Author: Jose Baez
@@ -2141,14 +2141,18 @@ function e_load_tools() {
 		if (document.getElementById("form_submit") !== null) {
 			document.getElementById("form_submit").addEventListener("submit", function () {
 				var xmlhttp = new XMLHttpRequest(),
-					data;
+					data,
+					form = new FormData(document.getElementById("form_submit"));
+				console.log(form);
 				xmlhttp.open("POST", './ERIS/authenticate.php', false);
-				xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-				xmlhttp.send("userName=" + document.getElementById("username").value + "&password=" + document.getElementById("password").value);
+				xmlhttp.send(form);
 				if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-					data = xmlhttp.responseText.trim();	
-					if (data === "true") {
-						sessionStorage.username = document.getElementById("username").value;
+					console.log(xmlhttp.responseText.trim());
+					data = JSON.parse(xmlhttp.responseText.trim());
+					console.log(data);
+					console.log(data.response);
+					if (data.response === true) {
+						sessionStorage.username = data.username;
 						location.reload();
 					} else {
 						document.getElementById("login_response").innerHTML = "Wrong login Credentials";
