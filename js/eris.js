@@ -4,8 +4,7 @@
 // Author: Jose Baez
 // Date:   11 Nov 2013
 //=========================================
-var ERIS = true,
-	ERIS_layers;
+var ERIS_layers;
 function f_get_ERIS_Layers() {
 	var xmlhttp = new XMLHttpRequest(),
 		data,
@@ -308,6 +307,7 @@ function f_ERIS_list_build() {
 }
 function f_startup_eris() {
 	"use strict";
+	console.log("here");
 	document.getElementById("useraccount").innerHTML = sessionStorage.username;
 	require(["esri/layers/ArcGISDynamicMapServiceLayer", "dojo/domReady!"], function (ArcGISDynamicMapServiceLayer) {
 		var ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1, id: "ERIS_base"});

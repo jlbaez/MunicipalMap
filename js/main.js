@@ -1,4 +1,4 @@
-/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, f_startup_eris,typeof, FormData*/
+/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, f_startup_eris,typeof, FormData, ERIS*/
 //==========================================
 // Title:  Municipal Map V.31
 // Author: Jose Baez
@@ -423,7 +423,7 @@ function f_getoutFields() {
 }
 function f_printMap(pid) {
 	"use strict";
-	window.open("print/parcel_info.php?PID=" + pid, "_blank");
+	window.open(DynamicLayerHost + "/municipal/print/parcel_info.php?PID=" + pid, "_blank");
 }
 function fieldAlias(fieldName, dataSource) {
 	"use strict";
@@ -788,7 +788,7 @@ function f_search_add_selections(graphics) {
 			el_parcel.id = feature_div + featureAttributes.PID;
 			el_parcel.className = "dParcelItem";
 			output.appendChild(el_parcel);
-			el_parcel.innerHTML += '<a href="./print/parcel_info.php?PID=' + featureAttributes.PID + '" target="_blank" class="search_a feature_tool">Print</a>';
+			el_parcel.innerHTML += '<a href="' + DynamicLayerHost + '/municipal/print/parcel_info.php?PID=' + featureAttributes.PID + '" target="_blank" class="search_a feature_tool">Print</a>';
 			for(index2 = 0; index2 < actions.length; index2 += 1) {
 				el_parcel.innerHTML += '<a href="#" class="search_a feature_tool" onclick=\'f_feature_action("' + actions[index2] + '","' + output.id + '","' + featureAttributes.PID + '");return false;\'>' + actions[index2] + '</a>';
 			}
@@ -2026,28 +2026,40 @@ function e_load_tools() {
 				f_search_owner(domForm.toJson("search_owner"));
 			});
 			document.getElementById("owner_toggle").addEventListener("click", function () {
-				this.style.color = "#09D";
+				if(ERIS) {
+					this.style.color = "#DE0A0A";
+				} else {
+					this.style.color = "#09D";
+				}
 				document.getElementById("property_toggle").style.color = "#444";
 				document.getElementById("li_property").style.display = "none";
 				document.getElementById("li_owner").style.display = "block";
 			});
 			document.getElementById("property_toggle").addEventListener("click", function () {
-				this.style.color = "#09D";
-				document.getElementById("owner_toggle").style.color = "#444";
+				if(ERIS) {
+					this.style.color = "#DE0A0A";
+				} else {
+					this.style.color = "#09D";
+				}
+				document.getElementById("property_toggle").style.color = "#444";
 				document.getElementById("li_property").style.display = "block";
 				document.getElementById("li_owner").style.display = "none";
 			});
 			document.getElementById("filter").addEventListener("click", function (e) {
 				var toElem = e.originalTarget || e.toElement || e.srcElement;
 				if (toElem.id === "filter") {
-					if (this.style.color !== "rgb(0, 153, 221)") {
+					if (this.style.color !== "rgb(0, 153, 221)" && this.style.color !== "rgb(222, 10, 10)") {
 						this.innerHTML = "Search Options & Filters (-)";
 					} else {
 						this.innerHTML = "Search Options & Filters (+)";
 					}
 				}
-				if (this.style.color !== "rgb(0, 153, 221)") {
-					this.style.color = "#09D";
+				if (this.style.color !== "rgb(0, 153, 221)" && this.style.color !== "rgb(222, 10, 10)") {
+					if(ERIS) {
+						this.style.color = "#DE0A0A";
+					} else {
+						this.style.color = "#09D";
+					}
 				} else {
 					this.style.color = "#444";
 				}
