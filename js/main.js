@@ -1350,7 +1350,7 @@ function f_map_identify_exec(click_evt) {
 		el_popup_content.appendChild(el_popup_view);
 		IP_Map_All.tolerance = 3;
 		IP_Map_All.returnGeometry = true;
-		IP_Map_All.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE;
+		IP_Map_All.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
 		IP_Map_All.width  = M_meri.width;
 		IP_Map_All.height = M_meri.height;
 		IP_Map_All.geometry = click_evt.mapPoint;
@@ -1358,7 +1358,6 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
-			console.log(identifyResults);
 			var e_table = document.createElement("table"),
 				e_tbody = document.createElement("tbody"),
 				identifyResult,
@@ -2147,7 +2146,6 @@ function e_load_tools() {
 				xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 				xmlhttp.send("userName=" + document.getElementById("username").value + "&password=" + document.getElementById("password").value);
 				if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-					console.log(xmlhttp.responseText);
 					data = xmlhttp.responseText.trim();	
 					if (data === "true") {
 						sessionStorage.username = document.getElementById("username").value;
@@ -2176,7 +2174,6 @@ function f_layer_list_update(checkbox) {
 		LD_visible.push(parseInt(checkbox.value, 10));
 	} else {
 		checkbox.parentNode.parentNode.className = "toc_layer_li";
-		console.log(LD_visible.indexOf(parseInt(checkbox.value, 10)));
 		LD_visible.splice(LD_visible.indexOf(parseInt(checkbox.value, 10)), 1);
 	}
 	if (LD_visible.length === 0) {
