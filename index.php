@@ -1,8 +1,8 @@
 <?php 
-$Load = 'municipal_2013_v3';
+$Load = 'municipal_2013_v31';
 if(isset($_GET['version'])){
 	$ver = $_GET['version'];
-	$versions['new'] = 'municipal_2013_v3';
+	$versions['new'] = 'municipal_2013_v31';
 	$latestRelease = 0;
 	foreach($versions as $release => $filePath){
 		if($ver == 'current'){
@@ -19,7 +19,7 @@ if(isset($_GET['version'])){
 require_once('ERIS/validate.php');
 if(validateERIS()){
 	$AUTH = true;
-	$Load = 'ERIS_v3';
+	$Load = 'ERIS_v31';
 }
 require_once('versions/'.$Load.'.php');
 ?>
