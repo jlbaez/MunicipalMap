@@ -1,0 +1,234 @@
+nav a 
+{
+	color: #777;
+	display: block;
+	margin-bottom: 10px;
+	padding: 15px 0;
+	text-align: center;
+	text-decoration: none;
+	text-shadow: 0 1px 0 #FFF;
+	transition: color ease-in-out .2s
+}
+.active > ul
+{
+	padding: 5px;
+}
+.button
+{
+	height: 35px;
+	padding-bottom: 0.75em;
+	padding-top: 0.8125em;
+	width: 100%;
+}
+.dropdown
+{
+	position: relative;
+}
+.dropdown0
+{
+	display: none;
+}
+.footer
+{
+	visibility: hidden;
+}
+.esriMobileNavigationBar
+{
+	background-color: #777;
+	background-image: none;
+}
+.esriPopupMobile .pointer.bottom
+{
+	background-image: url("img/pointerbottom.png");
+}
+.esriPopupMobile .pointer.top
+{
+	background-image: url("img/pointertop.png");
+}
+.esriPopupMobile .titlePane
+{
+	background-color: #777;
+}
+.esriSimpleSliderTL
+{
+  display:none;
+}
+.measure
+{
+	display: none;
+}
+.LocateButton .zoomLocateButton
+{
+	background-color: #E9E9E9;
+	border-color: #D0D0D0;
+	border-style: solid;
+	border-width: 1px;
+	background-image: url("img/toolbar-icons-locate.png");
+	padding: 0;
+	width: 32px;
+	height: 33px;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	-o-border-radius: 0;
+	border-radius: 0;
+}
+.logo
+{
+  float: none;
+  left: 35%;
+	margin: 0;
+  position: relative;
+  width: 35%;
+}
+.LocateButton
+{
+	display: inline-block !important;
+	vertical-align: top;
+}
+.select_option
+{
+	width: 100%;
+	height: 35px;
+}
+.tabs
+{
+	height: 100%;
+}
+.tabs > li
+{
+	display: block;
+	margin-right: 0;
+}
+.toc_layer_li
+{
+	padding: 10px 1px;
+}
+.toolbutton
+{
+	background-position: 50% 50%;
+	background-size: 65% auto;
+	background-repeat: no-repeat;
+	margin-bottom: 10px;
+	width: 35px;
+	height: 35px;
+}
+.ul_buttons {
+	text-align: center;
+	width: 100%;
+}
+.zoomin
+{
+	display: none;
+}
+.zoomout
+{
+	display: none;
+}
+@media only screen and (min-width: 360px)
+{
+  .esriViewPopup .gallery
+  {
+    width: 350px;
+    height: 300px;
+  }
+  .esriViewPopup .gallery .frame img
+  {
+    max-width: 350px;
+    max-height: 300px;
+  }
+}
+@media only screen and (max-width: 799px)
+{
+  .nav_tabs
+  {
+    background-color: #FAFAFA;
+    background-image: linear-gradient(to bottom, #FFF, #F2F2F2);
+    background-repeat: repeat-x;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    width: 0;
+    overflow-x: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+  }
+  .pull
+  {
+    background: url('img/nav-icon.png') no-repeat;
+    background-size: 100% auto;
+    background-position:center; 
+    display: block;
+    height: 25px;
+    left: 7px;
+    top: 7px;
+    width: 25px;
+    z-index: 1;
+  }
+}
+@media only screen and (min-width: 800px)
+{
+  .button_row
+  {
+    padding: 0;
+  }
+  .dropdown
+  {
+    position: absolute;
+    max-height: 65%;
+  }
+  .nav_tabs
+  {
+    display: block;
+    width: auto;
+  }
+  .tab
+  {
+    margin-bottom: 0;
+    padding: 17px 5px;
+  }
+  .tabs
+  {
+    width: 414px;
+    margin: auto;
+  }
+  .tabs>li
+  {
+    display: inline-block;
+    margin-right: 2%;
+  }  
+}
+@media only screen and (min-width: 1280px)
+{
+	.logo
+  {
+    float:left;
+    width: 15%;
+    position: static;
+  }
+  .buttons
+  {
+    display: inline-block;
+    float: left;
+    width: auto;
+  }
+  .button_row
+  {
+    margin-right: 5px;
+  }
+  .nav_tabs
+  {
+    display: inline-block;
+  }
+  .mainSection
+  {
+    width: 40%;
+    display: inline-block;
+    float: left;
+  }
+  .mediaSection
+  {
+    width: 40%;
+    display: inline-block;
+  }
+}
+

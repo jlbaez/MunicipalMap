@@ -13,6 +13,9 @@
 <?php if ($_SESSION['isERIS']): ?>
 		<link rel="stylesheet" href="css/ERIS.css">
 <?php endif ?>
+<?php if ($_SESSION['isMobile']): ?>
+		<link rel="stylesheet" href="css/mobile.css">
+<?php endif ?>
 		<link rel="apple-touch-icon" href="css/img/map-logo-57x57.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="css/img/map-logo-72x72.png">
 		<link rel="apple-touch-icon" sizes="114x114" href="css/img/map-logo-114x114.png">
@@ -95,7 +98,7 @@
 									</li>
 									<li class="layer_group_title">Flooding Scenario</li>
 								</ul>
-								<ul id="dropdown0" class="animate hidden">
+								<ul id="dropdown0" class="dropdown0 animate hidden">
 									<li>
 										<div id="dMeasureTool"></div>
 									</li>

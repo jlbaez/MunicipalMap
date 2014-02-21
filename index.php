@@ -1,5 +1,11 @@
 <?php
 session_start();
+require_once 'php/Mobile_Detect.php';
+$detect = new Mobile_Detect;
+$_SESSION['isMobile'] = false;
+if($detect->isMobile()) {
+	$_SESSION['isMobile'] = true;
+}
 $Load = 'municipal_2013_v31';
 if(isset($_GET['version'])){
 	$ver = $_GET['version'];

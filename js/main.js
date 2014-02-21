@@ -45,8 +45,7 @@ var DynamicLayerHost = "http://webmaps.njmeadowlands.gov",
 	legendDigit,
 	parcel_results = [],
 	legendLayers = [],
-	layers_json,
-	isERIS = false;
+	layers_json;
 function f_getLayerInfo() {
 	var json = [],
 		env = ["FEMA PANEL", "RIPARIAN CLAIM (NJDEP)", "FEMA (100-YR FLOOD)", "WETLANDS (DEP)", "SEISMIC SOIL CLASS"],
@@ -1089,28 +1088,31 @@ function f_process_results_parcel(results, event) {
 			e_pan,
 			e_flash,
 			e_buffer,
+			actionList = document.getElementsByClassName("actionList")[0],
 			e_add;
-		if (document.getElementsByClassName("a_print action").length > 0) {
-			document.getElementsByClassName("a_print action")[0].remove();
+		if (actionList !== undefined) {
+			if (document.getElementsByClassName("a_print action").length > 0) {
+				document.getElementsByClassName("a_print action")[0].remove();
+			}
+			if (document.getElementsByClassName("a_remove action").length > 0) {
+				document.getElementsByClassName("a_remove action")[0].remove();
+			}
+			e_print_1 = document.createElement("a");
+			e_print_1.innerHTML = "Print";
+			e_print_1.href = "#";
+			e_print_1.className = "a_print action";
+			document.getElementsByClassName("actionList")[0].appendChild(e_print_1);
+			e_remove_1 = document.createElement("a");
+			e_remove_1.href = "#";
+			e_remove_1.innerHTML = "Remove";
+			e_remove_1.className = "a_remove action";
+			document.getElementsByClassName("actionList")[0].appendChild(e_remove_1);
+			f_add_listener(e_print_1, "print", results.features[0].attributes.PID, null);
+			e_remove_1.addEventListener("click", function (e) {
+				f_removeSelection(results.features[0].attributes.PID);
+				e.preventDefault();	
+			});
 		}
-		if (document.getElementsByClassName("a_remove action").length > 0) {
-			document.getElementsByClassName("a_remove action")[0].remove();
-		}
-		e_print_1 = document.createElement("a");
-		e_print_1.innerHTML = "Print";
-		e_print_1.href = "#";
-		e_print_1.className = "a_print action";
-		document.getElementsByClassName("actionList")[0].appendChild(e_print_1);
-		e_remove_1 = document.createElement("a");
-		e_remove_1.href = "#";
-		e_remove_1.innerHTML = "Remove";
-		e_remove_1.className = "a_remove action";
-		document.getElementsByClassName("actionList")[0].appendChild(e_remove_1);
-		f_add_listener(e_print_1, "print", results.features[0].attributes.PID, null);
-		e_remove_1.addEventListener("click", function (e) {
-			f_removeSelection(results.features[0].attributes.PID);
-			e.preventDefault();	
-		});
 		for (index = 0; index < results.features.length; index += 1) {
 			result = results.features[index];
 			featureAttributes = result.attributes;
@@ -1257,6 +1259,7 @@ function f_process_results_parcel(results, event) {
 			f_update_export_parcel();
 		}
 	});
+	console.log("done");
 }
 function f_parcel_selection_exec(map_event) {
 	"use strict";
@@ -1393,7 +1396,7 @@ function f_map_identify_exec(click_evt) {
 			M_meri.infoWindow.setContent(el_popup_content);
 			M_meri.infoWindow.show(click_evt.mapPoint);
 			if (next_arrow !== undefined) {
-				next_arrow.style.display = "block";
+				next_arrow.classList.toggle('hidden', false);
 				document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
 				document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 			}
@@ -1949,8 +1952,9 @@ function f_image_layer_toggle(sel) {
 		});
 	}
 }
-function e_load_tools() {
+function f_load_tools() {
 	"use strict";
+	console.log("here");
 	require(["esri/toolbars/navigation", "dojo/dom-form"], function (Navigation, domForm) {
 		var header = document.getElementsByClassName("header-container")[0],
 			nav_tabs = document.getElementById("nav_tabs"),
@@ -1960,6 +1964,7 @@ function e_load_tools() {
 			index,
 			length;
 			document.getElementById("pull").addEventListener("click", function () {
+				console.log("here");
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
 					header.style.left = "80%";
 					header.style.position = "absolute";
@@ -2243,7 +2248,7 @@ function f_layer_list_build() {
 	scenario = map_layers_flooding_json[index1];
 		e_sel_flood.innerHTML += '<option value="' + scenario.id + '">' + scenario.name + '</option>';
 	}
-	if(isERIS) {
+	if(ERIS) {
 		f_startup_eris();
 	}
 	length1 = mapLayersJSON.length;
@@ -2341,28 +2346,6 @@ function f_query_owner_int_exec(ownerid) {
 		}
 	});
 }
-function f_deviceCheck(version) {
-	"use strict";
-	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-		var oldlink = document.getElementsByTagName("link").item(3),
-			newlink = document.createElement("link");
-		newlink.setAttribute("rel", "stylesheet");
-		newlink.setAttribute("type", "text/css");
-		if (version === "Municipal") {
-			newlink.setAttribute("href", "css/main_mobile.css");
-		} else {
-			newlink.setAttribute("href", "css/ERIS_mobile.css");
-		}
-		document.getElementsByTagName("head").item(0).replaceChild(newlink, oldlink);
-	}
-	document.getElementsByClassName("header-container")[0].style.display = "block";
-}
-function checkERIS() {
-	"use strict";
-	if (typeof f_startup_eris === 'function') {
-		isERIS = true;
-	}
-}
 function f_startup() {
 	"use strict";
 	require(["esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton", "esri/dijit/Scalebar", "esri/dijit/Legend"], function (Navigation, GeometryService, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, on, Measurement, config, PopupMobile, Popup, LocateButton, scalebar, Legend) {
@@ -2420,8 +2403,7 @@ function f_startup() {
 			navToolbar = new Navigation(M_meri);
 			measurementDijit = new Measurement({map: M_meri}, document.getElementById("dMeasureTool"));
 			measurementDijit.startup();
-			e_load_tools();
-			checkERIS();
+			f_load_tools();
 		});
 		on.once(LD_button, "load", function () {
 			f_layer_list_build();
@@ -2432,8 +2414,8 @@ function f_startup() {
 				layerInfos: legendLayers
 			}, "legend_li");
 			legendDigit.startup();
+			document.getElementsByClassName("header-container")[0].style.display = "block";
 		});
 	});
 }
-f_deviceCheck("Municipal");
 f_startup();
