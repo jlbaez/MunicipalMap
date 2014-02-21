@@ -1953,7 +1953,6 @@ function f_image_layer_toggle(sel) {
 }
 function f_load_tools() {
 	"use strict";
-	console.log("here");
 	require(["esri/toolbars/navigation", "dojo/dom-form"], function (Navigation, domForm) {
 		var header = document.getElementsByClassName("header-container")[0],
 			nav_tabs = document.getElementById("nav_tabs"),
@@ -2228,7 +2227,8 @@ function f_layer_list_build() {
 		length2,
 		scenario,
 		group,
-		layer;
+		layer,
+		found = false;
 	dropdown1.appendChild(e_li_0);
 	e_sel_flood = document.createElement("select");
 	e_sel_flood.className = "select_option";
@@ -2272,6 +2272,10 @@ function f_layer_list_build() {
 			if (layer.vis) {
 				e_chk.checked = true;
 				e_li.className = "toc_layer_li li_checked";
+			}
+			if (!found && layer.name.toLowerCase() === "buildings") {
+				e_chk.id = "buildings";
+				found = true;
 			}
 			if (layer.ident || (layer.id === 30)) {
 				IP_Identify_Layers.push(layer.id);
@@ -2410,6 +2414,11 @@ function f_startup() {
 			}, "legend_li");
 			legendDigit.startup();
 			document.getElementsByClassName("header-container")[0].style.display = "block";
+		});
+		on.once(LD_button, "update-end", function () {
+			if(ERIS) {
+				document.getElementById("buildings").click();
+			}
 		});
 	});
 }
