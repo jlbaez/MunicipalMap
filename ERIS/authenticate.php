@@ -29,7 +29,6 @@ function authenticate($user, $pass){
 		$sql = sprintf("UPDATE `mapping_accounts`.`ERIS_Auth` SET `sessionDate` = '%s',`authCount` = '%s', `cookieValue` = '%s' WHERE `ERIS_Auth`.`UID` = '%s';", 
 			mysql_real_escape_string($dateStamp), mysql_real_escape_string($authCount),  mysql_real_escape_string($cookieKey),  mysql_real_escape_string($userID));		
 		mysql_query($sql)	or die();
-		echo "here";
 		//build the authentication cookie
 		setcookie("NJMC_MERI_ERIS", $cookieKey, (date('U') + 31556926), '/',"localhost"); //31 556 926 = 1 year
 		return true;

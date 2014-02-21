@@ -181,7 +181,7 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 		M_meri.infoWindow.setContent(el_popup_content);
 		M_meri.infoWindow.show(map_event.mapPoint);
 		if (next_arrow !== undefined) {
-			next_arrow.style.display = "block";
+			next_arrow.classList.toggle("hidden", false);
 			document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
 			document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 		}
@@ -217,7 +217,7 @@ function f_ERIS_selection_exec(map_event) {
 						M_meri.infoWindow.setTitle("ERIS Selection");
 						M_meri.infoWindow.setContent(ERIS_LINK);
 						if (next_arrow !== undefined) {
-							next_arrow.style.display = "block";
+							next_arrow.classList.toggle("hidden", false);
 							document.getElementsByClassName("esriMobileNavigationItem right1")[0].style.display = "none";
 							document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 						}

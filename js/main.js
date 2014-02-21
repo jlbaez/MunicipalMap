@@ -2161,13 +2161,10 @@ function f_load_tools() {
 				xmlhttp.open("POST", './ERIS/authenticate.php', false);
 				xmlhttp.send(form);
 				if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-					console.log(xmlhttp.responseText.trim());
 					data = JSON.parse(xmlhttp.responseText.trim());
-					console.log(data);
-					console.log(data.response);
 					if (data.response === true) {
 						sessionStorage.username = data.username;
-						//location.reload();
+						location.reload();
 					} else {
 						document.getElementById("login_response").innerHTML = "Wrong login Credentials";
 					}
