@@ -1951,6 +1951,11 @@ function f_image_layer_toggle(sel) {
 		});
 	}
 }
+function f_add_checked(node) {
+	node.addEventListener("click", function () {
+		node.parentNode.classList.toggle("li_checked");
+	});
+}
 function f_load_tools() {
 	"use strict";
 	require(["esri/toolbars/navigation", "dojo/dom-form"], function (Navigation, domForm) {
@@ -1961,6 +1966,18 @@ function f_load_tools() {
 			target,
 			index,
 			length;
+			target = document.getElementsByClassName("s_muni_chk_item");
+			for(index = 0; index < target.length; index += 1) {
+				f_add_checked(target[index]);
+			}
+			target = document.getElementsByClassName("s_qual_chk_item");
+			for(index = 0; index < target.length; index += 1) {
+				f_add_checked(target[index]);
+			}
+			target = document.getElementsByClassName("s_landuse_chk_item");
+			for(index = 0; index < target.length; index += 1) {
+				f_add_checked(target[index]);
+			}
 			document.getElementById("pull").addEventListener("click", function () {
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
 					header.style.left = "80%";
@@ -2170,6 +2187,7 @@ function f_load_tools() {
 				}
 			});
 		}
+
 	});
 }
 function f_hide_owner_parcels(ownerid) {

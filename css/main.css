@@ -170,6 +170,15 @@ nav a:hover
 	font-size: 12px;
 	line-height: 30px;
 }
+.search_muni_label, .search_qual_label, .search_landuse_label
+{
+	display: block;
+	width: 100%;
+}
+.s_muni_chk_item, .s_qual_chk_item, .s_landuse_chk_item
+{
+	display: none;
+}
 .buttons
 {
 	float:left;
