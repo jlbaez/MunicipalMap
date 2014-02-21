@@ -216,3 +216,4 @@ pip-log.txt
 
 #PHP Class folder
 php/Classes
+php/Mobile_Detect.php
