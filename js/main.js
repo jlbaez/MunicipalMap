@@ -1259,7 +1259,6 @@ function f_process_results_parcel(results, event) {
 			f_update_export_parcel();
 		}
 	});
-	console.log("done");
 }
 function f_parcel_selection_exec(map_event) {
 	"use strict";
@@ -1964,7 +1963,6 @@ function f_load_tools() {
 			index,
 			length;
 			document.getElementById("pull").addEventListener("click", function () {
-				console.log("here");
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
 					header.style.left = "80%";
 					header.style.position = "absolute";
@@ -2169,7 +2167,7 @@ function f_load_tools() {
 					console.log(data.response);
 					if (data.response === true) {
 						sessionStorage.username = data.username;
-						location.reload();
+						//location.reload();
 					} else {
 						document.getElementById("login_response").innerHTML = "Wrong login Credentials";
 					}
