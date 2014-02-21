@@ -317,4 +317,3 @@ function f_startup_eris() {
 		legendLayers.push({layer: ERIS_base, title: "ERIS Layers"});
 	});
 }
-f_deviceCheck("ERIS");

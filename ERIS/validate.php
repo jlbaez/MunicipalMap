@@ -1,4 +1,4 @@
-<?php 
+<?php
 function validateERIS(){
 	if(isset($_COOKIE['NJMC_MERI_ERIS'])){
 		// Make a MySQL Connection
