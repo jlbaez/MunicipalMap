@@ -3,7 +3,7 @@
 	<head>
 		<title>New Jersey Meadowlands Commission &raquo; Municipal Map v.31</title>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="author" content="Jose Baez - Intern Web Developer">
 		<link rel="stylesheet" href="css/normalize.min.css">
