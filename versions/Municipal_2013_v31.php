@@ -2,12 +2,10 @@
 <html class="no-js">
 	<head>
 		<title>New Jersey Meadowlands Commission &raquo; Municipal Map v.31</title>
-		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="author" content="Jose Baez - Intern Web Developer">
 		<link rel="stylesheet" href="css/normalize.min.css">
-		<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/tundra/tundra.css">
 		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
 		<link rel="stylesheet" href="css/main.css">
 <?php if ($_SESSION['isERIS']): ?>
@@ -481,7 +479,7 @@
 			</div>
 			<div id="map" class="map"></div>
 		</div>
-    <script  src="http://js.arcgis.com/3.8/"></script>
+    <script  src="http://js.arcgis.com/3.8compact/init.js"></script>
 		<script  type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 		<script  src="js/main.js"></script>
 <?php if ($_SESSION['isERIS']): ?>
