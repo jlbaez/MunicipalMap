@@ -483,7 +483,7 @@
 		<script  type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 		<script  src="js/main.js"></script>
 <?php if ($_SESSION['isERIS']): ?>
-		<script  src="js/ERIS.js"></script>;
+		<script  src="js/ERIS.js"></script>
 <?php endif ?>
 	</body>
 </html>
