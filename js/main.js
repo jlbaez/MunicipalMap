@@ -778,7 +778,10 @@ function f_search_add_selections(graphics) {
 			el_featureAttribs.className = "search_parcel_container";
 			el_featureAttribs.id = "parcelinfo_" + featureAttributes.PID;
 			output = document.createElement("ul");
-			output.className = "ResultList SelectionResult";
+			output.className = "SelectionResult";
+			output.style.top = "2px";
+			output.style.padding = "1.5%";
+			output.style.position = "relative";
 			output.id = "parcelinfo_ul_added_" + featureAttributes.PID;
 			el_featureAttribs.appendChild(output);
 			dropdown3.appendChild(el_featureAttribs);
@@ -1147,7 +1150,10 @@ function f_process_results_parcel(results, event) {
 				document.getElementById("findownerparcel_" + event.split("_")[1]).appendChild(el_featureAttribs);
 			}
 			output = document.createElement("ul");
-			output.className = "ResultList SelectionResult";
+			output.className = "SelectionResult";
+			output.style.top = "2px";
+			output.style.padding = "1.5%";
+			output.style.position = "relative";
 			output.id = "parcelinfo_ul_" + featureAttributes.PID;
 			el_featureAttribs.appendChild(output);
 			el_parcel = document.createElement("li");
@@ -1838,7 +1844,9 @@ function f_query_owners_results(results) {
 		e_li_owner.style.display = "block";
 		dropdown2.appendChild(e_li_owner);
 		e_ul_owner_attrib = document.createElement("ul");
-		e_ul_owner_attrib.className = "ResultList";
+		e_ul_owner_attrib.style.top = "2px";
+		e_ul_owner_attrib.style.padding = "1.5%";
+		e_ul_owner_attrib.style.position = "relative";
 		e_ul_owner_attrib.id = "findownerparcel_" + featureAttributes.OWNID;
 		e_li_owner.appendChild(e_ul_owner_attrib);
 		for (att in featureAttributes) {
