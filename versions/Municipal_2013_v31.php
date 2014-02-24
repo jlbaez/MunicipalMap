@@ -7,8 +7,8 @@
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="author" content="Jose Baez - Intern Web Developer">
 		<link rel="stylesheet" href="css/normalize.min.css">
-		<link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/tundra/tundra.css">
-		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+		<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/tundra/tundra.css">
+		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
 		<link rel="stylesheet" href="css/main.css">
 <?php if ($_SESSION['isERIS']): ?>
 		<link rel="stylesheet" href="css/ERIS.css">
@@ -25,6 +25,14 @@
 <?php else: ?>
 			var ERIS = false;
 <?php endif ?>
+		</script>
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		  ga('create', 'UA-37047196-3', 'njmeadowlands.gov');
+		  ga('send', 'pageview');
 		</script>
 	</head>
 	<body>
@@ -473,11 +481,11 @@
 			</div>
 			<div id="map" class="map"></div>
 		</div>
-    <script src="http://js.arcgis.com/3.8/"></script>
-		<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
-		<script src="js/main.js"></script>
+    <script  src="http://js.arcgis.com/3.8/"></script>
+		<script  type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+		<script  src="js/main.js"></script>
 <?php if ($_SESSION['isERIS']): ?>
-		<script src="js/ERIS.js"></script>;
+		<script  src="js/ERIS.js"></script>;
 <?php endif ?>
 	</body>
 </html>

@@ -4,7 +4,8 @@
 // Author: Jose Baez
 // Date:   11 Nov 2013
 //=========================================
-var ERIS_layers;
+var ERIS_layers,
+  DynamicLayerHost = "http://webmaps.njmeadowlands.gov";
 function f_get_ERIS_Layers() {
 	var xmlhttp = new XMLHttpRequest(),
 		data,

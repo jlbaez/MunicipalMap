@@ -1487,6 +1487,7 @@ function f_map_clear() {
 	}
 	array = document.getElementsByClassName('search_parcel_container');
 	for(index = 0; index < array.length; index += 1) {
+		console.log(array[index] === "");
 		array[index].remove();
 		index += -1;
 	}
@@ -1979,21 +1980,16 @@ function f_load_tools() {
 			}
 			document.getElementById("pull").addEventListener("click", function () {
 				if (document.getElementById("nav_tabs").style.width !== "80%") {
-					header.style.left = "80%";
 					header.style.position = "absolute";
 					header.style.overflow = "hidden";
-					header.style.width = "20%";
 					nav_tabs.style.width = "80%";
 					buttons.style.visibility = "hidden";
-					logo.style.width = "135%";
 					logo.style.visibility = "hidden";
 				} else {
-					header.style.left = "0";
 					header.style.width = "100%";
 					buttons.style.visibility = "visible";
 					nav_tabs.style.width = "0";
 					logo.style.visibility = "visible";
-					logo.style.width = "35%";
 				}
 			});
 			document.getElementById("zoomin").addEventListener("click", function () {
