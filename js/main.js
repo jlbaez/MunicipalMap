@@ -575,7 +575,6 @@ function f_getPopupTemplate(graphic) {
 					}
 				}]
 			});
-			e_parent.remove();
 		});
 	}
 	return popupTemplate;
