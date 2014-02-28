@@ -1480,20 +1480,22 @@ function f_map_clear() {
 	length = array.length;
 	for(index = 0; index < length; index += 1) {
 		array[index].checked = false;
+		array[index].parentNode.classList.toggle("li_checked", false);
 	}
 	array = document.getElementsByClassName('s_qual_chk_item');
 	length = array.length;
 	for(index = 0; index < length; index += 1) {
 		array[index].checked = false;
+		array[index].parentNode.classList.toggle("li_checked", false);
 	}
 	array = document.getElementsByClassName('s_landuse_chk_item');
 	length = array.length;
 	for(index = 0; index < length; index += 1) {
 		array[index].checked = false;
+		array[index].parentNode.classList.toggle("li_checked", false);
 	}
 	array = document.getElementsByClassName('search_parcel_container');
 	for(index = 0; index < array.length; index += 1) {
-		console.log(array[index] === "");
 		array[index].remove();
 		index += -1;
 	}
@@ -1544,7 +1546,7 @@ function f_search_parcel_old(search, where_PID) {
 		Q_parcel_selection.returnGeometry = true;
 		Q_parcel_selection.outFields = outFields_json.parcel;
 		if (search.rdo_muni_search === "yes") {
-			if (search.s_muni_chk_item.length > 0) {
+			if (search.s_muni_chk_item !== undefined && search.s_muni_chk_item.length > 0) {
 				where_muni = "[MUN_CODE] IN (";
 				if (search.s_muni_chk_item instanceof Array) {
 					for (index = 0; index < search.s_muni_chk_item.length; index += 1) {
@@ -1559,7 +1561,7 @@ function f_search_parcel_old(search, where_PID) {
 			}
 		}
 		if (search.rdo_qual_search === "yes") {
-			if (search.s_qual_chk_item.length > 0) {
+			if (search.s_qual_chk_item !== undefined && search.s_qual_chk_item.length > 0) {
 				where_qual = "[QUALIFIER] in (";
 				if (search.s_qual_chk_item instanceof Array) {
 					for (index = 0; index < search.s_qual_chk_item.length; index += 1) {
@@ -1579,15 +1581,18 @@ function f_search_parcel_old(search, where_PID) {
 		Q_parcel_selection.where = where.join(" AND ");
 		QT_parcel_selection.execute(Q_parcel_selection, function (results) {
 			var old_result;
-			for (index = 0; index < results.features.length; index += 1) {
-				if (old_result !== undefined) {
-					if (results.features[index].attributes.BLOCK === old_result.attributes.BLOCK && results.features[index].attributes.LOT === old_result.attributes.LOT) {
-						delete results.features[index];
+			if(results.features.length > 0)
+			{
+				for (index = 0; index < results.features.length; index += 1) {
+					if (old_result !== undefined) {
+						if (results.features[index].attributes.BLOCK === old_result.attributes.BLOCK && results.features[index].attributes.LOT === old_result.attributes.LOT) {
+							delete results.features[index];
+						}
 					}
-				}
 				old_result = results.features[index];
+				}
+				f_process_results_parcel(results, "search");
 			}
-			f_process_results_parcel(results, "search");
 			search_progress.value = "1";
 			search_progress.style.display = "none";
 		});
@@ -1604,7 +1609,7 @@ function f_search_landuse(search) {
 				index = 0;
 			Q_landuse.returnGeometry = false;
 			Q_landuse.outFields = ["PID"];
-			if (search.s_landuse_chk_item.length > 0) {
+			if (search.s_landuse_chk_item !== undefined && search.s_landuse_chk_item.length > 0) {
 				where_landuse = "where LANDUSE_CODE IN (";
 				if (search.s_landuse_chk_item instanceof Array) {
 					for (index = 0; index < search.s_landuse_chk_item.length; index += 1) {
@@ -1732,7 +1737,7 @@ function showResults(candidates, search) {
 		Q_landuse.outFields = ["PID"];
 		QT_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/9");
 		if (search.rdo_muni_search === "yes") {
-			if (search.s_muni_chk_item.length > 0) {
+			if (search.s_muni_chk_item !== undefined && search.s_muni_chk_item.length > 0) {
 				var where_muni = "[MUN_CODE] IN (";
 				if (search.s_muni_chk_item instanceof Array) {
 					for (i = 0; i < search.s_muni_chk_item.length; i += 1) {
@@ -1747,7 +1752,7 @@ function showResults(candidates, search) {
 			}
 		}
 		if (search.rdo_qual_search === "yes") {
-			if (search.s_qual_chk_item.length > 0) {
+			if (search.s_qual_chk_item !== undefined && search.s_qual_chk_item.length > 0) {
 				where_qual = "[QUALIFIER] in (";
 				if (search.s_qual_chk_item instanceof Array) {
 					for (i = 0; i < search.s_qual_chk_item.length; i += 1) {
@@ -2041,8 +2046,8 @@ function f_load_tools() {
 				f_map_clear();
 			});
 			document.getElementById("search_property").addEventListener("submit", function (e) {
-				f_search_address(domForm.toJson("search_property"));
 				e.preventDefault();
+				f_search_address(domForm.toJson("search_property"));
 			});
 			document.getElementById("search_owner").addEventListener("click", function () {
 				f_search_owner(domForm.toJson("search_owner"));
@@ -2176,7 +2181,6 @@ function f_load_tools() {
 				var xmlhttp = new XMLHttpRequest(),
 					data,
 					form = new FormData(document.getElementById("form_submit"));
-				console.log(form);
 				xmlhttp.open("POST", './ERIS/authenticate.php', false);
 				xmlhttp.send(form);
 				if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {

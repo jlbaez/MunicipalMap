@@ -481,6 +481,18 @@ secondary:hover, secondary:focus, .secondary:hover, .secondary:focus
 	margin: 0;
 	padding: .5625em 1.125em .625em 1.125em;
 }
+.input_adj
+{
+	display: inline-block;
+  height: 2.3125em;
+  width: 50px;
+}
+.input
+{
+	display: block;
+  height: 2.3125em;
+  width: 93%;
+}
 .tiny 
 {
 	font-size: 0.6875em;
@@ -539,13 +551,6 @@ input[type="text"],input[type="password"]
 	margin: 0 0 1em 0;
 	padding-left: .5em;
 	transition: box-shadow 0.45s, border-color 0.45s ease-in-out;
-}
-.input_adj
-{
-	display: inline-block;
-	display: block;
-	height: 2.3125em;
-	width: 93%;
 }
 input[type="text"]:focus,input[type="password"]:focus
 {
