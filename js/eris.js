@@ -308,7 +308,7 @@ function f_ERIS_list_build() {
 }
 function f_startup_eris() {
 	"use strict";
-	document.getElementById("useraccount").innerHTML = sessionStorage.username;
+	document.getElementById("useraccount").innerHTML = userName;
 	require(["esri/layers/ArcGISDynamicMapServiceLayer", "dojo/domReady!"], function (ArcGISDynamicMapServiceLayer) {
 		var ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1, id: "ERIS_base"});
 		M_meri.addLayer(ERIS_base);

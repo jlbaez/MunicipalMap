@@ -31,8 +31,18 @@ function authenticate($user, $pass){
 		mysql_query($sql)	or die();
 		//build the authentication cookie
 		setcookie("NJMC_MERI_ERIS", $cookieKey, (date('U') + 31556926), '/',"localhost"); //31 556 926 = 1 year
+		setcookie('ERIS_ACCOUNT', encryptCookie($user), (date('U') + 31556926), '/', "localhost");
 		return true;
 	}
+}
+function encryptCookie($value){
+   if(!$value){return false;}
+   $key = 'The Line Secret Key';
+   $text = $value;
+   $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+   $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+   $crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv);
+   return trim(base64_encode($crypttext)); //encode for cookie
 }
 //
 // Random ID/Key for cookie

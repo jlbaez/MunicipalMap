@@ -20,7 +20,8 @@
 		<link rel="apple-touch-icon" sizes="114x114" href="css/img/map-logo-114x114.png">
 		<script>
 <?php if($_SESSION['isERIS']): ?>
-			var ERIS = true;
+			var ERIS = true,
+				userName = <?php require_once('ERIS/validate.php'); echo '"'.decryptCookie($_COOKIE['ERIS_ACCOUNT']).'";';?>		
 <?php else: ?>
 			var ERIS = false;
 <?php endif ?>
