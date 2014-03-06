@@ -124,6 +124,10 @@ nav a
 {
 	display: none;
 }
+.print_a
+{
+	display: none;
+}
 @media only screen and (min-width: 360px)
 {
   .esriViewPopup .gallery

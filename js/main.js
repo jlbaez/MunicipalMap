@@ -2016,6 +2016,7 @@ function f_load_tools() {
 			document.getElementById("pan").addEventListener("click", function () {
 				navToolbar.activate(Navigation.PAN);
 				f_button_clicked("pan");
+				tool_selected = "pan";
 			});
 			document.getElementById("extent").addEventListener("click", function () {
 				M_meri.centerAndZoom([-74.08456781356876, 40.78364440736023], 12);
