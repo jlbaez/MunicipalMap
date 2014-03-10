@@ -391,6 +391,7 @@ function f_getAliases() {
 						 "LOCATION2": "Location 2",
 						 "STREET": "Street",
 						 "ELEVATION": "Elevation",
+						 "SLD_NAME": "Road Name",
 						 "Zone_Code": "Zoning"}};
 	return aliases;
 }
