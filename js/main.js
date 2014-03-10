@@ -1282,6 +1282,7 @@ function f_parcel_selection_exec(map_event) {
 }
 function f_map_identify_exec(click_evt) {
 	"use strict";
+	console.log(click_evt);
 	require(["esri/tasks/IdentifyParameters", "esri/tasks/IdentifyTask"], function (IdentifyParameters, IdentifyTask) {
 		document.getElementById("map_container").style.cursor = "progress";
 		var IP_Map_All = new IdentifyParameters(),
