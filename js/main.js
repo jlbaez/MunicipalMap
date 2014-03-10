@@ -386,6 +386,10 @@ function f_getAliases() {
 						 "ownerName": "Owner Name",
 						 "ownerAddress": "Owner Address",
 						 "ZIPCODE": "Zip Code",
+						 "ACCESS_": "Access",
+						 "LOCATION1": "Location 1",
+						 "LOCATION2": "Location 2",
+						 "STREET": "Street",
 						 "Zone_Code": "Zoning"}};
 	return aliases;
 }
@@ -1282,7 +1286,6 @@ function f_parcel_selection_exec(map_event) {
 }
 function f_map_identify_exec(click_evt) {
 	"use strict";
-	console.log(click_evt);
 	require(["esri/tasks/IdentifyParameters", "esri/tasks/IdentifyTask"], function (IdentifyParameters, IdentifyTask) {
 		document.getElementById("map_container").style.cursor = "progress";
 		var IP_Map_All = new IdentifyParameters(),
@@ -1365,6 +1368,7 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
+			console.log(identifyResults);
 			var e_table = document.createElement("table"),
 				e_tbody = document.createElement("tbody"),
 				identifyResult,
@@ -1381,7 +1385,7 @@ function f_map_identify_exec(click_evt) {
 				identifyResult = identifyResults[index1];
 				for (index2 = 0; index2 < identify_fields_json[identifyResult.layerId].length; index2 += 1) {
 					attr = identify_fields_json[identifyResult.layerId][index2];
-					if (identifyResult.feature.attributes[attr] !== "Null" && identifyResult.feature.attributes[attr] !== null && identifyResult.feature.attributes[attr] !== "") {
+					if (identifyResult.feature.attributes[attr] !== "Null" && identifyResult.feature.attributes[attr] !== null && identifyResult.feature.attributes[attr] !== "" && identifyResult.feature.attributes[attr] !== undefined) {
 						e_tr = document.createElement("tr");
 						e_tr.style.verticalAlign = "top";
 						e_td1 = document.createElement("td");
