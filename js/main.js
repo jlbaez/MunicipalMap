@@ -1369,14 +1369,16 @@ function f_map_identify_exec(click_evt) {
 		IP_Map_All.layerIds = IP_Identify_Layers;
 		tool_selected = "pan";
 		IT_Map_All.execute(IP_Map_All, function (identifyResults) {
-			console.log(identifyResults);
 			var e_table = document.createElement("table"),
 				e_tbody = document.createElement("tbody"),
 				identifyResult,
 				attr,
 				e_tr,
 				e_td1,
-				e_td2;
+				e_td2,
+				string_array,
+				lstring,
+				rstring;
 			e_table.className = "attrTable ident_table";
 			e_table.cellSpacing = "0";
 			e_table.cellPadding = "0";
@@ -1384,6 +1386,10 @@ function f_map_identify_exec(click_evt) {
 			e_table.appendChild(e_tbody);
 			for (index1 = 0; index1 < identifyResults.length; index1 += 1) {
 				identifyResult = identifyResults[index1];
+				string_array = identifyResult.layerName.toLowerCase();
+				lstring = string_array.substr(0, Math.round(string_array.length/2));
+				rstring = string_array.substr(Math.round(string_array.length/2), string_array.length);
+				e_tbody.innerHTML += '<tr><td class="attrName" style="text-transform:capitalize;text-align:right;padding-right: 0px;">' + lstring + '</td><td class="attrName" style="padding-left:0;">' + rstring + '</td></tr>';
 				for (index2 = 0; index2 < identify_fields_json[identifyResult.layerId].length; index2 += 1) {
 					attr = identify_fields_json[identifyResult.layerId][index2];
 					if (identifyResult.feature.attributes[attr] !== "Null" && identifyResult.feature.attributes[attr] !== null && identifyResult.feature.attributes[attr] !== "" && identifyResult.feature.attributes[attr] !== undefined) {
@@ -2377,7 +2383,7 @@ function f_query_owner_int_exec(ownerid) {
 		}
 	});
 }
-function f_startup() {
+(function() {
 	"use strict";
 	require(["esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton", "esri/dijit/Scalebar", "esri/dijit/Legend"], function (Navigation, GeometryService, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, on, Measurement, config, PopupMobile, Popup, LocateButton, scalebar, Legend) {
 		config.defaults.io.alwaysUseProxy = false;
@@ -2453,5 +2459,4 @@ function f_startup() {
 			}
 		});
 	});
-}
-f_startup();
+}());
