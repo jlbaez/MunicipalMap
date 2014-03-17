@@ -399,31 +399,31 @@ nav ul li ul li a
 }
 .extent
 {
-	background-position: 5px -34px;
+	background-position: 5px -35px;
 }
 .previous
 {
-	background-position: 5px -52px;
+	background-position: 5px -55px;
 }
 .next
 {
-	background-position: 5px -71px;
+	background-position: 5px -74px;
 }
 .pan
 {
-	background-position: 5px -90px;
+	background-position: 5px -94px;
 }
 .identify
 {
-	background-position: 4px -110px;
+	background-position: 4px -114px;
 }
 .parcel
 {
-	background-position: 4px -130px;
+	background-position: 4px -135px;
 }
 .measure
 {
-	background-position: 4px -150px;
+	background-position: 4px -156px;
 }
 .locate
 {
@@ -431,7 +431,45 @@ nav ul li ul li a
 }
 .clear
 {
-	background-position: 4px -170px;
+	background-position: 4px -197px;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	.zoomout
+	{
+		background-position: 5px -14px;
+	}
+	.extent
+	{
+		background-position: 5px -32px;
+	}
+	.previous
+	{
+		background-position: 5px -50px;
+	}
+	.next
+	{
+		background-position: 5px -69px;
+	}
+	.pan
+	{
+		background-position: 5px -87px;
+	}
+	.identify
+	{
+		background-position: 5px -106px;
+	}
+	.parcel
+	{
+		background-position: 4px -125px;
+	}
+	.measure
+	{
+		background-position: 4px -145px;
+	}
+	.clear
+	{
+		background-position: 4px -184px;
+	}
 }
 button, .button
 {

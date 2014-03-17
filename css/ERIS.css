@@ -1,6 +1,7 @@
 .ERIS
 {
-    background-image: url("img/toolbar-icons-eris.png");	
+    background-image: url("img/icons.png");
+		background-position: 4px -176px;
 }
 .li_checked
 {
