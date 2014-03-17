@@ -399,40 +399,39 @@ nav ul li ul li a
 }
 .extent
 {
-	background-position: 5px -36px;
+	background-position: 5px -34px;
 }
 .previous
 {
-	background-position: 5px -55px;
+	background-position: 5px -52px;
 }
 .next
 {
-	background-position: 5px -75px;
+	background-position: 5px -71px;
 }
 .pan
 {
-	background-position: 5px -94px;
+	background-position: 5px -90px;
 }
 .identify
 {
-	background-position: 4px -114px;
+	background-position: 4px -110px;
 }
 .parcel
 {
-	background-position: 4px -135px;
+	background-position: 4px -130px;
 }
 .measure
 {
-	background-position: 4px -156px;
+	background-position: 4px -150px;
 }
 .locate
 {
 	display: none;
-	background-image: url("img/toolbar-icons-locate.png");	
 }
 .clear
 {
-	background-position: 4px -176px;
+	background-position: 4px -170px;
 }
 button, .button
 {
