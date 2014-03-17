@@ -3,6 +3,12 @@
     background-image: url("img/icons.png");
 		background-position: 4px -176px;
 }
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	.ERIS
+	{
+		background-position: 4px -164px;
+	}
+}
 .li_checked
 {
 	background-color: #b72727;
