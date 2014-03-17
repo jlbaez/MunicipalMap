@@ -40,12 +40,12 @@ nav a
 .esriPopupMobile .pointer.bottom
 {
 	background-image: url("img/icons.png");
-	background-position: 0px -440px;
+	background-position: 0px -454px;
 }
 .esriPopupMobile .pointer.top
 {
 	background-image: url("img/icons.png");
-	background-position: 0px -415px;
+	background-position: 0px -475px;
 }
 .esriPopupMobile .titlePane
 {
@@ -166,6 +166,85 @@ nav a
 {
 	background-color: #E9E9E9;
 }
+.pull
+{
+    background: url('img/icons.png') no-repeat;
+    background-position:3px -388px; 
+    background-size: 100% auto;
+    height: 25px;
+    left: 7px;
+    top: 7px;
+    width: 25px;
+    z-index: 1;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	.extent
+	{
+		background-position: 7px -47px;
+	}
+	.previous
+	{
+		background-position: 7px -74px;
+	}
+	.next
+	{
+		background-position: 7px -100px;
+	}
+	.pan
+	{
+		background-position: 7px -126px;
+	}
+	.identify
+	{
+		background-position: 6px -153px;
+	}
+	.parcel
+	{
+		background-position: 6px -181px;
+	}
+	.ERIS
+	{
+		background-position: 6px -237px;
+	}
+	.clear
+	{
+		background-position: 6px -293px;
+	}
+}
+@-moz-document url-prefix() {
+	.extent
+	{
+		background-position: 7px -48px;
+	}
+	.previous
+	{
+		background-position: 7px -75px;
+	}
+	.next
+	{
+		background-position: 7px -102px;
+	}
+	.pan
+	{
+		background-position: 7px -129px;
+	}
+	.identify
+	{
+		background-position: 6px -157px;
+	}
+	.parcel
+	{
+    background-position: 6px -186px;
+	}
+	.clear
+	{
+    background-position: 6px -301px;
+	}
+	.ERIS
+	{
+		background-position: 6px -243px;
+	}
+}
 @media only screen and (min-width: 360px)
 {
   .esriViewPopup .gallery
@@ -196,15 +275,7 @@ nav a
   }
   .pull
   {
-    background: url('img/icons.png') no-repeat;
-    background-size: 100% auto;
-    background-position:3px -355px; 
     display: block;
-    height: 25px;
-    left: 7px;
-    top: 7px;
-    width: 25px;
-    z-index: 1;
   }
 }
 @media only screen and (min-width: 800px)

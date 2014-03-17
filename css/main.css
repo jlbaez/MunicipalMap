@@ -470,6 +470,14 @@ nav ul li ul li a
 	{
 		background-position: 4px -184px;
 	}
+	.esriPopupMobile .pointer.bottom
+	{
+		background-position: 0px -453px;
+	}
+	.esriPopupMobile .pointer.top
+	{
+		background-position: 0px -474px;
+	}
 }
 button, .button
 {
@@ -567,10 +575,6 @@ secondary:hover, secondary:focus, .secondary:hover, .secondary:focus
 	    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;	    
 	    transition: background-color 300ms ease-out;
 	}
-    button:active, .button:active
-    {
-    	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset;
-    }
 }
 .button_clicked
 {
