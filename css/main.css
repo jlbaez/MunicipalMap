@@ -380,50 +380,50 @@ nav ul li ul li a
 	margin-right: 5px;
 	padding: 9px 0 8px;
 }
-.zoomin
-{
-	background-image: url("img/toolbar-icons-zoomin.png");	
-}
 .toolbutton
 {
-   background-position: 50% 50%;
+	background-image: url("img/icons.png");
 	background-size: 65%;
 	background-repeat: no-repeat;	
 	height: 25px;
 	transform: rotate( .0001deg );
 	width: 25px;
 }
+.zoomin
+{
+	background-position: 5px 5px;
+}
 .zoomout
 {
-    background-image: url("img/toolbar-icons-zoomout.png");	
+	background-position: 5px -15px;
 }
 .extent
 {
-    background-image: url("img/toolbar-icons-extent.png");	
+	background-position: 5px -36px;
 }
 .previous
 {
-    background-image: url("img/toolbar-icons-previous.png");	
+	background-position: 5px -55px;
 }
 .next
 {
-    background-image: url("img/toolbar-icons-next.png");	
+	background-position: 5px -75px;
 }
 .pan
 {
-    background-image: url("img/toolbar-icons-pan.png");	
+	background-position: 5px -94px;
 }
 .identify
 {
-    background-image: url("img/toolbar-icons-identify.png");	
+	background-position: 4px -114px;
 }
 .parcel
 {
-    background-image: url("img/toolbar-icons-parcel.png");	
+	background-position: 4px -135px;
 }
 .measure
 {
-    background-image: url("img/toolbar-icons-measure.png");	
+	background-position: 4px -156px;
 }
 .locate
 {
@@ -432,7 +432,7 @@ nav ul li ul li a
 }
 .clear
 {
-    background-image: url("img/toolbar-icons-clear.png");	
+	background-position: 4px -176px;
 }
 button, .button
 {
