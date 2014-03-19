@@ -588,8 +588,9 @@ function f_export_excel(event) {
 	"use strict";
 	var form = document.createElement("form"),
 		hidden,
-		pid,
-		target;
+		target,
+		index,
+		array;
 	if (event === "search") {
 		target = search_results;
 	} else {
@@ -599,14 +600,14 @@ function f_export_excel(event) {
 	form.target = "_blank";
 	form.method = "POST";
 	form.style.display = "none";
-	for (pid in target) {
-		if (target.hasOwnProperty(pid)) {
-			hidden = document.createElement("input");
-			hidden.type = "hidden";
-			hidden.name = "PID[]";
-			hidden.value = pid;
-			form.appendChild(hidden);
-		}
+	array = Object.keys(target);
+	console.log(array);
+	for(index = 0; index < array.length; index += 1) {
+		hidden = document.createElement("input");
+		hidden.type = "hidden";
+		hidden.name = "PID[]";
+		hidden.value = array[index];
+		form.appendChild(hidden);
 	}
 	document.body.appendChild(form);
 	form.submit();
@@ -615,8 +616,17 @@ function f_export_excel(event) {
 function f_update_export_parcel() {
 	"use strict";
 		var a_export = document.createElement("a"),
-			search_export = document.getElementById("parcel_export");
+			search_export = document.getElementById("parcel_export"),
+			acres = document.getElementById("parcel_acres"),
+			total = 0,
+			pid;
 	if (Object.keys(parcel_results).length > 0) {
+		console.log(parcel_results);
+		for(pid in parcel_results) {
+			if(parcel_results.hasOwnProperty(pid)) {
+				total += parcel_results[pid];
+			}
+		}
 		a_export.className = "selection_a";
 		a_export.href = "#";
 		a_export.style.color = "#09D";
@@ -626,6 +636,7 @@ function f_update_export_parcel() {
 		};
 		search_export.innerHTML = "";
 		a_export.innerHTML = "Export to Excel: [" + Object.keys(parcel_results).length + " item(s)]";
+		acres.innerHTML = "Total Acres: " + Math.round(total * 100) / 100;
 		search_export.appendChild(a_export);
 	} else {
 		document.getElementById("parcel_export").innerHTML = "";
@@ -1130,7 +1141,7 @@ function f_process_results_parcel(results, event) {
 				search_results[graphic.attributes.PID] = graphic.attributes.PID;
 				search_acres[graphic.attributes.PID] = graphic.attributes.MAP_ACRES;
 			} else {
-				parcel_results[graphic.attributes.PID] = graphic.attributes.PID;
+				parcel_results[graphic.attributes.PID] = graphic.attributes.MAP_ACRES;
 			}
 			popupTemplate = f_getPopupTemplate(graphic);
 			graphic.infoTemplate = popupTemplate;
@@ -1469,6 +1480,7 @@ function f_map_clear() {
 	document.getElementById("search_tally").innerHTML = "";
 	document.getElementById("search_export").innerHTML = "";
 	document.getElementById("parcel_export").innerHTML = "";
+	document.getElementById("parcel_acres").innerHTML = "";
 	document.getElementById("rdo_muni_searchAll").click();
 	document.getElementById("rdo_qual_searchAll").click();
 	document.getElementById("rdo_landuse_searchAll").click();

@@ -360,6 +360,7 @@
 										<a href="javascript:void(0);" id="buffer_exe" class="selection_a buffer_exe">Execute Buffer</a>
 									</li>
 									<li id="parcel_export"></li>
+									<li id="parcel_acres"></li>
 									<li>Parcel Selections:</li>
 								</ul>
 							</li>
