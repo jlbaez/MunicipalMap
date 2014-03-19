@@ -15,6 +15,8 @@
 <?php if ($_SESSION['isMobile']): ?>
 		<link rel="stylesheet" href="css/mobile.css">
 <?php endif ?>
+		<link rel="icon" type="image/ico" href="css/img/favicon.ico">
+
 		<link rel="apple-touch-icon" href="css/img/map-logo-57x57.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="css/img/map-logo-72x72.png">
 		<link rel="apple-touch-icon" sizes="114x114" href="css/img/map-logo-114x114.png">
