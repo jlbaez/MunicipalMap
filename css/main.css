@@ -397,86 +397,81 @@ nav ul li ul li a
 {
 	background-position: 5px -15px;
 }
-.extent
-{
-	background-position: 5px -35px;
-}
-.previous
-{
-	background-position: 5px -55px;
-}
-.next
-{
-	background-position: 5px -74px;
-}
-.pan
-{
-	background-position: 5px -94px;
-}
-.identify
-{
-	background-position: 4px -114px;
-}
-.parcel
-{
-	background-position: 4px -135px;
-}
-.measure
-{
-	background-position: 4px -156px;
-}
 .locate
 {
 	display: none;
 }
-.clear
+@-moz-document url-prefix()
 {
-	background-position: 4px -197px;
+	.extent
+	{
+		background-position: 5px -35px;
+	}
+	.previous
+	{
+		background-position: 5px -53px;
+	}
+	.next
+	{
+		background-position: 5px -71px;
+	}
+	.pan
+	{
+		background-position: 5px -90px;
+	}
+	.identify
+	{
+		background-position: 4.5px -110px;
+	}
+	.parcel
+	{	
+		background-position: 4.5px -130px;
+	}
+	.measure
+	{
+		background-position: 4.5px -150px;
+	}
+	.clear
+	{
+		background-position: 4.5px -210px;
+	}
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) {
 	.zoomout
 	{
-		background-position: 5px -14px;
+		background-position: 5px -13px;
 	}
 	.extent
 	{
-		background-position: 5px -32px;
+		background-position: 5px -31px;
 	}
 	.previous
 	{
-		background-position: 5px -50px;
+		background-position: 5px -49px;
 	}
 	.next
 	{
-		background-position: 5px -69px;
+		background-position: 5px -66px;
 	}
 	.pan
 	{
-		background-position: 5px -87px;
+		background-position: 5.5px -83px;
 	}
 	.identify
 	{
-		background-position: 5px -106px;
+		background-position: 5px -102px;
 	}
 	.parcel
 	{
-		background-position: 4px -125px;
+		background-position: 5px -120px;
 	}
 	.measure
 	{
-		background-position: 4px -145px;
+		background-position: 5px -139px;
 	}
 	.clear
 	{
-		background-position: 4px -184px;
-	}
-	.esriPopupMobile .pointer.bottom
-	{
-		background-position: 0px -453px;
-	}
-	.esriPopupMobile .pointer.top
-	{
-		background-position: 0px -474px;
+		background-position: 5px -195px;
 	}
 }
 button, .button
