@@ -249,12 +249,12 @@ nav a
 {
   .esriViewPopup .gallery
   {
-    width: 350px;
+    width: 280px;
     height: 300px;
   }
   .esriViewPopup .gallery .frame img
   {
-    max-width: 350px;
+    max-width: 280px;
     max-height: 300px;
   }
 }
