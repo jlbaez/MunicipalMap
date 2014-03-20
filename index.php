@@ -6,6 +6,10 @@ $_SESSION['isMobile'] = false;
 if($detect->isMobile()) {
 	$_SESSION['isMobile'] = true;
 }
+$_SESSION['ios'] = false;
+if( $detect->isiOS() ){
+	$_SESSION['ios'] = true;
+}
 $Load = 'municipal_2013_v31';
 if(isset($_GET['version'])){
 	$ver = $_GET['version'];

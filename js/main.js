@@ -621,7 +621,6 @@ function f_update_export_parcel() {
 			total = 0,
 			pid;
 	if (Object.keys(parcel_results).length > 0) {
-		console.log(parcel_results);
 		for(pid in parcel_results) {
 			if(parcel_results.hasOwnProperty(pid)) {
 				total += parcel_results[pid];

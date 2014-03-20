@@ -6,6 +6,10 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="author" content="Jose Baez - Intern Web Developer">
+<?php if ($_SESSION['ios']): ?>
+		<meta content='yes' name='apple-mobile-web-app-capable'>
+		<meta content='white-translucent' name='apple-mobile-web-app-status-bar-style'>
+<?php endif ?>
 		<link rel="stylesheet" href="css/normalize.min.css">
 		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
 		<link rel="stylesheet" href="css/main.css">
@@ -16,7 +20,6 @@
 		<link rel="stylesheet" href="css/mobile.css">
 <?php endif ?>
 		<link rel="icon" type="image/ico" href="css/img/favicon.ico">
-
 		<link rel="apple-touch-icon" href="css/img/map-logo-57x57.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="css/img/map-logo-72x72.png">
 		<link rel="apple-touch-icon" sizes="114x114" href="css/img/map-logo-114x114.png">
