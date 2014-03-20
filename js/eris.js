@@ -155,6 +155,7 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 					e_tbody.appendChild(e_tr2);
 					if (f_urlExists('http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
 						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>';
+				} else {
 						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>';
 					}
 					for (index2 = old_index; index2 < old_index + 1; index2 += 2) {

@@ -6,8 +6,15 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
 	.ERIS
 	{
-		background-position: 4px -164px;
+		background-position: 5px -157px;
 	}
+}
+@-moz-document url-prefix()
+{
+	.ERIS
+	{
+		background-position: 5px -169px;
+	}	
 }
 .li_checked
 {

@@ -1550,11 +1550,19 @@ function f_search_parcel_old(search, where_PID) {
 		where.push(where_address);
 	} else if (search.block !== "" || search.lot !== "") {
 		if (search.block !== "") {
-			where_block = "([BLOCK] = '" + search.block + "' OR [OLD_BLOCK] = '" + search.block + "')";
+			if(search.block_type === "true") {
+				where_block = "([BLOCK] = '" + search.block + "' OR [OLD_BLOCK] = '" + search.block + "')";
+			} else {
+				where_block = "([BLOCK] = '" + search.block + "')";
+			}
 			where.push(where_block);
 		}
 		if (search.lot !== "") {
-			where_lot = "([LOT] = '" + search.lot + "' OR [OLD_LOT] = '" + search.lot + "')";
+			if(search.block_type === "true") {
+				where_lot = "([LOT] = '" + search.lot + "' OR [OLD_LOT] = '" + search.lot + "')";
+			} else {
+				where_lot = "([LOT] = '" + search.lot + "')";
+			}
 			where.push(where_lot);
 		}
 	}
@@ -2071,6 +2079,7 @@ function f_load_tools() {
 			});
 			document.getElementById("search_property").addEventListener("submit", function (e) {
 				e.preventDefault();
+				console.log(domForm.toJson("search_property"));
 				f_search_address(domForm.toJson("search_property"));
 			});
 			document.getElementById("search_owner").addEventListener("click", function () {

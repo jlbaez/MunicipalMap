@@ -137,7 +137,16 @@
 											<label class="label_adj" for="block">Block:</label>
 											<input class="input_adj" type="text" id="block" name="block">
 											<label class="label_adj" for="lot">Lot:</label>
-											<input class="input_adj" type="text" id="lot" name="lot">
+											<input class="input_adj" type="text" id="lot" name="lot"><br>
+											<span>Search Old block and lots:</span>
+											<label>
+												No
+												<input type="radio" name="block_type" id= block_type" value="false" checked>
+											</label>
+											<label>
+												Yes
+												<input type="radio" name="block_type" value="true">
+											</label>
 											<ul class="filters">
 												<li class="property_li">
 													<a href="javascript:void(0);" id="filter" class="search_toggle filter">Search Options & Filters (+)</a>
