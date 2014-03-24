@@ -3,9 +3,6 @@
 	background: #b3d4fc;
 	text-shadow: none;
 }
-/* ===== Initializr Styles ==================================================
-   Author: Jonathan Verrecchia - verekia.com/initializr/responsive-template
-   ========================================================================== */
 body
 {
 	color: #777;
@@ -296,6 +293,10 @@ nav a:hover
 {
 	min-width: 200px;
 	position: absolute !important;
+}
+input[type="radio"]
+{
+	vertical-align: middle;
 }
 input[type=checkbox]:checked + label 
 {

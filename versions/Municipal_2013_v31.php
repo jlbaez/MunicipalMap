@@ -141,7 +141,7 @@
 											<span>Search Old block and lots:</span>
 											<label>
 												No
-												<input type="radio" name="block_type" id= block_type" value="false" checked>
+												<input type="radio" name="block_type" value="false" checked>
 											</label>
 											<label>
 												Yes
