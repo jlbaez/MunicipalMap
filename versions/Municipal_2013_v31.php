@@ -138,10 +138,10 @@
 											<input class="input_adj" type="text" id="block" name="block">
 											<label class="label_adj" for="lot">Lot:</label>
 											<input class="input_adj" type="text" id="lot" name="lot"><br>
-											<span>Search Old block and lots:</span>
+											<span>Include Old block and lots:</span>
 											<label>
 												No
-												<input type="radio" name="block_type" value="false" checked>
+												<input type="radio" name="block_type" id="block_type" value="false" checked>
 											</label>
 											<label>
 												Yes

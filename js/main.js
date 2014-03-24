@@ -601,7 +601,6 @@ function f_export_excel(event) {
 	form.method = "POST";
 	form.style.display = "none";
 	array = Object.keys(target);
-	console.log(array);
 	for(index = 0; index < array.length; index += 1) {
 		hidden = document.createElement("input");
 		hidden.type = "hidden";
@@ -1483,6 +1482,7 @@ function f_map_clear() {
 	document.getElementById("rdo_muni_searchAll").click();
 	document.getElementById("rdo_qual_searchAll").click();
 	document.getElementById("rdo_landuse_searchAll").click();
+	document.getElementById("block_type").click();
 	document.getElementById("search_progress").style.display = "none";
 	M_meri.getLayer("GL_parcel_selection").clear();
 	M_meri.getLayer("GL_buffer_parcel").clear();
@@ -2079,7 +2079,6 @@ function f_load_tools() {
 			});
 			document.getElementById("search_property").addEventListener("submit", function (e) {
 				e.preventDefault();
-				console.log(domForm.toJson("search_property"));
 				f_search_address(domForm.toJson("search_property"));
 			});
 			document.getElementById("search_owner").addEventListener("click", function () {
