@@ -33,11 +33,11 @@
 		</script>
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+				(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+				m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-		  ga('create', 'UA-37047196-3', 'njmeadowlands.gov');
-		  ga('send', 'pageview');
+			ga('create', 'UA-37047196-3', 'njmeadowlands.gov');
+			ga('send', 'pageview');
 		</script>
 	</head>
 	<body>
@@ -133,29 +133,35 @@
 									<li id="li_property">
 										<form id="search_property">
 											<label for="address">Address:</label>
-											<input type="text" id="address" class="input" name="address">
+											<input type="text" id="address" class="input" name="address" autocomplete="off">
 											<label class="label_adj" for="block">Block:</label>
 											<input class="input_adj" type="text" id="block" name="block">
 											<label class="label_adj" for="lot">Lot:</label>
 											<input class="input_adj" type="text" id="lot" name="lot"><br>
-											<span>Include Old block and lots:</span>
+											<span>Include Old block and lots:</span><br>
 											<label>
 												No
 												<input type="radio" name="block_type" id="block_type" value="false" checked>
+												<span class="check"></span>
 											</label>
 											<label>
 												Yes
 												<input type="radio" name="block_type" value="true">
+												<span class="check"></span>
 											</label>
 											<ul class="filters">
 												<li class="property_li">
 													<a href="javascript:void(0);" id="filter" class="search_toggle filter">Search Options & Filters (+)</a>
 													<ul class=" dropdown filters hidden">
 														<li class="li_filter">
-															<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchAll" value="no" checked="checked" />
-															<label for="rdo_muni_searchAll">All Municipalities</label>
-															<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchSelect" value="yes">
-															<label for="rdo_muni_searchSelect">Selected Municipalities</label>
+															<label>All Municipalities
+																<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchAll" value="no" checked="checked" />
+																<span class="check"></span>
+															</label>
+															<label for="rdo_muni_searchSelect">Select Municipalities
+																<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchSelect" value="yes">
+																<span class="check"></span>
+															</label>
 															<ul id="search_munis" class="dropdown filters search_item animate hidden">
 																<li class="muniCheckRow">
 																	<label class="search_muni_label">Carlstadt
@@ -230,10 +236,16 @@
 															</ul>
 														</li>
 														<li class="li_filter">
-															<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchAll" value="no" checked="checked" />
-															<label for="rdo_qual_searchAll">All Parcels</label>
-															<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchSelect" value="yes">
-															<label for="rdo_qual_searchSelect">Designated Parcels</label>
+															<label>
+																All Parcels
+																<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchAll" value="no" checked="checked" />
+																<span class="check"></span>
+															</label>
+															<label>
+																Designate Parcels
+																<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchSelect" value="yes">
+																<span class="check"></span>
+															</label>
 															<ul id="search_qual" class="dropdown filters search_item animate hidden">
 																<li class="qualCheckRow">
 																	<label class="search_qual_label">In District
@@ -253,10 +265,16 @@
 															</ul>
 														</li>
 														<li class="li_filter">
-															<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchAll" value="no" checked="checked" />
-															<label for="rdo_landuse_searchAll">All Land Uses</label>
-															<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchSelect" value="yes">
-															<label for="rdo_landuse_searchSelect">Selected Land Uses</label>
+															<label>
+																All Land Uses
+																<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchAll" value="no" checked="checked" />
+																<span class="check"></span>
+															</label>
+															<label>
+																Select Land Uses
+																<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchSelect" value="yes">
+																<span class="check"></span>
+															</label>
 															<ul id="search_landuse" class="dropdown filters search_item animate hidden">
 																<li class="landuseCheckRow">
 																	<label class="search_landuse_label">Commercial Office
@@ -496,9 +514,9 @@
 			</div>
 			<div id="map" class="map"></div>
 		</div>
-    <script  src="http://js.arcgis.com/3.8compact/init.js"></script>
-		<script  type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
-		<script  src="js/main.js"></script>
+		<script src="http://js.arcgis.com/3.8compact/init.js"></script>
+		<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+		<script src="js/main.js"></script>
 <?php if ($_SESSION['isERIS']): ?>
 		<script  src="js/ERIS.js"></script>
 <?php endif ?>

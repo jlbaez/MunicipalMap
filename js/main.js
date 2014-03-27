@@ -1921,7 +1921,8 @@ function e_goBack() {
 }
 function f_add_filter_listener(filter) {
 	filter.addEventListener("change", function () {
-		var target = this.parentNode.getElementsByTagName("ul")[0];
+		var target = this.parentNode.parentNode.getElementsByTagName("ul")[0];
+		console.log(target);
 		target.classList.toggle("hidden");
 	});
 }
