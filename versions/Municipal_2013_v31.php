@@ -132,13 +132,21 @@
 									</li>
 									<li id="li_property">
 										<form id="search_property">
-											<label for="address">Address:</label>
-											<input type="text" id="address" class="input" name="address" autocomplete="off">
-											<label class="label_adj" for="block">Block:</label>
-											<input class="input_adj" type="text" id="block" name="block">
-											<label class="label_adj" for="lot">Lot:</label>
-											<input class="input_adj" type="text" id="lot" name="lot"><br>
-											<span>Include Old block and lots:</span><br>
+											<label>
+												<span>Address:</span>
+												<input type="text" id="address" class="input" name="address" autocomplete="off">
+											</label>
+											<label class="label_adj">
+												<span>Block:</span>
+												<input class="input_adj" type="text" id="block" name="block">
+											</label>
+											<label class="label_adj">
+												<span>Lot:</span>
+												<input class="input_adj" type="text" id="lot" name="lot">
+											</label>
+											<br>
+											<span>Include Old block and lots:</span>
+											<br>
 											<label>
 												No
 												<input type="radio" name="block_type" id="block_type" value="false" checked>
