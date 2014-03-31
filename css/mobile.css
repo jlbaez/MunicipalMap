@@ -277,50 +277,6 @@ body
 		background-position: 6px -243px;
 	}
 }
-@media only screen and (max-width: 360px)
-{
-	.esriViewPopup .gallery
-	{
-		width: 280px;
-		height: 300px;
-	}
-	.esriViewPopup .gallery .frame img
-	{
-		max-width: 280px;
-		max-height: 300px;
-	}
-	.dropdown
-	{
-		width: auto;
-	}
-	.dropdown4
-	{
-		width: 100%;
-	}
-	.tab
-	{
-		padding: 17px 0;
-	}
-	.nav_tabs
-	{
-		background-color: #FDFDFD;
-		background-repeat: repeat-x;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-		width: 0;
-		overflow-x: hidden;
-		position: fixed;
-		top: 0;
-		left: 0;
-		height: 100%;
-	}
-	.pull
-	{
-		display: block;
-	}	
-}
-@media only screen and (max-width: 768px)
-{
-}
 @media only screen and (max-width: 1024px)
 {
 	.buttons
@@ -333,7 +289,6 @@ body
 	.dropdown
 	{
 		position: absolute;
-		max-width: 65%;
 	}
 	.logo
 	{
@@ -360,92 +315,82 @@ body
 		width: 100%;
 	}
 }
-/*@media only screen and (max-width: 799px)
-{
-  .nav_tabs
-  {
-    background-color: #FAFAFA;
-    background-image: linear-gradient(to bottom, #FFF, #F2F2F2);
-    background-repeat: repeat-x;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-    width: 0;
-    overflow-x: hidden;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-  }
-  .pull
-  {
-    display: block;
-  }
-}
-@media only screen and (min-width: 800px)
-{
-  .button_row
-  {
-    padding: 0;
-  }
-  .dropdown
-  {
-    position: absolute;
-    max-height: 65%;
-  }
-  .nav_tabs
-  {
-    display: block;
-    width: auto;
-  }
-  .tab
-  {
-    margin-bottom: 0;
-    padding: 17px 5px;
-  }
-  .tabs
-  {
-    width: 414px;
-    margin: auto;
-  }
-  .tabs>li
-  {
-    display: inline-block;
-    margin-right: 2%;
-  }  
-}
-@media only screen and (min-width: 1280px)
+@media only screen and (max-width: 768px)
 {
 	.logo
-  {
-    float:left;
-    width: 15%;
-    position: static;
-  }
-  .buttons
-  {
-    display: inline-block;
-    float: left;
-    width: auto;
-  }
-  .button_row
-  {
-    margin-right: 5px;
-  }
-  .nav_tabs
-  {
-    display: inline-block;
-  }
-  .mainSection
-  {
-    width: 40%;
-    display: inline-block;
-    float: left;
-  }
-  .mediaSection
-  {
-    width: 40%;
-    display: inline-block;
-  }
-}*/
-@media only screen and (max-width: 36px)
+	{
+		display: block;
+		left: 0;
+		margin: auto;
+	}
+	.toolbutton
+	{
+		margin-bottom: 0;
+	}
+}
+@media only screen and (max-width: 384px)
 {
+	.esriViewPopup .gallery
+	{
+		width: 280px;
+		height: 300px;
+	}
+	.esriViewPopup .gallery .frame img
+	{
+		max-width: 280px;
+		max-height: 300px;
+	}
+	.buttons
+	{
+		left: 0;
+		width: 100%;
+	}
+	.dropdown
+	{
+		width: auto;
+		position: relative;
+	}
+	.dropdown4
+	{
+		width: 100%;
+	}
+	.tab
+	{
+		padding: 17px 0;
+	}
+	.tabs
+	{
+		width: auto;
+	}
+	.tabs > li
+	{
+		display: block;
+	}
+	.logo
+	{
+		width: 35%;
+	}
+	.nav_tabs
+	{
+		background-color: #FDFDFD;
+		background-repeat: repeat-x;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+		width: 0;
+		overflow-x: hidden;
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 100%;
+	}
+	.pull
+	{
+		display: block;
+	}	
+}
+@media only screen and (max-width: 320px)
+{
+	.toolbutton
+	{
+		margin-right: -1px;
+	}
 }
