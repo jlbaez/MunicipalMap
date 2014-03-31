@@ -127,9 +127,19 @@
 								<a href="javascript:void(0);" id="search" class="tab">Search</a>
 								<ul id="dropdown2" class="dropdown main animate hidden">
 									<li>
+										<label>
+											<input type="radio" name="search_type" id="property_toggle" class="search_type" value="property" checked>
+											<span>Property</span>
+										</label>
+										<label>
+											<input type="radio" name="search_type" id="owner_toggle" class="search_type" value="owner">
+											<span>Owner</span>
+										</label>
+									</li>
+									<!--<li>
 										<a href="javascript:void(0);" id="property_toggle" class="search_toggle property_toggle">Property</a>
 										<a href="javascript:void(0);" id="owner_toggle" class="search_toggle">Owner</a>
-									</li>
+									</li>-->
 									<li id="li_property">
 										<form id="search_property">
 											<label>

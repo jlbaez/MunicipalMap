@@ -2094,23 +2094,11 @@ function f_load_tools() {
 			document.getElementById("search_owner").addEventListener("click", function () {
 				f_search_owner(domForm.toJson("search_owner"));
 			});
-			document.getElementById("owner_toggle").addEventListener("click", function () {
-				if(ERIS) {
-					this.style.color = "#DE0A0A";
-				} else {
-					this.style.color = "#09D";
-				}
-				document.getElementById("property_toggle").style.color = "#444";
+			document.getElementById("owner_toggle").addEventListener("change", function() {
 				document.getElementById("li_property").style.display = "none";
 				document.getElementById("li_owner").style.display = "block";
 			});
-			document.getElementById("property_toggle").addEventListener("click", function () {
-				if(ERIS) {
-					this.style.color = "#DE0A0A";
-				} else {
-					this.style.color = "#09D";
-				}
-				document.getElementById("property_toggle").style.color = "#444";
+			document.getElementById("property_toggle").addEventListener("change", function() {
 				document.getElementById("li_property").style.display = "block";
 				document.getElementById("li_owner").style.display = "none";
 			});

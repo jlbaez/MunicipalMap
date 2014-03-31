@@ -23,7 +23,6 @@ nav a
 	padding: 15px 0;
 	text-align: center;
 	text-decoration: none;
-	text-shadow: 0 1px 0 #FFF;
 	transition: color ease-in-out .2s
 }
 nav a:hover 
@@ -553,14 +552,23 @@ button, .button
 .input_adj
 {
 	display: inline-block;
-  height: 2.3125em;
-  width: 50px;
+	height: 2.3125em;
+	width: 50px;
+}
+.label_adj
+{
+	float:left;
+	margin: 1px 0;
 }
 .input
 {
 	display: block;
-  height: 2.3125em;
-  width: 93%;
+	height: 2.3125em;
+	width: 182px;
+}
+.search_type:checked + span
+{
+	color: #09D;
 }
 .tiny 
 {

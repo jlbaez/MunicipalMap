@@ -1,7 +1,11 @@
 .ERIS
 {
-    background-image: url("img/icons.png");
-		background-position: 4px -176px;
+	background-image: url("img/icons.png");
+	background-position: 4px -176px;
+}
+.search_type:checked + span
+{
+	color: #DE0A0A;
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) {
 	.ERIS
