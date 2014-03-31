@@ -142,26 +142,23 @@
 											<label>
 												No
 												<input type="radio" name="block_type" id="block_type" value="false" checked>
-												<span class="check"></span>
+												<span class="check circle"></span>
 											</label>
 											<label>
 												Yes
 												<input type="radio" name="block_type" value="true">
-												<span class="check"></span>
+												<span class="check circle"></span>
 											</label>
 											<ul class="filters">
 												<li class="property_li">
 													<a href="javascript:void(0);" id="filter" class="search_toggle filter">Search Options & Filters (+)</a>
 													<ul class=" dropdown filters hidden">
 														<li class="li_filter">
-															<label>All Municipalities
-																<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchAll" value="no" checked="checked" />
+															<label>
+																Select Municipalities
+																<input type="checkbox" name="rdo_muni_search" class="filter_check" id="rdo_muni_searchAll">
 																<span class="check"></span>
-															</label>
-															<label for="rdo_muni_searchSelect">Select Municipalities
-																<input type="radio" name="rdo_muni_search" class="radio_filter" id="rdo_muni_searchSelect" value="yes">
-																<span class="check"></span>
-															</label>
+															<label>
 															<ul id="search_munis" class="dropdown filters search_item animate hidden">
 																<li class="muniCheckRow">
 																	<label class="search_muni_label">Carlstadt
@@ -236,14 +233,9 @@
 															</ul>
 														</li>
 														<li class="li_filter">
-															<label>
-																All Parcels
-																<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchAll" value="no" checked="checked" />
-																<span class="check"></span>
-															</label>
-															<label>
-																Designate Parcels
-																<input type="radio" name="rdo_qual_search" class="radio_filter" id="rdo_qual_searchSelect" value="yes">
+															<label> 
+																Designate District 
+																<input type="checkbox" name="rdo_qual_search" class="filter_check" id="rdo_qual_searchAll">
 																<span class="check"></span>
 															</label>
 															<ul id="search_qual" class="dropdown filters search_item animate hidden">
@@ -266,13 +258,8 @@
 														</li>
 														<li class="li_filter">
 															<label>
-																All Land Uses
-																<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchAll" value="no" checked="checked" />
-																<span class="check"></span>
-															</label>
-															<label>
-																Select Land Uses
-																<input type="radio" name="rdo_landuse_search" class="radio_filter" id="rdo_landuse_searchSelect" value="yes">
+																Select Land Uses 
+																<input type="checkbox" name="rdo_landuse_search" class="filter_check" id="rdo_landuse_searchAll">
 																<span class="check"></span>
 															</label>
 															<ul id="search_landuse" class="dropdown filters search_item animate hidden">

@@ -1470,6 +1470,7 @@ function f_map_clear() {
 	var dropdown0 = document.getElementById("dropdown0"),
 		index,
 		length,
+		target,
 		array;
 	search_results = [];
 	parcel_results = [];
@@ -1479,9 +1480,18 @@ function f_map_clear() {
 	document.getElementById("search_export").innerHTML = "";
 	document.getElementById("parcel_export").innerHTML = "";
 	document.getElementById("parcel_acres").innerHTML = "";
-	document.getElementById("rdo_muni_searchAll").click();
-	document.getElementById("rdo_qual_searchAll").click();
-	document.getElementById("rdo_landuse_searchAll").click();
+	target = document.getElementById("rdo_muni_searchAll");
+	if(target.checked) {
+		target.click();
+	}
+	target = document.getElementById("rdo_qual_searchAll");
+	if(target.checked) {
+		target.click();
+	}
+	target = document.getElementById("rdo_landuse_searchAll");
+	if(target.checked) {
+		target.click();
+	}
 	document.getElementById("block_type").click();
 	document.getElementById("search_progress").style.display = "none";
 	M_meri.getLayer("GL_parcel_selection").clear();
@@ -1576,7 +1586,7 @@ function f_search_parcel_old(search, where_PID) {
 		Q_parcel_selection.outSpatialReference = {wkid: 3857};
 		Q_parcel_selection.returnGeometry = true;
 		Q_parcel_selection.outFields = outFields_json.parcel;
-		if (search.rdo_muni_search === "yes") {
+		if (search.rdo_muni_search === "on") {
 			if (search.s_muni_chk_item !== undefined && search.s_muni_chk_item.length > 0) {
 				where_muni = "[MUN_CODE] IN (";
 				if (search.s_muni_chk_item instanceof Array) {
@@ -1591,7 +1601,7 @@ function f_search_parcel_old(search, where_PID) {
 				where.push(where_muni);
 			}
 		}
-		if (search.rdo_qual_search === "yes") {
+		if (search.rdo_qual_search === "on") {
 			if (search.s_qual_chk_item !== undefined && search.s_qual_chk_item.length > 0) {
 				where_qual = "[QUALIFIER] in (";
 				if (search.s_qual_chk_item instanceof Array) {
@@ -1782,7 +1792,7 @@ function showResults(candidates, search) {
 				where.push(where_muni);
 			}
 		}
-		if (search.rdo_qual_search === "yes") {
+		if (search.rdo_qual_search === "on") {
 			if (search.s_qual_chk_item !== undefined && search.s_qual_chk_item.length > 0) {
 				where_qual = "[QUALIFIER] in (";
 				if (search.s_qual_chk_item instanceof Array) {
@@ -1922,7 +1932,6 @@ function e_goBack() {
 function f_add_filter_listener(filter) {
 	filter.addEventListener("change", function () {
 		var target = this.parentNode.parentNode.getElementsByTagName("ul")[0];
-		console.log(target);
 		target.classList.toggle("hidden");
 	});
 }
@@ -2135,6 +2144,9 @@ function f_load_tools() {
 			});
 			target = document.getElementsByClassName("radio_filter");
 			length = target.length;
+			f_add_filter_listener(document.getElementById('rdo_muni_searchAll'));
+			f_add_filter_listener(document.getElementById('rdo_qual_searchAll'));
+			f_add_filter_listener(document.getElementById('rdo_landuse_searchAll'));
 			for(index = 0; index < length; index += 1) {
 				f_add_filter_listener(target[index]);
 			}

@@ -10,23 +10,10 @@ body
 	font-size: 14px;
 	line-height: 20px
 }
-.header-container
-{
-	background-color: #FAFAFA;
-	background-image: linear-gradient(to bottom, #FFF, #F2F2F2);
-	background-repeat: repeat-x;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-}
 nav ul
 {
 	margin: 0;
 	padding: 0
-}
-.esriScalebarLabel
-{
-	color: #FFF;
-	font-family: Verdana;
-	font-size: 8px;
 }
 nav a 
 {
@@ -42,6 +29,26 @@ nav a
 nav a:hover 
 {
 	color: #333
+}
+label
+{
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.esriScalebarLabel
+{
+	color: #FFF;
+	font-family: Verdana;
+	font-size: 8px;
+}
+.header-container
+{
+	background-color: rgb(253, 253, 253);
+	/*background-image: linear-gradient(to bottom, #FFF, #F2F2F2);*/
+	background-repeat: repeat-x;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
 }
 .main 
 {
@@ -64,26 +71,26 @@ nav a:hover
 .dijitInline
 {
 	border: 0 none;
-  display: inline-block;
-  padding: 0;
-  vertical-align: middle;
+	display: inline-block;
+	padding: 0;
+	vertical-align: middle;
 }
 .dijitReset
 {
 	-moz-font-feature-settings: inherit;
-  -moz-font-language-override: inherit;
-  border: 0 none;
-  color: inherit;
-  font-family: inherit;
-  font-size: inherit;
-  font-size-adjust: inherit;
-  font-stretch: inherit;
-  font-style: inherit;
-  font-variant: inherit;
-  font-weight: inherit;
-  line-height: normal;
-  margin: 0;
-  padding: 0;
+	-moz-font-language-override: inherit;
+	border: 0 none;
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
+	font-size-adjust: inherit;
+	font-stretch: inherit;
+	font-style: inherit;
+	font-variant: inherit;
+	font-weight: inherit;
+	line-height: normal;
+	margin: 0;
+	padding: 0;
 }
 .esriButton .dijitButtonNode
 {
@@ -164,8 +171,8 @@ nav a:hover
 }
 .logo
 {
-	float:left;
-	width: 15%
+	width: 15%;
+	vertical-align: middle;
 }
 .about_link
 {
@@ -247,7 +254,9 @@ nav a:hover
 }
 .buttons
 {
-	float:left;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
 }
 .pull
 {  
@@ -294,8 +303,7 @@ nav a:hover
 	min-width: 200px;
 	position: absolute !important;
 }
-input[type="radio"]
-{
+.filter_check,input[type="radio"]{
 	vertical-align: middle;
 	position: absolute;
 	opacity: 0;
@@ -309,10 +317,13 @@ input[type="radio"]
 	padding: 0;
 	margin: 0;
 	vertical-align: middle;
-	border-radius: 50%;
 	width: 15px;
 	height: 15px;
 	display: inline-block;
+}
+.circle
+{
+	border-radius: 50%;
 }
 input[type="checkbox"]:checked + label 
 {
@@ -327,6 +338,14 @@ input[type="radio"]:checked ~.check:after
 	border-radius: 50%;
 	background-color: #1D1D1D;
 	margin: 3px;
+}
+.filter_check:checked ~.check:after
+{
+	color: #1D1D1D;
+	content: "✔";
+	margin: 2px;
+	line-height: 9pt;
+	position: absolute;
 }
 .active>a
 {
@@ -402,18 +421,13 @@ nav ul li ul li a
 {
     z-index: 1;
 }
-.button_row
-{
-	margin-right: 5px;
-	padding: 9px 0 8px;
-}
 .toolbutton
 {
 	background-image: url("img/icons.png");
 	background-size: 65%;
-	background-repeat: no-repeat;	
+	background-repeat: no-repeat;
 	height: 25px;
-	transform: rotate( .0001deg );
+	margin-bottom: 0;
 	width: 25px;
 }
 .zoomin
@@ -430,6 +444,10 @@ nav ul li ul li a
 }
 @-moz-document url-prefix()
 {
+	.buttons
+	{
+		vertical-align: super;
+	}
 	.extent
 	{
 		background-position: 5px -35px;
