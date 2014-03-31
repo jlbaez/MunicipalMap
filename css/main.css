@@ -255,7 +255,7 @@ label
 {
 	margin: 0;
 	padding: 0;
-	vertical-align: middle;
+	vertical-align: baseline;
 }
 .pull
 {  

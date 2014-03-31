@@ -9,6 +9,10 @@ nav a
 	text-shadow: 0 1px 0 #FFF;
 	transition: color ease-in-out .2s
 }
+body
+{
+	font-size: 20px;
+}
 .active > ul
 {
 	padding: 5px;
@@ -19,6 +23,14 @@ nav a
 	padding-bottom: 0.75em;
 	padding-top: 0.8125em;
 	width: 100%;
+}
+.mobile_padding
+{
+	padding: 10px 0;
+}
+.li_filter
+{
+	padding: 10px 0;
 }
 .dropdown
 {
@@ -90,12 +102,24 @@ nav a
 }
 .select_option
 {
-	width: 100%;
+	display: block;
+	font-size: 15px;
 	height: 35px;
+	margin: auto;
+}
+.mobile_choice
+{
+	float: left;
+	width: 95%;
 }
 .tabs
 {
 	height: 100%;
+	width: auto;
+}
+.input
+{
+	width: 95%;
 }
 .tabs > li
 {
@@ -114,6 +138,10 @@ nav a
 	width: 35px;
 	height: 35px;
 }
+.search_qual_label, .search_muni_label, .search_landuse_label
+{
+	padding: 10px 0;
+}
 .ul_buttons {
 	text-align: center;
 	width: 100%;
@@ -129,6 +157,10 @@ nav a
 .print_a
 {
 	display: none;
+}
+.esriLegendService
+{
+	padding-left: 10px;
 }
 .extent
 {
@@ -245,20 +277,90 @@ nav a
 		background-position: 6px -243px;
 	}
 }
-@media only screen and (min-width: 360px)
+@media only screen and (max-width: 360px)
 {
-  .esriViewPopup .gallery
-  {
-    width: 280px;
-    height: 300px;
-  }
-  .esriViewPopup .gallery .frame img
-  {
-    max-width: 280px;
-    max-height: 300px;
-  }
+	.esriViewPopup .gallery
+	{
+		width: 280px;
+		height: 300px;
+	}
+	.esriViewPopup .gallery .frame img
+	{
+		max-width: 280px;
+		max-height: 300px;
+	}
+	.dropdown
+	{
+		width: auto;
+	}
+	.dropdown4
+	{
+		width: 100%;
+	}
+	.tab
+	{
+		padding: 17px 0;
+	}
+	.nav_tabs
+	{
+		background-color: #FDFDFD;
+		background-repeat: repeat-x;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+		width: 0;
+		overflow-x: hidden;
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 100%;
+	}
+	.pull
+	{
+		display: block;
+	}	
 }
-@media only screen and (max-width: 799px)
+@media only screen and (max-width: 768px)
+{
+}
+@media only screen and (max-width: 1024px)
+{
+	.buttons
+	{
+		display: inline-block;
+		left: 210px;
+		position: relative;
+		vertical-align: text-top;
+	}
+	.dropdown
+	{
+		position: absolute;
+		max-width: 65%;
+	}
+	.logo
+	{
+		display: inline-block;
+		left: 210px;
+		margin: 0 12px;
+		width:25%;
+	}
+	.nav_tabs
+	{
+		width: 100%;
+	}
+	.tabs
+	{
+		width: 494px;
+		margin: auto;
+	}
+	.tabs > li
+	{
+		display: inline-block;
+	}
+	.wrapper
+	{
+		width: 100%;
+	}
+}
+/*@media only screen and (max-width: 799px)
 {
   .nav_tabs
   {
@@ -343,5 +445,7 @@ nav a
     width: 40%;
     display: inline-block;
   }
+}*/
+@media only screen and (max-width: 36px)
+{
 }
-

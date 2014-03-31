@@ -136,10 +136,6 @@
 											<span>Owner</span>
 										</label>
 									</li>
-									<!--<li>
-										<a href="javascript:void(0);" id="property_toggle" class="search_toggle property_toggle">Property</a>
-										<a href="javascript:void(0);" id="owner_toggle" class="search_toggle">Owner</a>
-									</li>-->
 									<li id="li_property">
 										<form id="search_property">
 											<label>
@@ -154,20 +150,20 @@
 												<span>Lot:</span>
 												<input class="input_adj" type="text" id="lot" name="lot">
 											</label>
-											<br>
-											<span>Include Old block and lots:</span>
-											<br>
+											<br />
+											<span class="mobile_choice">Include Old block and lots:</span>
+											<br />
 											<label>
-												No
+												<span>No</span>
 												<input type="radio" name="block_type" id="block_type" value="false" checked>
 												<span class="check circle"></span>
 											</label>
 											<label>
-												Yes
+												<span>Yes</span>
 												<input type="radio" name="block_type" value="true">
 												<span class="check circle"></span>
 											</label>
-											<ul class="filters">
+											<ul class="filters mobile_padding">
 												<li class="property_li">
 													<a href="javascript:void(0);" id="filter" class="search_toggle filter">Search Options & Filters (+)</a>
 													<ul class=" dropdown filters hidden">
