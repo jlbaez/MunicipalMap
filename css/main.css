@@ -522,7 +522,7 @@ nav ul li ul li a
 button, .button
 {
     background-color: #0099dd;
-    border-color: #0076aa;
+    border-color: transparent;
     border-style: solid;
     border-width: 1px;
     color: white;    
@@ -742,7 +742,7 @@ button, .button
 {
 	.tabs
 	{
-		width: 100%;
+		width: 321px;
 	}
 	.dropdown
 	{
@@ -752,6 +752,14 @@ button, .button
 	.buttons
 	{
 		width: auto;
+	}
+	.tab
+	{
+		padding: 10px 1px;
+	}
+	.tabs > li
+	{
+		margin: 0;
 	}
 }
 /* ==========================================================================
