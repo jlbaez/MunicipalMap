@@ -29,7 +29,7 @@ if(isset($_GET['version'])){
 }
 require_once('ERIS/validate.php');
 $_SESSION['isERIS'] = false;
-if(!validateERIS()){
+if(validateERIS()){
 	$_SESSION['isERIS'] = true;
 }
 require_once('versions/'.$Load.'.php');
