@@ -17,7 +17,7 @@
  *	QT    -	Query Task
  *	EVT   -	Event
  *  F     -	Feature
- *  IW    -	Info Window  
+ *  IW    -	Info Window
  *  GS    -	GeoService
  *  GeomS -	Geometry Service
  *	S     -	Symbol
@@ -143,286 +143,273 @@ function f_getFloodInfo() {
 }
 function f_getAliases() {
 	"use strict";
-	var aliases = {"munCodes":
-		{"205": "Carlstadt",
-							"212": "East Rutherford",
-							"230": "Little Ferry",
-							"232": "Lyndhurst",
-							"237": "Moonachie",
-		 "239": "North Arlington",
-						 "249": "Ridgefield",
-						 "256": "Rutherford",
-						 "259": "South Hackensack",
-						 "262": "Teterboro",
-						 "906": "Jersey City",
-						 "907": "Kearny",
-						 "908": "North bergen",
-						 "909": "Secaucus"},
-						"landUseCodes" :
-						{"000": "Unclassified",
-						 "AL": "Altered Lands",
-						 "CO": "Commercial Office",
-						 "CR": "Commercial Retail",
-						 "CU": "Communication Utility",
-						 "HM": "Hotels and Motels",
-						 "ICC": "Ind. Comm. Complex",
-						 "IND": "Industrial",
-						 "PQP": "Public Services",
-						 "RES": "Residential",
-						 "RL": "Recreational Land",
-						 "TRS": "Transportation",
-						 "VAC": "Open Land",
-						 "TL": "Transitional Lands",
-						 "WAT": "Water",
-						 "WET": "Wetlands"},
-						"zoneCodes":
-						{"AV": "Aviation facilities",
-						 "CP": "Commercial Park",
-						 "EC": "Environmental Conservation",
-						 "HI": "Heavy Industrial",
-						 "HC": "Highway Commercial",
-						 "IA": "Intermodal A",
-						 "IB": "Intermodal B",
-						 "LIA": "Light Industrial A",
-						 "LIB": "Light Industrial B",
-						 "LDR": "Low Density Residential",
-						 "NC": "Neighborhood Commercial",
-						 "PR": "Planned Residential",
-						 "PU" : "Public Utilities",
-						 "RC": "Regional Commercial",
-						 "TC": "Transportation Center",
-						 "WR" : "Waterfront Recreation",
-						 "RRR" : "Roads, Rails, ROWs",
-						 "000" : "Unclassified",
-						 "RA" : "Redevelopment Area",
-						 "MZ" : "Multiple Zones",
-						 "CZC-SECA" : "Commercial Zone C - Secaucus",
-						 "LI1-SECA" : "Light Industrial Zone 1 - Secaucus",
-						 "RZA-SECA" : "Residential Zone A - Secaucus",
-						 "WAT" : "Water",
-						 "LID-TET" : "Light Industrial & Distribution Zone - Teterboro",
-						 "RA1-TET" : "Redevelopment Area 1 Zone - Teterboro",
-						 "RA2-TET" : "Redevelopment Area 2 Zone - Teterboro",
-						 "PA" : "Parks and Recreation",
-						 "C-CARL" : "Commercial Zone - Carlstadt",
-						 "LI-CARL" : "Light Industrial - Carlstadt",
-						 "LDR-TET" : "Low Density Residential - Teterboro",
-						 "MCZ-CARL" : "Mixed Commercial Zone - Carlstadt",
-						 "RZ-CARL" : "Residential Zone - Carlstadt",
-						 "RZB-SECA" : "Residential Zone B - Secaucus",
-						 "MNF-MOON" : "Manufacturing Zone - Moonachie",
-						 "R1-MOON" : "1-Family Residential Zone - Moonachie",
-						 "R2-MOON" : "2-Family Residential Zone - Moonachie",
-						 "B1-MOON" : "General Business Zone - Moonachie",
-						 "B2-MOON" : "Limited Business Zone - Moonachie",
-						 "R1-ER" : "Low Density Residential - E Rutherford",
-						 "R2-ER" : "Medium Density Residential - E Rutherford",
-						 "R3-ER" : "Multi-Family Residential - E Rutherford",
-						 "NC-ER" : "Neighborhood Commercial - E Rutherford",
-						 "RC-ER" : "Regional Commercial - E Rutherford",
-						 "PCD-ER" : "Planned Commercial Development - E Rutherford",
-						 "RD1-ER" : "Redevelopment-1 - E Rutherford",
-						 "R1-NA" : "1-Family Residential - N Arlington",
-						 "R2-NA" : "1&2-Family Residential - N Arlington",
-						 "RRRA-NA" : "Ridge Road Redevelopment Area - N Arlington",
-						 "PARA-NA" : "Porete Avenue Redevelopment Area - N Arlington",
-						 "R3-NA" : "Multi-Family Residential - N Arlington",
-						 "I1-NA" : "Light Industrial - N Arlington",
-						 "C3-NA" : "Cemetery - N Arlington",
-						 "P/OS-NA" : "Parks & Open Space - N Arlington",
-						 "W/C-NA" : "Waterways & Creeks - N Arlington",
-						 "SEA" : "Sports and Expositions",
-						 "I-ER" : "Light Industrial -  E Rutherford",
-						 "C2-NA" : "Commercial 2 - N Arlington",
-						 "C1-NA" : "Commercial 1 - N Arlington",
-						 "R1-RU" : "Single Family Residential - Rutherford",
-						 "R1A-RU" : "Single Family Residential - Rutherford",
-						 "R1B-RU" : "Single Family Residential - Rutherford",
-						 "R2-RU" : "Two Family Residential - Rutherford",
-						 "R4-RU" : "Five Story Apartment - Rutherford",
-						 "B1-RU" : "Three Story Office - Rutherford",
-						 "B2-RU" : "Five Story Office - Rutherford",
-						 "B3-RU" : "Three Story Office-Retail - Rutherford",
-						 "B3/SH-RU" : "Business / Senior Housing - Rutherford",
-						 "B4-RU" : "Business / Light Industrial - Rutherford",
-						 "ORD-RU" : "Ten Story Office, Research & Distribution - Rutherford",
-						 "HC-RU" : "Highway Commercial Development - Rutherford",
-						 "PCD-RU" : "Planned Commercial Development - Rutherford",
-						 "R3-RU" : "Three Story Apartment - Rutherford",
-						 "UR1A-RU" : "University / Residential, Single Family - Rutherford",
-						 "C-RF" : "Commercial - Ridgefield",
-						 "C/HRH-RF" : "Commercial / High Rise Hotel - Ridgefield",
-						 "GA/TH C-RF" : "GA/TH Cluster - Ridgefield",
-						 "LM-RF" : "Light Manufacturing - Ridgefield",
-						 "NB-RF" : "Neighborhood Business - Ridgefield",
-						 "O/TH-RF" : "Office / T.H. - Ridgefield",
-						 "OC-RF" : "Office Commercial - Ridgefield",
-						 "OMR-RF" : "Office Mid Rise - Ridgefield",
-						 "OMRH-RF" : "Office Mid Rise Hotel - Ridgefield",
-						 "OFR-RF" : "One Family Residential - Ridgefield",
-						 "P/SP-RF" : "Public / Semi Public - Ridgefield",
-						 "TH/SRCH-RF" : "TH / SR Citizens Housing - Ridgefield",
-						 "T-RF" : "Townhomes - Ridgefield",
-						 "TFR-RF" : "Two Family Residential - Ridgefield",
-						 "RB-LF" : "One & Two Family Residential - Little Ferry",
-						 "RM-LF" : "Multifamily Residential - Little Ferry",
-						 "BH-LF" : "Highway & Regional Business - Little Ferry",
-						 "BN-LF" : "Neighborhood Business - Little Ferry",
-						 "IR-LF" : "Restricted Industrial - Little Ferry",
-						 "IG-LF" : "General Industrial - Little Ferry",
-						 "P-LF" : "Public Facilities - Little Ferry",
-						 "RA-LF" : "One Family Residential - Little Ferry",
-						 "P/SP-NA" : "Public/Semi-Public - N Arlington",
-						 "A-SH" : "Residential - South Hackensack",
-						 "B-SH" : "Commercial - South Hackensack",
-						 "C-SH" : "Industrial - South Hackensack",
-						 "M-SH" : "Mixed - South Hackensack",
-						 "SCR-SH" : "Senior Citizen Multifamily Res - South Hackensack",
-						 "RA-LYND" : "One Family Residence - Lyndhurst",
-						 "RB-LYND" : "One and Two Familly Residence - Lyndhurst",
-						 "RC-LYND" : "Medium Density Residential - Lyndhurst",
-						 "B-LYND" : "Business - Lyndhurst",
-						 "M1-LYND" : "Light Industrial - Lyndhurst",
-						 "M2-LYND" : "Heavy Industrial - Lyndhurst",
-						 "CGI-LYND" : "Commercial-General Industrial - Lyndhurst",
-						 "R-1-K" : "One Family Residential - Kearny",
-						 "OS-K" : "Open Space Parks and Recreation District - Kearny",
-						 "SU-1-K" : "Special Use 1 - Kearny",
-						 "SU-3_K" : "Special Use 3 - Kearny",
-						 "SOCD-K" : "Street Oriented Commercial District - Kearny",
-						 "SKI-N-K" : "South Kearny Industrial North - Kearny",
-						 "SKI-S-K" : "South Kearny Industrial South - Kearny",
-						 "RDP-K" : "Research Distribution Park - Kearny",
-						 "RD-K" : "Residential District - Kearny",
-						 "R-A-K" : "Redevelopment Area - Kearny",
-						 "R-3-K" : "Multi-Family Residential - Kearny",
-						 "R-2B-K" : "One_Two Family Residential/Hospital - Kearny",
-						 "R-2-K" : "One_Two Family Residential - Kearny",
-						 "PRD-K" : "Planned Residential Development - Kearny",
-						 "MXD-K" : "Mixed Use District - Kearny",
-						 "MP-K" : "Marshland Preservation - Kearny",
-						 "M-K" : "Manufacturing - Kearny",
-						 "LTI-K" : "Light Industrial - Kearny",
-						 "LID-B-K" : "Light Industrial Distribution B - Kearny",
-						 "LID-A-K" : "Light Industrial Distribution A - Kearny",
-						 "LCD-K" : "Large Scale Commercial District - Kearny",
-						 "H-I-K" : "Heavy Industrial - Kearny",
-						 "ESCD-K" : "Existing Shopping Center District - Kearny",
-						 "CEM-K" : "Cemetery - Kearny",
-						 "C-4-K" : "General Commercial - Kearny",
-						 "C-3-K" : "Community Business - Kearny",
-						 "C-2-K" : "Neighborhood Business - Kearny",
-						 "C-1-K" : "Office - Kearny",
-						 "ARLD-K" : "Adaptive Reuse Loft District - Kearny",
-						 "ACD-K" : "Automobile Oriented Commercial District - Kearny",
-						 "LI-K" : "Limited Industrial- Kearny",
-						 "R1-NB" : "Low Density Residential - N Bergen",
-						 "R2-NB" : "Intermediate Density Residential - N Bergen",
-						 "R3-NB" : "Moderate Density Residential - N Bergen",
-						 "C1-NB" : "General Business - N Bergen",
-						 "C1A-NB" : "General Business Limited Mixed Use - N Bergen",
-						 "C1B-NB" : "General Business Limited Mixed Use Bergenline - N Bergen",
-						 "C1C-NB" : "General Business Mixed Use - N Bergen",
-						 "C1R-NB" : "Commercial Residential District - N Bergen",
-						 "C2-NB" : "Highway Business - N Bergen",
-						 "I-NB" : "Industrial - N Bergen",
-						 "P1-NB" : "Riverside - N Bergen",
-						 "P2-NB" : "Edgecliff - N Bergen",
-						 "P3-NB" : "River Road West - N Bergen",
-						 "TRD-NB" : "Tonnelle Ave Redevelopment Area - N Bergen",
-						 "ET-NB" : "East Side Tonnelle Ave Zone - N Bergen",
-						 "GL-NB" : "Granton Ave-Liberty Ave-69th Street Zone - N Bergen",
-						 "KO-NB" : "Kennedy Overlay Zone - N Bergen",
-						 "TO-NB" : "Townhouse Overlay Zone - N Bergen"},
-						"fieldNames":
-						{"BLOCK": "Block",
-						 "LOT": "Lot",
-						 "PID" : "PID",
-						 "PAMS Pin" : "PAMS Pin",
-						 "PAMS_PIN" : "PAMS Pin",
-						 "OLD_BLOCK" : "Old Block",
-						 "OLD_LOT" : "Old Lot",
-						 "PROPERTY_ADDRESS" : "Address",
-						 "TAX_ACRES" : "Tax Acres",
-						 "CITY_STATE" : "City, State",
-						 "MAP_ACRES" : "GIS Acres",
-						 "MUN_CODE" : "Municipality",
-						 "LANDUSE_CODE" : "Landuse",
-						 "ZONE_CODE" : "Zone",
-						 'NAME' : 'Name', "ADDRESS" : 'Address', "FIRM_PAN" : "Firm Panel #",
-						 "TMAPNUM" : "Tidelands Map #",
-						 "FLD_ZONE" : "Flood Zone",
-						 "STATIC_BFE" : 'Static Base<br>Flood Elevation',
-						 "LABEL07" : "Wetland Label",
-						 "TYPE07" : "Wetland Type",
-						 "LU07" : "Anderson landuse class",
-						 "RECIEVINGWATER" : "Receiving Water",
-						 "NAME10" : "Voting District Label",
-						 "TRACTCE10" : "Census Tract #",
-						 "BLOCKCE10" : "Census Block #",
-						 "FACILITY_NAME" : "Facility Name",
-						 "BUILDING_LOCATION" : "Building Location",
-						 "TOTALBLDG_SF" : "Total Building Square Feet",
-						 "PHYSICAL_ADDRESS" : "Address",
-						 "PHYSICAL_CITY" : "City",
-						 "PHYSICAL_ZIP" : "Zip Code",
-						 "COMPANY_CONTACT" : "Company Contact",
-						 "CONTACT_PHONE" : "Phone",
-						 "OFFICIAL_CONTACT" : "Official Contact",
-						 "OFFICIAL_PHONE" : "Phone",
-						 "EMERGENCY_CONTACT" : "Emergency Contact",
-						 "EMERGENCY_PHONE" : "Phone",
-						 "CAS_NUMBER" : "CAS Number",
-						 "LandUse_Code" : "Landuse",
-						 "QUALIFIER": "Qualifier",
-						 "ENCUMBRANCEDESCRIPTION": "Encumbrance<br>Description",
-						 "ENCUMBRANCETYPE": "Encumbrance<br>Type",
-						 "ENCUMBRANCEOWNER": "Encumbrance<br>Owner",
-						 "POPULATION": "Population",
-						 "STATUS ": "Status",
-						 "FacilityID": "Facility ID",
-						 "UNIT": "Seismic Soil Class",
-						 "OWNID": "Owner ID",
-						 "ownerName": "Owner Name",
-						 "ownerAddress": "Owner Address",
-						 "ZIPCODE": "Zip Code",
-						 "ACCESS_": "Access",
-						 "LOCATION1": "Location 1",
-						 "LOCATION2": "Location 2",
-						 "STREET": "Street",
-						 "ELEVATION": "Elevation",
-						 "Zone_Code": "Zoning"}};
+	var aliases = {
+		"munCodes": {
+			"205": "Carlstadt",
+			"212": "East Rutherford",
+			"230": "Little Ferry",
+			"232": "Lyndhurst",
+			"237": "Moonachie",
+			"239": "North Arlington",
+			"249": "Ridgefield",
+			"256": "Rutherford",
+			"259": "South Hackensack",
+			"262": "Teterboro",
+			"906": "Jersey City",
+			"907": "Kearny",
+			"908": "North Bergen",
+			"909": "Secaucus"
+		},
+		"landUseCodes" : {
+			"000": "Unclassified",
+			"AL": "Altered Lands",
+			"CO": "Commercial Office",
+			"CR": "Commercial Retail",
+			"CU": "Communication Utility",
+			"HM": "Hotels and Motels",
+			"ICC": "Ind. Comm. Complex",
+			"IND": "Industrial",
+			"PQP": "Public Services",
+			"RES": "Residential",
+			"RL": "Recreational Land",
+			"TRS": "Transportation",
+			"VAC": "Open Land",
+			"TL": "Transitional Lands",
+			"WAT": "Water",
+			"WET": "Wetlands"
+		},
+		"zoneCodes": {
+			"AV": "Aviation facilities",
+			"CP": "Commercial Park",
+			"EC": "Environmental Conservation",
+			"HI": "Heavy Industrial",
+			"HC": "Highway Commercial",
+			"IA": "Intermodal A",
+			"IB": "Intermodal B",
+			"LIA": "Light Industrial A",
+			"LIB": "Light Industrial B",
+			"LDR": "Low Density Residential",
+			"NC": "Neighborhood Commercial",
+			"PR": "Planned Residential",
+			"PU" : "Public Utilities",
+			"RC": "Regional Commercial",
+			"TC": "Transportation Center",
+			"WR" : "Waterfront Recreation",
+			"RRR" : "Roads, Rails, ROWs",
+			"000" : "Unclassified",
+			"RA" : "Redevelopment Area",
+			"MZ" : "Multiple Zones",
+			"CZC-SECA" : "Commercial Zone C - Secaucus",
+			"LI1-SECA" : "Light Industrial Zone 1 - Secaucus",
+			"RZA-SECA" : "Residential Zone A - Secaucus",
+			"WAT" : "Water",
+			"LID-TET" : "Light Industrial & Distribution Zone - Teterboro",
+			"RA1-TET" : "Redevelopment Area 1 Zone - Teterboro",
+			"RA2-TET" : "Redevelopment Area 2 Zone - Teterboro",
+			"PA" : "Parks and Recreation",
+			"C-CARL" : "Commercial Zone - Carlstadt",
+			"LI-CARL" : "Light Industrial - Carlstadt",
+			"LDR-TET" : "Low Density Residential - Teterboro",
+			"MCZ-CARL" : "Mixed Commercial Zone - Carlstadt",
+			"RZ-CARL" : "Residential Zone - Carlstadt",
+			"RZB-SECA" : "Residential Zone B - Secaucus",
+			"MNF-MOON" : "Manufacturing Zone - Moonachie",
+			"R1-MOON" : "1-Family Residential Zone - Moonachie",
+			"R2-MOON" : "2-Family Residential Zone - Moonachie",
+			"B1-MOON" : "General Business Zone - Moonachie",
+			"B2-MOON" : "Limited Business Zone - Moonachie",
+			"R1-ER" : "Low Density Residential - E Rutherford",
+			"R2-ER" : "Medium Density Residential - E Rutherford",
+			"R3-ER" : "Multi-Family Residential - E Rutherford",
+			"NC-ER" : "Neighborhood Commercial - E Rutherford",
+			"RC-ER" : "Regional Commercial - E Rutherford",
+			"PCD-ER" : "Planned Commercial Development - E Rutherford",
+			"RD1-ER" : "Redevelopment-1 - E Rutherford",
+			"R1-NA" : "1-Family Residential - N Arlington",
+			"R2-NA" : "1&2-Family Residential - N Arlington",
+			"RRRA-NA" : "Ridge Road Redevelopment Area - N Arlington",
+			"PARA-NA" : "Porete Avenue Redevelopment Area - N Arlington",
+			"R3-NA" : "Multi-Family Residential - N Arlington",
+			"I1-NA" : "Light Industrial - N Arlington",
+			"C3-NA" : "Cemetery - N Arlington",
+			"P/OS-NA" : "Parks & Open Space - N Arlington",
+			"W/C-NA" : "Waterways & Creeks - N Arlington",
+			"SEA" : "Sports and Expositions",
+			"I-ER" : "Light Industrial -  E Rutherford",
+			"C2-NA" : "Commercial 2 - N Arlington",
+			"C1-NA" : "Commercial 1 - N Arlington",
+			"R1-RU" : "Single Family Residential - Rutherford",
+			"R1A-RU" : "Single Family Residential - Rutherford",
+			"R1B-RU" : "Single Family Residential - Rutherford",
+			"R2-RU" : "Two Family Residential - Rutherford",
+			"R4-RU" : "Five Story Apartment - Rutherford",
+			"B1-RU" : "Three Story Office - Rutherford",
+			"B2-RU" : "Five Story Office - Rutherford",
+			"B3-RU" : "Three Story Office-Retail - Rutherford",
+			"B3/SH-RU" : "Business / Senior Housing - Rutherford",
+			"B4-RU" : "Business / Light Industrial - Rutherford",
+			"ORD-RU" : "Ten Story Office, Research & Distribution - Rutherford",
+			"HC-RU" : "Highway Commercial Development - Rutherford",
+			"PCD-RU" : "Planned Commercial Development - Rutherford",
+			"R3-RU" : "Three Story Apartment - Rutherford",
+			"UR1A-RU" : "University / Residential, Single Family - Rutherford",
+			"C-RF" : "Commercial - Ridgefield",
+			"C/HRH-RF" : "Commercial / High Rise Hotel - Ridgefield",
+			"GA/TH C-RF" : "GA/TH Cluster - Ridgefield",
+			"LM-RF" : "Light Manufacturing - Ridgefield",
+			"NB-RF" : "Neighborhood Business - Ridgefield",
+			"O/TH-RF" : "Office / T.H. - Ridgefield",
+			"OC-RF" : "Office Commercial - Ridgefield",
+			"OMR-RF" : "Office Mid Rise - Ridgefield",
+			"OMRH-RF" : "Office Mid Rise Hotel - Ridgefield",
+			"OFR-RF" : "One Family Residential - Ridgefield",
+			"P/SP-RF" : "Public / Semi Public - Ridgefield",
+			"TH/SRCH-RF" : "TH / SR Citizens Housing - Ridgefield",
+			"T-RF" : "Townhomes - Ridgefield",
+			"TFR-RF" : "Two Family Residential - Ridgefield",
+			"RB-LF" : "One & Two Family Residential - Little Ferry",
+			"RM-LF" : "Multifamily Residential - Little Ferry",
+			"BH-LF" : "Highway & Regional Business - Little Ferry",
+			"BN-LF" : "Neighborhood Business - Little Ferry",
+			"IR-LF" : "Restricted Industrial - Little Ferry",
+			"IG-LF" : "General Industrial - Little Ferry",
+			"P-LF" : "Public Facilities - Little Ferry",
+			"RA-LF" : "One Family Residential - Little Ferry",
+			"P/SP-NA" : "Public/Semi-Public - N Arlington",
+			"A-SH" : "Residential - South Hackensack",
+			"B-SH" : "Commercial - South Hackensack",
+			"C-SH" : "Industrial - South Hackensack",
+			"M-SH" : "Mixed - South Hackensack",
+			"SCR-SH" : "Senior Citizen Multifamily Res - South Hackensack",
+			"RA-LYND" : "One Family Residence - Lyndhurst",
+			"RB-LYND" : "One and Two Familly Residence - Lyndhurst",
+			"RC-LYND" : "Medium Density Residential - Lyndhurst",
+			"B-LYND" : "Business - Lyndhurst",
+			"M1-LYND" : "Light Industrial - Lyndhurst",
+			"M2-LYND" : "Heavy Industrial - Lyndhurst",
+			"CGI-LYND" : "Commercial-General Industrial - Lyndhurst",
+			"R-1-K" : "One Family Residential - Kearny",
+			"OS-K" : "Open Space Parks and Recreation District - Kearny",
+			"SU-1-K" : "Special Use 1 - Kearny",
+			"SU-3_K" : "Special Use 3 - Kearny",
+			"SOCD-K" : "Street Oriented Commercial District - Kearny",
+			"SKI-N-K" : "South Kearny Industrial North - Kearny",
+			"SKI-S-K" : "South Kearny Industrial South - Kearny",
+			"RDP-K" : "Research Distribution Park - Kearny",
+			"RD-K" : "Residential District - Kearny",
+			"R-A-K" : "Redevelopment Area - Kearny",
+			"R-3-K" : "Multi-Family Residential - Kearny",
+			"R-2B-K" : "One_Two Family Residential/Hospital - Kearny",
+			"R-2-K" : "One_Two Family Residential - Kearny",
+			"PRD-K" : "Planned Residential Development - Kearny",
+			"MXD-K" : "Mixed Use District - Kearny",
+			"MP-K" : "Marshland Preservation - Kearny",
+			"M-K" : "Manufacturing - Kearny",
+			"LTI-K" : "Light Industrial - Kearny",
+			"LID-B-K" : "Light Industrial Distribution B - Kearny",
+			"LID-A-K" : "Light Industrial Distribution A - Kearny",
+			"LCD-K" : "Large Scale Commercial District - Kearny",
+			"H-I-K" : "Heavy Industrial - Kearny",
+			"ESCD-K" : "Existing Shopping Center District - Kearny",
+			"CEM-K" : "Cemetery - Kearny",
+			"C-4-K" : "General Commercial - Kearny",
+			"C-3-K" : "Community Business - Kearny",
+			"C-2-K" : "Neighborhood Business - Kearny",
+			"C-1-K" : "Office - Kearny",
+			"ARLD-K" : "Adaptive Reuse Loft District - Kearny",
+			"ACD-K" : "Automobile Oriented Commercial District - Kearny",
+			"LI-K" : "Limited Industrial- Kearny",
+			"R1-NB" : "Low Density Residential - N Bergen",
+			"R2-NB" : "Intermediate Density Residential - N Bergen",
+			"R3-NB" : "Moderate Density Residential - N Bergen",
+			"C1-NB" : "General Business - N Bergen",
+			"C1A-NB" : "General Business Limited Mixed Use - N Bergen",
+			"C1B-NB" : "General Business Limited Mixed Use Bergenline - N Bergen",
+			"C1C-NB" : "General Business Mixed Use - N Bergen",
+			"C1R-NB" : "Commercial Residential District - N Bergen",
+			"C2-NB" : "Highway Business - N Bergen",
+			"I-NB" : "Industrial - N Bergen",
+			"P1-NB" : "Riverside - N Bergen",
+			"P2-NB" : "Edgecliff - N Bergen",
+			"P3-NB" : "River Road West - N Bergen",
+			"TRD-NB" : "Tonnelle Ave Redevelopment Area - N Bergen",
+			"ET-NB" : "East Side Tonnelle Ave Zone - N Bergen",
+			"GL-NB" : "Granton Ave-Liberty Ave-69th Street Zone - N Bergen",
+			"KO-NB" : "Kennedy Overlay Zone - N Bergen",
+			"TO-NB" : "Townhouse Overlay Zone - N Bergen"
+		},
+		"fieldNames": {
+			"BLOCK": "Block",
+			"LOT": "Lot",
+			"PID" : "PID",
+			"PAMS Pin" : "PAMS Pin",
+			"PAMS_PIN" : "PAMS Pin",
+			"OLD_BLOCK" : "Old Block",
+			"OLD_LOT" : "Old Lot",
+			"PROPERTY_ADDRESS" : "Address",
+			"TAX_ACRES" : "Tax Acres",
+			"CITY_STATE" : "City, State",
+			"MAP_ACRES" : "GIS Acres",
+			"MUN_CODE" : "Municipality",
+			"LANDUSE_CODE" : "Landuse",
+			"ZONE_CODE" : "Zone",
+			'NAME' : 'Name', "ADDRESS" : 'Address', "FIRM_PAN" : "Firm Panel #",
+			"TMAPNUM" : "Tidelands Map #",
+			"FLD_ZONE" : "Flood Zone",
+			"STATIC_BFE" : 'Static Base<br>Flood Elevation',
+			"LABEL07" : "Wetland Label",
+			"TYPE07" : "Wetland Type",
+			"LU07" : "Anderson landuse class",
+			"RECIEVINGWATER" : "Receiving Water",
+			"NAME10" : "Voting District Label",
+			"TRACTCE10" : "Census Tract #",
+			"BLOCKCE10" : "Census Block #",
+			"FACILITY_NAME" : "Facility Name",
+			"BUILDING_LOCATION" : "Building Location",
+			"TOTALBLDG_SF" : "Total Building Square Feet",
+			"PHYSICAL_ADDRESS" : "Address",
+			"PHYSICAL_CITY" : "City",
+			"PHYSICAL_ZIP" : "Zip Code",
+			"COMPANY_CONTACT" : "Company Contact",
+			"CONTACT_PHONE" : "Phone",
+			"OFFICIAL_CONTACT" : "Official Contact",
+			"OFFICIAL_PHONE" : "Phone",
+			"EMERGENCY_CONTACT" : "Emergency Contact",
+			"EMERGENCY_PHONE" : "Phone",
+			"CAS_NUMBER" : "CAS Number",
+			"LandUse_Code" : "Landuse",
+			"QUALIFIER": "Qualifier",
+			"ENCUMBRANCEDESCRIPTION": "Encumbrance<br>Description",
+			"ENCUMBRANCETYPE": "Encumbrance<br>Type",
+			"ENCUMBRANCEOWNER": "Encumbrance<br>Owner",
+			"POPULATION": "Population",
+			"STATUS ": "Status",
+			"FacilityID": "Facility ID",
+			"UNIT": "Seismic Soil Class",
+			"OWNID": "Owner ID",
+			"ownerName": "Owner Name",
+			"ownerAddress": "Owner Address",
+			"ZIPCODE": "Zip Code",
+			"ACCESS_": "Access",
+			"LOCATION1": "Location 1",
+			"LOCATION2": "Location 2",
+			"STREET": "Street",
+			"ELEVATION": "Elevation",
+			"Zone_Code": "Zoning"
+		}
+	};
 	return aliases;
 }
 function f_getoutFields() {
 	"use strict";
-	var outFields_json = {"parcel": ["PID",
-											"PAMS_PIN",
-											"BLOCK",
-											"LOT",
-											"OLD_BLOCK",
-											"OLD_LOT",
-											"FACILITY_NAME",
-											"PROPERTY_ADDRESS",
-											"MAP_ACRES",
-											"TAX_ACRES",
-											"MUN_CODE",
-											"QUALIFIER"],
-							 "parcelB": ["PID"],
-							 "search": ["PROPERTY_ADDRESS",
-											"BLOCK",
-											"LOT"],
-							 "owner": ["OWNID",
-										  "NAME",
-										  "ADDRESS",
-										  "CITY_STATE",
-										  "ZIPCODE"],
-							 "building": ["PID",
-											  "BID",
-											  "MUNICIPALITY",
-											  "BUILDING_LOCATION",
-											  "FACILITY_NAME"],
-							 "ERIS": ["*"]};
+	var outFields_json = {
+		"parcel": ["PID", "PAMS_PIN", "BLOCK", "LOT", "OLD_BLOCK", "OLD_LOT", "FACILITY_NAME", "PROPERTY_ADDRESS", "MAP_ACRES", "TAX_ACRES", "MUN_CODE", "QUALIFIER"],
+		"parcelB": ["PID"],
+		"search": ["PROPERTY_ADDRESS", "BLOCK", "LOT"],
+		"owner": ["OWNID", "NAME", "ADDRESS", "CITY_STATE", "ZIPCODE"],
+		"building": ["PID", "BID", "MUNICIPALITY", "BUILDING_LOCATION", "FACILITY_NAME"],
+		"ERIS": ["*"]
+	};
 	return outFields_json;
 }
 function f_printMap(pid) {
@@ -437,7 +424,7 @@ function fieldAlias(fieldName, dataSource) {
 	aliases.fieldNames.ADDRESS = dataSource + 'Address';
 	if (aliases.fieldNames[fieldName] !== undefined) {
 		return (aliases.fieldNames[fieldName]);
-	} 
+	}
 	return fieldName;
 }
 function landuseAlias(a) {
@@ -481,46 +468,27 @@ function formatResult(fieldName, fieldValue, data) {
 	Result.value = fieldValue;
 	if (fieldName === "MAP_ACRES" && !isNaN(fieldValue)) {
 		Result.value = Math.round(fieldValue * 100) / 100;
-	}
-	if (fieldName === "LANDUSE_CODE") {
+	} else if (fieldName === "LANDUSE_CODE") {
 		Result.value = landuseAlias(fieldValue);
-	}
-	if (fieldName === "ZONE_CODE") {
+	} else if (fieldName === "ZONE_CODE") {
 		Result.value = zoningAlias(fieldValue);
-	}
-	if (fieldName === "MUN_CODE") {
+	} else if (fieldName === "MUN_CODE") {
 		Result.value = muncodeToName(fieldValue);
+	} else if(fieldName === "QUALIFIER") {
+		if(fieldValue === "MD") {
+			Result.value = "In District";
+		} else if (fieldValue === "OMD") {
+			Result.value = "Out of District";
+		} else if (fieldValue === "MD-OMD") {
+			Result.value = "Borderline Parcels";
+		}
 	}
-	return '<li class="field ' + CSS.field + '"><b>' + Result.field + ':</b>' + Result.value + '</li>';
+	return '<li class="field ' + CSS.field + '"><b>' + Result.field + ':</b> ' + Result.value + '</li>';
 }
-var munis_json = [{"muncode": "0205", "mun": "Carlstadt"},
-						{"muncode": "0212", "mun": "East Rutherford"},
-						{"muncode": "0906", "mun": "Jersey City"},
-						{"muncode": "0907", "mun": "Kearny"},
-						{"muncode": "0230", "mun": "Little Ferry"},
-						{"muncode": "0232", "mun": "Lyndhurst"},
-						{"muncode": "0237", "mun": "Moonachie"},
-						{"muncode": "0239", "mun": "North Arlington"},
-						{"muncode": "0908", "mun": "North Bergen"},
-						{"muncode": "0249", "mun": "Ridgefield"},
-						{"muncode": "0256", "mun": "Rutherford"},
-						{"muncode": "0909", "mun": "Secaucus"},
-						{"muncode": "0259", "mun": "South Hackensack"},
-						{"muncode": "0262", "mun": "Teterboro"}];
-var quals_json = [{"id": "MD",
-						 "name": "In District",
-						 "desc": "All parcels fully within the NJMC District"},
-						{"id": "OMD",
-						 "name": "Out of District",
-						 "desc": "All parcels fully outside the NJMC District"},
-						{"id": "MD-OMD", "name": "Borderline Parcels",
-						 "desc": "All parcels partially in and partially out of the NJMC District"}];
 function f_getPopupTemplate(graphic) {
 	"use strict";
 	var popupTemplate,
-		qualifiers = {"MD": "In District",
-						  "OMD": "Out of District",
-						  "MD-OMD": "Borderline Parcels"},
+		qualifiers = {"MD": "In District", "OMD": "Out of District", "MD-OMD": "Borderline Parcels"},
 		attributes = graphic.attributes,
 		xmlhttp = new XMLHttpRequest(),
 		data,
@@ -823,20 +791,20 @@ function f_process_results_buffer(results) {
 	"use strict";
 	M_meri.getLayer("GL_buffer_selected_parcels").clear();
 	require(["dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Color, SimpleFillSymbol, SimpleLineSymbol) {
-	    var featureAttributes,
+		var featureAttributes,
 			S_feature_buffer_selection = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-																			  new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
-																										  new Color([255, 255, 0]), 3),
-																			  new Color([0, 0, 255, 0.4])),
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
+					new Color([255, 255, 0]), 3),
+				new Color([0, 0, 255, 0.4])),
 			GL_container = M_meri.getLayer("GL_buffer_selected_parcels"),
 			G_symbol = S_feature_buffer_selection,
 			graphic,
-			i,
-			il;
-		for (i = 0, il = results.features.length; i < il; i += 1) {
-			featureAttributes = results.features[i].attributes;
-			parcel_results[featureAttributes.PID] = featureAttributes.PID;
-			graphic = results.features[i];
+			index,
+			length;
+		for (index = 0, length = results.features.length; index < length; index += 1) {
+			featureAttributes = results.features[index].attributes;
+			parcel_results[featureAttributes.PID] = featureAttributes.TAX_ACRES;
+			graphic = results.features[index];
 			graphic.setSymbol(G_symbol);
 			GL_container.add(graphic);
 			M_meri.infoWindow.resize("300", "350");
@@ -1064,7 +1032,7 @@ function f_add_listener(element, action, PID, id) {
 				e.preventDefault();
 			});
 			break;
-		case "Add to Selection": 
+		case "Add to Selection":
 			element.addEventListener("click", function (e) {
 				f_feature_action("Add to Selection", id, PID);
 				e.preventDefault();				
@@ -1076,9 +1044,9 @@ function f_process_results_parcel(results, event) {
 	"use strict";
 	require(["dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol"], function (Color, SimpleFillSymbol, SimpleLineSymbol) {
 		var S_feature_selection = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-																	  new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
-																								  new Color([0, 255, 36]), 2),
-																	  new Color([52, 83, 130, 0.95])),
+			new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
+				new Color([0, 255, 36]), 2),
+			new Color([52, 83, 130, 0.95])),
 			feature_div = "selParcel_",
 			GL_container = M_meri.getLayer("GL_parcel_selection"),
 			G_symbol = S_feature_selection,
@@ -1641,7 +1609,7 @@ function f_search_parcel_old(search, where_PID) {
 }
 function f_search_landuse(search) {
 	"use strict";
-	if (search.rdo_landuse_search === "yes") {
+	if (search.rdo_landuse_search === "on") {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 			var Q_landuse = new Query(),
 				QT_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/9"),
@@ -2102,26 +2070,6 @@ function f_load_tools() {
 				document.getElementById("li_property").style.display = "block";
 				document.getElementById("li_owner").style.display = "none";
 			});
-			/*document.getElementById("owner_toggle").addEventListener("click", function () {
-				if(ERIS) {
-					this.style.color = "#DE0A0A";
-				} else {
-					this.style.color = "#09D";
-				}
-				document.getElementById("property_toggle").style.color = "#444";
-				document.getElementById("li_property").style.display = "none";
-				document.getElementById("li_owner").style.display = "block";
-			});
-			document.getElementById("property_toggle").addEventListener("click", function () {
-				if(ERIS) {
-					this.style.color = "#DE0A0A";
-				} else {
-					this.style.color = "#09D";
-				}
-				document.getElementById("property_toggle").style.color = "#444";
-				document.getElementById("li_property").style.display = "block";
-				document.getElementById("li_owner").style.display = "none";
-			});*/
 			document.getElementById("filter").addEventListener("click", function (e) {
 				var toElem = e.originalTarget || e.toElement || e.srcElement;
 				if (toElem.id === "filter") {
@@ -2427,7 +2375,7 @@ function f_query_owner_int_exec(ownerid) {
 	"use strict";
 	require(["esri/toolbars/navigation", "esri/tasks/GeometryService", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/GraphicsLayer", "esri/map", "dojo/on", "esri/dijit/Measurement", "esri/config", "esri/dijit/PopupMobile", "esri/dijit/Popup", "esri/dijit/LocateButton", "esri/dijit/Scalebar", "esri/dijit/Legend"], function (Navigation, GeometryService, ArcGISDynamicMapServiceLayer, GraphicsLayer, Map, on, Measurement, config, PopupMobile, Popup, LocateButton, scalebar, Legend) {
 		config.defaults.io.alwaysUseProxy = false;
-		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service 
+		config.defaults.io.proxyUrl = DynamicLayerHost + "/proxy/proxy.ashx"; // set the default geometry service
 		config.defaults.geometryService = new GeometryService(DynamicLayerHost + "/ArcGIS/rest/services/Map_Utility/Geometry/GeometryServer");
 		// set dynamic layer for MunicipalMap_live
 		var LD_button = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer", {opacity: 1.0, id: "LD_button"}),
@@ -2446,16 +2394,17 @@ function f_query_owner_int_exec(ownerid) {
 				titleInBody: true
 			}, e_info);
 		}
-		M_meri = new Map("map", {basemap: "satellite",
-										 center: [-74.08456781356876, 40.78364440736023],
-										 zoom: 12,
-										 sliderStyle: "small",
-										 optimizePanAnimation: true,
-										 fadeOnZoom: true,
-										 logo: false,
-										 minZoom: 12,
-										 infoWindow: infowindow
-										});
+		M_meri = new Map("map", {
+			basemap: "satellite",
+			center: [-74.08456781356876, 40.78364440736023],
+			zoom: 12,
+			sliderStyle: "small",
+			optimizePanAnimation: true,
+			fadeOnZoom: true,
+			logo: false,
+			minZoom: 12,
+			infoWindow: infowindow
+		});
 		scalebar({
 			map: M_meri,
 			attachTo: "bottom-left"

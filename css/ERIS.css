@@ -1,7 +1,7 @@
 .ERIS
 {
 	background-image: url("img/icons.png");
-	background-position: 4px -176px;
+	background-position: .4em -21.7em;
 }
 .search_type:checked + span
 {
@@ -10,15 +10,8 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
 	.ERIS
 	{
-		background-position: 5px -157px;
+		background-position: .4em -21.5em;
 	}
-}
-@-moz-document url-prefix()
-{
-	.ERIS
-	{
-		background-position: 5px -169px;
-	}	
 }
 .li_checked
 {

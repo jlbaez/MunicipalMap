@@ -1,4 +1,4 @@
-/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location, alert, f_getAliases, formatResult, M_meri, DynamicLayerHost, tool_selected: true, f_parcel_selection_exec, f_map_identify_exec, navToolbar, f_button_clicked, f_deviceCheck, Navigation, legendLayers, legendDigit*/
+/*global document, require, XMLHttpRequest, setTimeout, sessionStorage, window, navigator, location, alert, f_getAliases, formatResult, M_meri, DynamicLayerHost, tool_selected: true, f_parcel_selection_exec, f_map_identify_exec, navToolbar, f_button_clicked, f_deviceCheck, Navigation, legendLayers, legendDigit, userName*/
 //==========================================
 // Title:  Municipal Map ERIS V.3
 // Author: Jose Baez
@@ -10,31 +10,26 @@ function f_get_ERIS_Layers() {
 	var xmlhttp = new XMLHttpRequest(),
 		data,
 		index,
-		json = [];
-	json.push({
-		layers: [],
-		tables: [],
-		ident: ""
-	});
+		json = {};
+	json.layers = [];
+	json.tables = {};
+	json.ident = "";
 	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/?f=json&pretty=true", false);
 	xmlhttp.send();
 	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 		data = JSON.parse(xmlhttp.responseText);
 		for (index = 0; index < data.layers.length; index += 1) {
-			json[0].layers.push({
+			json.layers.push({
 				id: data.layers[index].id,
 				name: data.layers[index].name,
 				vis: data.layers[index].defaultVisibility
 			});
 			if (data.layers[index].name.toLowerCase() === "building rtk") {
-				json[0].ident = data.layers[index].id;
+				json.ident = data.layers[index].id;
 			}
 		}
 		for (index = 0; index < data.tables.length; index += 1) {
-			json[0].tables.push({
-				id: data.tables[index].id,
-				name: data.tables[index].name,
-			});
+			json.tables[data.tables[index].name.replace(/\./g, "_")] = data.tables[index].id;
 		}
 		return json;
 	}
@@ -192,9 +187,9 @@ function f_ERIS_selection_exec(map_event) {
 	"use strict";
 	document.getElementById("map_container").style.cursor = "progress";
 	require(["esri/tasks/query", "esri/tasks/QueryTask", "esri/tasks/RelationshipQuery"], function (Query, QueryTask, RelationshipQuery) {
-		var QT_ERIS_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers[0].ident),
-			QT_ERIS_BIDtoINTERMEDIATE = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers[0].tables[ERIS_layers[0].tables.length - 1].id),
-			QT_Q_RTK_IDS = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers[0].tables[ERIS_layers[0].tables.length - 1].id),
+		var QT_ERIS_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers.ident),
+			QT_ERIS_BIDtoINTERMEDIATE = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers.tables.gis_SDE_TBL_CAD_RTK),
+			QT_Q_RTK_IDS = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers.tables.gis_SDE_TBL_CAD_BLD_INTERMEDIATE),
 			Q_ERIS_selection = new Query(),
 			Q_ERIS_BIDtoINTERMEDIATE = new Query(),
 			Q_RTK_IDS = new RelationshipQuery(),
@@ -260,7 +255,6 @@ function f_ERIS_list_update(checkbox) {
 		LD_visible.push(parseInt(checkbox.value, 10));
 	} else {
 		checkbox.parentNode.parentNode.className = "toc_layer_li";
-		console.log(LD_visible.indexOf(parseInt(checkbox.value, 10)));
 		LD_visible.splice(LD_visible.indexOf(parseInt(checkbox.value, 10)), 1);
 	}
 	if (LD_visible.length === 0) {
@@ -280,7 +274,7 @@ function f_ERIS_list_build() {
 	var li = document.createElement("li"),
 		index,
 		dropdown1 = document.getElementById("dropdown1"),
-		layers_json = ERIS_layers[0].layers,
+		layers_json = ERIS_layers.layers,
 		e_li,
 		e_chk,
 		e_la;
