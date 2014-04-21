@@ -383,6 +383,10 @@ input[type="radio"]:checked ~.check:after
 {
 	color: #09D;
 }
+.progress
+{
+	cursor: progress;
+}
 .filteractive:hover
 {
 	color: #09D;

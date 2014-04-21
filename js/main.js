@@ -1,4 +1,4 @@
-/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, startupEris,typeof, FormData, ERIS*/
+/*global require, sessionStorage, window, document, erisSelectionExec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, startupEris,typeof, FormData, ERIS*/
 //==========================================
 // Title:  Municipal Map V.31
 // Author: Jose Baez
@@ -1404,7 +1404,7 @@ function f_map_click_handler(evt_click) {
 		f_map_identify_exec(evt_click);
 		break;
 	case "ERIS_Identify":
-		f_ERIS_selection_exec(evt_click);
+		erisSelectionExec(evt_click);
 		break;
 	case "pan":
 		break;
