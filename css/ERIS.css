@@ -1,9 +1,17 @@
 .ERIS
 {
 	background-image: url("img/icons.png");
-	background-position: .4em -21.7em;
+	background-position: .265em -21.8em;
 }
 .search_type:checked + span
+{
+	color: #DE0A0A;
+}
+.filteractive
+{
+	color: #DE0A0A;
+}
+.filteractive:hover
 {
 	color: #DE0A0A;
 }
@@ -41,4 +49,3 @@ button, .button
 {
     color: #DE0A0A;
 }
-

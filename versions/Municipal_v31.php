@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="no-js">
 	<head>
-		<meta charset="utf-8"> 
+		<meta charset="utf-8">
 		<title>New Jersey Meadowlands Commission &raquo; Municipal Map v.31</title>
 		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta name="mobile-web-app-capable" content="yes">
@@ -11,7 +11,7 @@
 		<meta content='white-translucent' name='apple-mobile-web-app-status-bar-style'>
 <?php endif ?>
 		<link rel="stylesheet" href="css/normalize.min.css">
-		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">
 		<link rel="stylesheet" href="css/main.css">
 <?php if ($_SESSION['isERIS']): ?>
 		<link rel="stylesheet" href="css/ERIS.css">
@@ -26,7 +26,7 @@
 		<script>
 <?php if($_SESSION['isERIS']): ?>
 			var ERIS = true,
-				userName = <?php require_once('ERIS/validate.php'); echo '"'.decryptCookie($_COOKIE['ERIS_ACCOUNT']).'";';?>		
+				userName = <?php require_once('../ERIS/validate.php'); echo '"'.decryptCookie($_COOKIE['ERIS_ACCOUNT']).'";';?>		
 <?php else: ?>
 			var ERIS = false;
 <?php endif ?>
@@ -247,8 +247,8 @@
 															</ul>
 														</li>
 														<li class="li_filter">
-															<label> 
-																Designate District 
+															<label>
+																Designate District
 																<input type="checkbox" name="rdo_qual_search" class="filter_check" id="rdo_qual_searchAll">
 																<span class="check"></span>
 															</label>
@@ -272,7 +272,7 @@
 														</li>
 														<li class="li_filter">
 															<label>
-																Select Land Uses 
+																Select Land Uses
 																<input type="checkbox" name="rdo_landuse_search" class="filter_check" id="rdo_landuse_searchAll">
 																<span class="check"></span>
 															</label>
@@ -365,9 +365,9 @@
 											<input type="submit" class="small button" value="Search for Property">
 										</form>
 									</li>
-									<li id="li_owner" class="li_owner">
+									<li id="li_owner" class="none">
 										<form id="search_owner" onsubmit="return false;">
-											<label>Owner: 
+											<label>Owner:
 												<input type="text" title="Owner Search" name="owner" class="input">
 											</label>
 											<input type="submit" class="small button" value="Search for Owner">
@@ -403,7 +403,7 @@
 										<form id="form_logoff" action="null" onsubmit="return false;" method="post">
 											<div>Hi there,</div><div id="useraccount"></div>
 											<div>Would you like to logoff?</div>
-											<input type="submit" class="small button" value="Log Off"> 
+											<input type="submit" class="small button" value="Log Off">
 										</form>
 									</li>
 <?php else: ?>
@@ -415,7 +415,7 @@
 											<input type="password" class="input" name="password" required>
 											<div id="login_response"></div>
 											<a href="javascript:void(0);" id="account_link" class="account_link">Forgot Password?</a>
-											<input type="submit" class="small button" value="LogIn"> 
+											<input type="submit" class="small button" value="LogIn">
 										</form>
 									</li>
 <?php endif ?>
@@ -429,19 +429,19 @@
 										<ul class="about_ul animate">
 											<li>
 												<p>
-													This version of NJMC&#39;s Municipal Map encompasses 8 years of 
-													data collected about its 14-constituent towns, including 
-													historical to present geographic information. Municipalities 
-													can gain access to these layers and records about properties 
-													that falls within their respective municipalities and identify 
-													pertinent information about each property in question. The 
-													layers include: parcels, land use, zoning, wetlands, riparian, 
-													encumbrance, FEMA and much more. In addition, MERI-GIS has 
-													been compiling utility data from stormwater manholes to 
-													sanitary lines so towns can visualize and further make decision 
-													on existing infrastructure and conditions. Imagery accessible 
-													on this application ranges from the 1930's to 2012. New data 
-													will become available once they are complete. Visit MERI's 
+													This version of NJMC&#39;s Municipal Map encompasses 8 years of
+													data collected about its 14-constituent towns, including
+													historical to present geographic information. Municipalities
+													can gain access to these layers and records about properties
+													that falls within their respective municipalities and identify
+													pertinent information about each property in question. The
+													layers include: parcels, land use, zoning, wetlands, riparian,
+													encumbrance, FEMA and much more. In addition, MERI-GIS has
+													been compiling utility data from stormwater manholes to
+													sanitary lines so towns can visualize and further make decision
+													on existing infrastructure and conditions. Imagery accessible
+													on this application ranges from the 1930's to 2012. New data
+													will become available once they are complete. Visit MERI's
 													webmaps periodically for timely updates.
 												</p>
 											</li>
@@ -452,21 +452,21 @@
 										<ul class="about_ul animate hidden">
 											<li>
 												<p>
-													The information contained in this site is the best available according 
-													to the procedures and standards of the New Jersey Meadowlands Commission 
-													(NJMC)/Meadowlands Environmental Research Institute Geographic Information 
-													Systems group (MERI-GIS) In order to maintain the quality and timeliness 
-													of the data, MERI-GIS regularly maintains the information in their 
-													databases and GIS layers. However, unintentional inaccuracies may occur. 
-													MERI-GIS has made every effort to present the information in a clear and 
-													understandable way for a variety of users. However, we cannot be responsible 
-													for the misuse or misinterpretation of the information presented by this 
-													system. Therefore, under no circumstances shall the NJMC/MERI-GIS be liable 
-													for any actions taken or omissions made from reliance on any information 
-													contained herein from whatever source nor shall the NJMC/MERI-GIS be liable 
-													for any other consequences from any such reliance. All data request shall be 
-													made directly to the GIS Department. Processing fees may apply and NJMC's 
-													data distribution agreement is required on all requests. The GIS Department 
+													The information contained in this site is the best available according
+													to the procedures and standards of the New Jersey Meadowlands Commission
+													(NJMC)/Meadowlands Environmental Research Institute Geographic Information
+													Systems group (MERI-GIS) In order to maintain the quality and timeliness
+													of the data, MERI-GIS regularly maintains the information in their
+													databases and GIS layers. However, unintentional inaccuracies may occur.
+													MERI-GIS has made every effort to present the information in a clear and
+													understandable way for a variety of users. However, we cannot be responsible
+													for the misuse or misinterpretation of the information presented by this
+													system. Therefore, under no circumstances shall the NJMC/MERI-GIS be liable
+													for any actions taken or omissions made from reliance on any information
+													contained herein from whatever source nor shall the NJMC/MERI-GIS be liable
+													for any other consequences from any such reliance. All data request shall be
+													made directly to the GIS Department. Processing fees may apply and NJMC's
+													data distribution agreement is required on all requests. The GIS Department
 													can be contacted at <a href="mailto:merigis@njmeadowlands.gov" class="about_link">merigis@njmeadowlands.gov</a>
 												</p>
 											</li>
@@ -515,7 +515,7 @@
 			</div>
 			<div id="map" class="map"></div>
 		</div>
-		<script src="http://js.arcgis.com/3.8compact/init.js"></script>
+		<script src="http://js.arcgis.com/3.9compact/init.js"></script>
 		<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 		<script src="js/main.js"></script>
 <?php if ($_SESSION['isERIS']): ?>

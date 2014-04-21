@@ -98,15 +98,13 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			e_td = document.createElement("td"),
 			next_arrow = document.getElementsByClassName("titleButton arrow")[0],
 			aliases = f_getAliases(),
-			e_tr2,
-			e_tr3;
+			e_tr2;
 		el_popup_content.className = "esriViewPopup";
 		el_popup_view.className = "mainSection";
 		el_popup_content.appendChild(el_popup_view);
 		e_table.className = "attrTable ident_table";
 		e_table.cellSpacing = "0";
 		e_table.cellPadding = "0";
-		el_popup_view.appendChild(e_table);
 		e_table.appendChild(e_tbody);
 		e_tr.style.verticalAlign = "top";
 		e_tbody.appendChild(e_tr);
@@ -131,10 +129,10 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 							if (inArray(ONCE_FLDS_RTK, att) && featureAttributes[att] !== null && !inArray(exclude, att)) {
 								e_tr2 = document.createElement("tr");
 								e_tr2.style.verticalAlign = "top";
-								e_tbody.appendChild(e_tr2);
 								exclude.push(att);
 								e_tr2.innerHTML = '<td class="attrName">' + aliases.fieldNames[att] + ':</td>';
 								e_tr2.innerHTML += '<td class="attrValue">' + featureAttributes[att] + '</td>';
+								e_tbody.appendChild(e_tr2);
 							}
 							if (!inArray(ONCE_FLDS_RTK, att)) {
 								if (inArray(MAIN_RTK, att)) {
@@ -145,34 +143,30 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 					}
 				}
 				for (index = 0; index < substance_name.length; index += 1) {
-					e_tr2 = document.createElement("tr");
 					e_tr2.style.verticalAlign = "top";
 					e_tbody.appendChild(e_tr2);
-					if (f_urlExists('http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
-						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>';
-				} else {
-						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/v3/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</stronng></a>';
+					if (substance_no[index].SUBSTANCE_NO !== null & f_urlExists('http://webmaps.njmeadowlands.gov/municipal/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
+						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</strong></a>';
+					} else {
+						console.log(substance_name[index].SUBSTANCE_NAME);
+						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" onclick="return false;"><strong>' + substance_name[index].SUBSTANCE_NAME + '</strong></a>';
 					}
 					for (index2 = old_index; index2 < old_index + 1; index2 += 2) {
+						if(record_main[index2] === null) {
+							record_main[index2] = "Not available";
+						}
 						if (record_main[index2] !== "") {
-							e_tr3 = document.createElement("tr");
-							e_tr3.style.verticalAlign = "top";
-							e_tbody.appendChild(e_tr3);
-							e_tr3.innerHTML = '<td class="attrName">CAS Number:</td>';
-							e_tr3.innerHTML += '<td class="attrValue">' + record_main[index2] + '</td>';
+							e_tbody.innerHTML += '<tr style="vertical-align: top;"><td class="attrName">CAS Number:</td><td class="attrValue">' + record_main[index2].toLowerCase() + '</td>';
 						}
 						if (record_main[index2 + 1] !== "") {
-							e_tr3 = document.createElement("tr");
-							e_tr3.style.verticalAlign = "top";
-							e_tbody.appendChild(e_tr3);
-							e_tr3.innerHTML += '<td class="attrName">Location:</td>';
-							e_tr3.innerHTML += '<td class="attrValue">' + record_main[index2 + 1] + '</td>';
+							e_tbody.innerHTML += '<tr style="vertical-align: top;"><td class="attrName">Location:</td><td class="attrValue select_option">' + record_main[index2 +1].toLowerCase() + '</td>';
 						}
 					}
 					old_index = index2;
 				}
 			}
 		}
+		el_popup_view.appendChild(e_table);
 		M_meri.infoWindow.clearFeatures();
 		M_meri.infoWindow.setTitle("ERIS Selection");
 		M_meri.infoWindow.setContent(el_popup_content);
@@ -188,7 +182,7 @@ function f_ERIS_selection_exec(map_event) {
 	document.getElementById("map_container").style.cursor = "progress";
 	require(["esri/tasks/query", "esri/tasks/QueryTask", "esri/tasks/RelationshipQuery"], function (Query, QueryTask, RelationshipQuery) {
 		var QT_ERIS_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers.ident),
-			QT_ERIS_BIDtoINTERMEDIATE = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers.tables.gis_SDE_TBL_CAD_RTK),
+			QT_ERIS_BIDtoINTERMEDIATE = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers.tables.gis_SDE_TBL_CAD_BLD_INTERMEDIATE),
 			QT_Q_RTK_IDS = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer/" + ERIS_layers.tables.gis_SDE_TBL_CAD_BLD_INTERMEDIATE),
 			Q_ERIS_selection = new Query(),
 			Q_ERIS_BIDtoINTERMEDIATE = new Query(),
@@ -221,9 +215,10 @@ function f_ERIS_selection_exec(map_event) {
 						M_meri.infoWindow.show(map_event.mapPoint);
 					} else {
 						Q_RTK_IDS.objectIds = [results];
+						Q_RTK_IDS.relationshipId = ERIS_layers.tables.gis_SDE_TBL_CAD_RTK;
 						QT_Q_RTK_IDS.executeRelationshipQuery(Q_RTK_IDS, function (results) {
 							f_query_RTK_IDS_results(results, bid, map_event);
-						});
+						}, function(error){console.log(error);});
 					}
 				}
 			});
@@ -277,6 +272,7 @@ function f_ERIS_list_build() {
 		layers_json = ERIS_layers.layers,
 		e_li,
 		e_chk,
+		fragment = document.createDocumentFragment(),
 		e_la;
 	li.className = "layer_group_title";
 	li.innerHTML = "ERIS Layers:";
@@ -298,8 +294,9 @@ function f_ERIS_list_build() {
 		e_la.innerHTML = layers_json[index].name.toLowerCase();
 		e_la.appendChild(e_chk);
 		e_li.appendChild(e_la);
-		dropdown1.appendChild(e_li);
+		fragment.appendChild(e_li);
 	}
+	dropdown1.appendChild(fragment);
 }
 function f_startup_eris() {
 	"use strict";

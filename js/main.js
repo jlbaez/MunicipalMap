@@ -45,9 +45,10 @@ var DynamicLayerHost = "http://webmaps.njmeadowlands.gov",
 	legendDigit,
 	parcel_results = [],
 	legendLayers = [],
+	parcels_json,
 	layers_json;
 function f_getLayerInfo() {
-	var json = [],
+	var json = {},
 		env = ["FEMA PANEL", "RIPARIAN CLAIM (NJDEP)", "FEMA (100-YR FLOOD)", "WETLANDS (DEP)", "SEISMIC SOIL CLASS"],
 		hyd = ["TIDEGATES", "CREEK NAMES", "DRAINAGE", "HYDRO LINES/ WETLAND EDGE", "WATERWAYS"],
 		inf = ["STORMWATER CATCHBASIN", "STORMWATER MANHOLE", "STORMWATER OUTFALL", "STORMWATER LINE", "SANITARY MANHOLE", "SANITARY LINES", "HYDRANTS"],
@@ -60,31 +61,32 @@ function f_getLayerInfo() {
 		identify,
 		bool,
 		index2;
-	json.push({
+	json.layers = [];
+	json.layers.push({
 		name: "Environmental",
 		layers: []
 	});
-	json.push({
+	json.layers.push({
 		name: "Hydro",
 		layers: []
 	});
-	json.push({
+	json.layers.push({
 		name: "Infrastructure/Utilities",
 		layers: []
 	});
-	json.push({
+	json.layers.push({
 		name: "Political/Jurisdiction",
 		layers: []
 	});
-	json.push({
+	json.layers.push({
 		name: "Topographic & Planimetrics",
 		layers: []
 	});
-	json.push({
+	json.layers.push({
 		name: "Transportation",
 		layers: []
 	});
-	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer?f=json&pretty=true", false);
+	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/Municipal/MunicipalMap_live/MapServer?f=json&pretty=false", false);
 	xmlhttp.send();
 	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 		data = JSON.parse(xmlhttp.responseText);
@@ -111,23 +113,55 @@ function f_getLayerInfo() {
 			} else {
 				index2 = 0;
 			}
-			json[index2].layers.push({
+			json.layers[index2].layers.push({
 				id: data.layers[index].id,
 				name: data.layers[index].name,
 				vis: data.layers[index].defaultVisibility,
 				ident: bool
 			});
+			json[data.layers[index].name.toLowerCase().replace(/\ /g, "_")] = {
+				id: data.layers[index].id,
+				vis: data.layers[index].defaultVisibility,
+				ident: bool
+			};
+			if (data.layers[index].name === "SPOT ELEVATIONS") {
+				json.spot_elevations = data.layers[index].id;
+			}
+		}
+	}
+	return json;
+}
+function f_getParcelInfo() {
+	var json = {},
+		xmlhttp = new XMLHttpRequest(),
+		index,
+		data,
+		length;
+	json.layers = [];
+	json.tables = [];
+	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/?f=json&pretty=false", false);
+	xmlhttp.send();
+	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+		data = JSON.parse(xmlhttp.responseText);
+		length = data.layers.length;
+		for(index = 0; index < length; index += 1) {
+			json.layers[data.layers[index].name.replace(/\./g, "_").toLowerCase()] = data.layers[index].id;
+		}
+		length = data.tables.length;
+		for(index = 0; index < length; index += 1) {
+			json.tables[data.tables[index].name.replace(/\./g, "_").toLowerCase()] = data.tables[index].id;
 		}
 	}
 	return json;
 }
 layers_json = f_getLayerInfo();
+parcels_json = f_getParcelInfo();
 function f_getFloodInfo() {
 	var index = 0,
 		json = [],
 		xmlhttp = new XMLHttpRequest(),
 		data;
-	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer?f=json&pretty=true", false);
+	xmlhttp.open("GET", DynamicLayerHost + "/ArcGIS/rest/services/Flooding/20131023_FloodingBaseMap/MapServer?f=json&pretty=false", false);
 	xmlhttp.send();
 	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 		data = JSON.parse(xmlhttp.responseText);
@@ -659,13 +693,13 @@ function f_removeSelection(pid) {
 function f_result_detail(target_el, pid) {
 	"use strict";
 	require(["esri/tasks/QueryTask", "esri/tasks/query", "esri/tasks/RelationshipQuery"], function (QueryTask, Query, RelationshipQuery) {
-		var QT_det_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/9"),
+		var QT_det_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_landuse),
 			Q_det_landuse = new Query(),
-			QT_det_zoning = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/7"),
+			QT_det_zoning = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_zoning),
 			Q_det_zoning = new Query(),
-			QT_det_owners_int = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/8"),
+			QT_det_owners_int = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_intermediate),
 			Q_det_owners_int = new Query(),
-			QT_det_owners = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/8"),
+			QT_det_owners = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_intermediate),
 			Q_det_owners = new RelationshipQuery();
 		Q_det_landuse.returnGeometry = false;
 		Q_det_landuse.outFields = ["LANDUSE_CODE", "MAP_ACRES"];
@@ -820,9 +854,9 @@ function f_multi_parcel_buffer_exec(distance, PID) {
 		M_meri.infoWindow.hide();
 		var multiparcel_geometries = new Polygon(new SpatialReference({"wkid": 102100})),
 			S_buffer_buffer = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-																new SimpleLineSymbol(SimpleFillSymbol.STYLE_SOLID,
-																							new Color([100, 100, 100]), 3),
-																new Color([255, 0, 0, 0.6])),
+				new SimpleLineSymbol(SimpleFillSymbol.STYLE_SOLID,
+					new Color([100, 100, 100]), 3),
+				new Color([255, 0, 0, 0.6])),
 			m,
 			bufferDistanceTxt = distance,
 			bufferDistance,
@@ -843,7 +877,7 @@ function f_multi_parcel_buffer_exec(distance, PID) {
 			}
 		}
 		if (!isNaN(bufferDistanceTxt) || (bufferDistanceTxt !== "")) {
-			QT_parcel_selection_buffer = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
+			QT_parcel_selection_buffer = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.layers.gis_sde_parcel);
 			Q_parcel_selection_buffer = new Query();
 			bufferDistance = bufferDistanceTxt * 1.35;
 			Q_parcel_selection_buffer.returnGeometry = true;
@@ -1251,7 +1285,7 @@ function f_parcel_selection_exec(map_event) {
 	"use strict";
 	require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 		var Q_parcel_selection = new Query(),
-			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0"),
+			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.layers.gis_sde_parcel),
 			outFields_json = f_getoutFields();
 		Q_parcel_selection.outSpatialReference = {wkid: 3857};
 		Q_parcel_selection.returnGeometry = true;
@@ -1274,70 +1308,70 @@ function f_map_identify_exec(click_evt) {
 			index2,
 			next_arrow = document.getElementsByClassName("titleButton arrow")[0],
 			identify_fields_json = {};
-		for (index1 = 0; index1 < layers_json.length; index1 +=1) {
-			for	(index2 = 0; index2 < layers_json[index1].layers.length; index2 +=1) {
-				if (layers_json[index1].layers[index2].name.toLowerCase() === "fema panel") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["FIRM_PAN"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "riparian claim (njdep)") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["TMAPNUM", "STATUS "];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "fema (100-yr flood)") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["FLD_ZONE", "FLOODWAY", "STATIC_BFE", "SFHA_TF"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "wetlands (dep)") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["LABEL07", "TYPE07", "ACRES", "LU07"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "seismic soil class") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["UNIT"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "tidegates") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["MUNICIPALITY", "TIDEGATE_NAME", "GPSPOINT_TYPE", "ELEVATION", "DATE_OBS", "TYPE_OF_TIDE_GATE", "TYPE_OF_GATE", "FUNCTIONALITY", "MAINTENANCEREQUIRED"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "drainage") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["TYPE"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "hydro lines/ wetland edge") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["TYPE"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "stormwater catchbasin") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "CBType", "ReceivingWater"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "stormwater manhole") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "stormwater outfall") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Diameter", "ReceivingWater"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "stormwater line") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "sanitary manhole") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "sanitary lines") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "hydrants") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["ID", "STREET", "LOCATION1", "LOCATION2", "ACCESS_", "PIPE_DIAMETER", "PIPEDIAMETER_VALUE"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "encumberance") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["ENCUMBRANCETYPE", "ENCUMBRANCEOWNER", "ENCUMBRANCEDESCRIPTION"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "buildings") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["BID", "FACILITY_NAME", "BUILDING_LOCATION", "TOTALBLDG_SF"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "voting districts 2010") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["NAME10"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "census block 2010") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["TRACTCE10", "BLOCKCE10", "POPULATION"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "land use") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["LandUse_Code"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "zoning") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["Zone_Code"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "spot elevations") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["ELEVATION"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "fence line") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["Elevation", "Type"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "contour lines") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["ELEVATION"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "dot roads") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["SLD_NAME"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "rails") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["Elevation", "Type"];
-				} else if (layers_json[index1].layers[index2].name.toLowerCase() === "roads row") {
-					identify_fields_json[layers_json[index1].layers[index2].id] = ["Elevation", "Type"];
+		for (index1 = 0; index1 < layers_json.layers.length; index1 +=1) {
+			for	(index2 = 0; index2 < layers_json.layers[index1].layers.length; index2 +=1) {
+				if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "fema panel") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["FIRM_PAN"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "riparian claim (njdep)") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["TMAPNUM", "STATUS "];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "fema (100-yr flood)") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["FLD_ZONE", "FLOODWAY", "STATIC_BFE", "SFHA_TF"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "wetlands (dep)") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["LABEL07", "TYPE07", "ACRES", "LU07"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "seismic soil class") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["UNIT"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "tidegates") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["MUNICIPALITY", "TIDEGATE_NAME", "GPSPOINT_TYPE", "ELEVATION", "DATE_OBS", "TYPE_OF_TIDE_GATE", "TYPE_OF_GATE", "FUNCTIONALITY", "MAINTENANCEREQUIRED"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "drainage") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["TYPE"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "hydro lines/ wetland edge") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["TYPE"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "stormwater catchbasin") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "CBType", "ReceivingWater"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "stormwater manhole") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "stormwater outfall") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Diameter", "ReceivingWater"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "stormwater line") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "sanitary manhole") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "RimElevation"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "sanitary lines") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["FacilityID", "Municipality", "MaintainedBy", "Material", "Diameter", "UpstreamInvert", "DownstreamInvert"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "hydrants") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["ID", "STREET", "LOCATION1", "LOCATION2", "ACCESS_", "PIPE_DIAMETER", "PIPEDIAMETER_VALUE"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "encumberance") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["ENCUMBRANCETYPE", "ENCUMBRANCEOWNER", "ENCUMBRANCEDESCRIPTION"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "buildings") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["BID", "FACILITY_NAME", "BUILDING_LOCATION", "TOTALBLDG_SF"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "voting districts 2010") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["NAME10"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "census block 2010") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["TRACTCE10", "BLOCKCE10", "POPULATION"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "land use") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["LandUse_Code"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "zoning") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["Zone_Code"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "spot elevations") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["ELEVATION"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "fence line") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["Elevation", "Type"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "contour lines") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["ELEVATION"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "dot roads") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["SLD_NAME"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "rails") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["Elevation", "Type"];
+				} else if (layers_json.layers[index1].layers[index2].name.toLowerCase() === "roads row") {
+					identify_fields_json[layers_json.layers[index1].layers[index2].id] = ["Elevation", "Type"];
 				}
 			}	
 		}
 		el_popup_content.className = "esriViewPopup";
 		el_popup_view.className = "mainSection";
 		el_popup_content.appendChild(el_popup_view);
-		IP_Map_All.tolerance = 3;
-		IP_Map_All.returnGeometry = true;
+		IP_Map_All.tolerance = 6;
+		IP_Map_All.returnGeometry = false;
 		IP_Map_All.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
 		IP_Map_All.width  = M_meri.width;
 		IP_Map_All.height = M_meri.height;
@@ -1350,9 +1384,6 @@ function f_map_identify_exec(click_evt) {
 				e_tbody = document.createElement("tbody"),
 				identifyResult,
 				attr,
-				e_tr,
-				e_td1,
-				e_td2,
 				string_array,
 				lstring,
 				rstring;
@@ -1370,17 +1401,7 @@ function f_map_identify_exec(click_evt) {
 				for (index2 = 0; index2 < identify_fields_json[identifyResult.layerId].length; index2 += 1) {
 					attr = identify_fields_json[identifyResult.layerId][index2];
 					if (identifyResult.feature.attributes[attr] !== "Null" && identifyResult.feature.attributes[attr] !== null && identifyResult.feature.attributes[attr] !== "" && identifyResult.feature.attributes[attr] !== undefined) {
-						e_tr = document.createElement("tr");
-						e_tr.style.verticalAlign = "top";
-						e_td1 = document.createElement("td");
-						e_td1.className = "attrName";
-						e_td1.innerHTML = fieldAlias(attr) + ":";
-						e_td2 = document.createElement("td");
-						e_td2.className = "attrValue";
-						e_td2.innerHTML = identifyResult.feature.attributes[attr];
-						e_tbody.appendChild(e_tr);
-						e_tr.appendChild(e_td1);
-						e_tr.appendChild(e_td2);
+						e_tbody.innerHTML += '<tr><td class="attrName">' + fieldAlias(attr) + ': </td><td class="attrValue">' + identifyResult.feature.attributes[attr] + '</td></tr>';
 					}
 				}
 			}
@@ -1546,7 +1567,7 @@ function f_search_parcel_old(search, where_PID) {
 	}
 	require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 		var Q_parcel_selection = new Query(),
-			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0"),
+			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.layers.gis_sde_parcel),
 			where_muni,
 			where_qual,
 			outFields_json = f_getoutFields(),
@@ -1612,7 +1633,7 @@ function f_search_landuse(search) {
 	if (search.rdo_landuse_search === "on") {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 			var Q_landuse = new Query(),
-				QT_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/9"),
+				QT_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_landuse),
 				where_landuse,
 				where_PID,
 				index = 0;
@@ -1657,7 +1678,7 @@ function f_candidate_search(where, candidate_array) {
 		require(["esri/geometry/Extent", "esri/SpatialReference", "esri/geometry/Point", "esri/tasks/query", "esri/tasks/QueryTask"], function (Extent, SpatialReference, Point, Query, QueryTask) {
 			var candidate = candidate_array.pop(),
 				Q_parcel_selection = new Query(),
-				QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0"),
+				QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.layers.gis_sde_parcel),
 				point,
 				search_extent,
 				index,
@@ -1744,7 +1765,7 @@ function showResults(candidates, search) {
 		Q_landuse = new Query();
 		Q_landuse.returnGeometry = false;
 		Q_landuse.outFields = ["PID"];
-		QT_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/9");
+		QT_landuse = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_landuse);
 		if (search.rdo_muni_search === "yes") {
 			if (search.s_muni_chk_item !== undefined && search.s_muni_chk_item.length > 0) {
 				var where_muni = "[MUN_CODE] IN (";
@@ -1880,7 +1901,7 @@ function f_search_owner(json) {
 	if (search.owner !== "") {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
 			var Q_owners = new Query(),
-				QT_owners = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/5"),
+				QT_owners = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_owner),
 				e_search_progress = document.getElementById("search_progress"),
 				outFields_json = f_getoutFields();
 			Q_owners.returnGeometry = false;
@@ -1978,6 +1999,11 @@ function f_add_checked(node) {
 		node.parentNode.classList.toggle("li_checked");
 	});
 }
+function switchSearch() {
+	console.log("here");
+	document.getElementById("li_property").classList.toggle("none");
+	document.getElementById("li_owner").classList.toggle("none");
+}
 function f_load_tools() {
 	"use strict";
 	require(["esri/toolbars/navigation", "dojo/dom-form"], function (Navigation, domForm) {
@@ -2062,32 +2088,19 @@ function f_load_tools() {
 			document.getElementById("search_owner").addEventListener("click", function () {
 				f_search_owner(domForm.toJson("search_owner"));
 			});
-			document.getElementById("owner_toggle").addEventListener("change", function() {
-				document.getElementById("li_property").style.display = "none";
-				document.getElementById("li_owner").style.display = "block";
-			});
-			document.getElementById("property_toggle").addEventListener("change", function() {
-				document.getElementById("li_property").style.display = "block";
-				document.getElementById("li_owner").style.display = "none";
-			});
-			document.getElementById("filter").addEventListener("click", function (e) {
-				var toElem = e.originalTarget || e.toElement || e.srcElement;
-				if (toElem.id === "filter") {
-					if (this.style.color !== "rgb(0, 153, 221)" && this.style.color !== "rgb(222, 10, 10)") {
-						this.innerHTML = "Search Options & Filters (-)";
-					} else {
-						this.innerHTML = "Search Options & Filters (+)";
-					}
+			document.getElementById("owner_toggle").addEventListener("change", switchSearch);
+			document.getElementById("property_toggle").addEventListener("change", switchSearch);
+			document.getElementById("filter").addEventListener("click", function () {
+				console.log(this.classList.contains('filteractive'));
+				if(this.classList.contains('filteractive'))
+				{
+					this.innerHTML = "Search Options & Filters (+)";
 				}
-				if (this.style.color !== "rgb(0, 153, 221)" && this.style.color !== "rgb(222, 10, 10)") {
-					if(ERIS) {
-						this.style.color = "#DE0A0A";
-					} else {
-						this.style.color = "#09D";
-					}
-				} else {
-					this.style.color = "#444";
+				else
+				{
+					this.innerHTML = "Search Options & Filters (-)";
 				}
+				this.classList.toggle('filteractive');
 			});
 			target = document.getElementsByClassName("tab");
 			length = target.length;
@@ -2182,7 +2195,7 @@ function f_load_tools() {
 				var xmlhttp = new XMLHttpRequest(),
 					data,
 					form = new FormData(document.getElementById("form_submit"));
-				xmlhttp.open("POST", './ERIS/authenticate.php', false);
+				xmlhttp.open("POST", '../ERIS/authenticate.php', false);
 				xmlhttp.send(form);
 				if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 					data = JSON.parse(xmlhttp.responseText.trim());
@@ -2272,9 +2285,9 @@ function f_layer_list_build() {
 	if(ERIS) {
 		f_startup_eris();
 	}
-	length1 = mapLayersJSON.length;
+	length1 = mapLayersJSON.layers.length;
 	for(index1 = 0; index1 < length1; index1 += 1) {
-		group = mapLayersJSON[index1];
+		group = mapLayersJSON.layers[index1];
 		e_title = document.createElement("li");
 		e_title.innerHTML = group.name;
 		e_title.className = "layer_group_title";
@@ -2318,13 +2331,13 @@ function f_query_owner_int_exec(ownerid) {
 			QT_parcel_selection,
 			outFields_json = f_getoutFields();
 		if (findparcels.innerHTML === "Find Owner Parcels") {
-			QT_owner_int = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/8");
-			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/0");
+			QT_owner_int = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_intermediate);
+			QT_parcel_selection = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.layers.gis_sde_parcel);
 			Q_owner_int = new Query();
 			Q_owner_int.where = "Where [OWNERID] = " + ownerid;
 			QT_owner_int.executeForIds(Q_owner_int, function (results) {
 				if (results) {
-					var QT_owner_parcels = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/8"),
+					var QT_owner_parcels = new QueryTask(DynamicLayerHost + "/ArcGIS/rest/services/Parcels/NJMC_Parcels_2011/MapServer/" + parcels_json.tables.gis_sde_tbl_cad_intermediate),
 						Q_owner_parcels = new RelationshipQuery(),
 						Q_parcel_selection = new Query();
 					Q_owner_parcels.relationshipId = 11;
@@ -2356,8 +2369,8 @@ function f_query_owner_int_exec(ownerid) {
 					});
 				}
 			});
-			findparcels.onclick = function (e) {
-				var toElem = e.originalTarget || e.toElement || e.srcElement;
+			findparcels.onclick = function () {
+				var toElem = this;
 				toElem.innerHTML = "Find Owner Parcels";
 				toElem.onclick = null;
 				toElem.onclick = function () {

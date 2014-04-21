@@ -25,10 +25,6 @@ nav a
 	text-decoration: none;
 	transition: color ease-in-out .2s
 }
-nav a:hover
-{
-	color: #333
-}
 label
 {
 	-webkit-user-select: none;
@@ -375,13 +371,25 @@ input[type="radio"]:checked ~.check:after
 	text-decoration: underline;
 	margin: 3px;
 }
-.li_owner
+.none
 {
 	display: none;
 }
 .search_item
 {
 	box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+}
+.filteractive
+{
+	color: #09D;
+}
+.filteractive:hover
+{
+	color: #09D;
+}
+nav a:hover
+{
+	color: #333
 }
 nav ul li ul
 {
