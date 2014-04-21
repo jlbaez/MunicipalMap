@@ -1,38 +1,9 @@
-/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, f_startup_eris,typeof, FormData, ERIS*/
+/*global require, sessionStorage, window, document, f_ERIS_selection_exec, Recaptcha, XMLHttpRequest, location, setTimeout, navigator, startupEris,typeof, FormData, ERIS*/
 //==========================================
 // Title:  Municipal Map V.31
 // Author: Jose Baez
 // Date:   11 Nov 2013
 //=========================================
-/* Naming Conventions
- *
- * MAP STUFF
- *
- *	M     - Map
- *	IT    - Identify Task
- *	IP    - Identify Parameters
- *	TP    - Task Parameters
- *	BP    -	Buffer Parameters
- *	Q     -	Query
- *	QT    -	Query Task
- *	EVT   -	Event
- *  F     -	Feature
- *  IW    -	Info Window
- *  GS    -	GeoService
- *  GeomS -	Geometry Service
- *	S     -	Symbol
- *  G     -	Graphic
- *	LG    -	Layer Graphics
- *	LD    -	Layer Dynamic
- *	LT    -	Layer Tiled
- *  IL    - Image Layer
- *
- * OTHER STUFF
- *
- *	f_    -	javascript function
- *	e_    -	html element
- *	_lbl  -	label
- */
 var DynamicLayerHost = "http://webmaps.njmeadowlands.gov",
 	IP_Identify_Layers = [],
 	measurementDijit,
@@ -2091,7 +2062,6 @@ function f_load_tools() {
 			document.getElementById("owner_toggle").addEventListener("change", switchSearch);
 			document.getElementById("property_toggle").addEventListener("change", switchSearch);
 			document.getElementById("filter").addEventListener("click", function () {
-				console.log(this.classList.contains('filteractive'));
 				if(this.classList.contains('filteractive'))
 				{
 					this.innerHTML = "Search Options & Filters (+)";
@@ -2283,7 +2253,7 @@ function f_layer_list_build() {
 		e_sel_flood.innerHTML += '<option value="' + scenario.id + '">' + scenario.name + '</option>';
 	}
 	if(ERIS) {
-		f_startup_eris();
+		startupEris();
 	}
 	length1 = mapLayersJSON.layers.length;
 	for(index1 = 0; index1 < length1; index1 += 1) {

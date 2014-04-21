@@ -6,7 +6,7 @@
 //=========================================
 var ERIS_layers,
   DynamicLayerHost = "http://webmaps.njmeadowlands.gov";
-function f_get_ERIS_Layers() {
+function getErisLayers() {
 	var xmlhttp = new XMLHttpRequest(),
 		data,
 		index,
@@ -34,8 +34,8 @@ function f_get_ERIS_Layers() {
 		return json;
 	}
 }
-ERIS_layers = f_get_ERIS_Layers();
-function f_load_ERIS_tools() {
+ERIS_layers = getErisLayers();
+function loadErisTools() {
 	"use strict";
 	require(["esri/toolbars/navigation", "dojo/domReady!"], function (Navigation) {
 		document.getElementById("ERIS").addEventListener("click", function () {
@@ -51,17 +51,7 @@ function f_load_ERIS_tools() {
 		});
 	});
 }
-function inArray(array, value) {
-	"use strict";
-	var index;
-	for (index = 0; index < array.length; index += 1) {
-		if (array[index] === value) {
-			return true;
-		}
-	}
-	return false;
-}
-function f_urlExists(url) {
+function urlExists(url) {
 	"use strict";
 	var http = new XMLHttpRequest();
 	http.open("POST", "php/functions.php", false);
@@ -74,7 +64,7 @@ function f_urlExists(url) {
 		return false;
 	}
 }
-function f_query_RTK_IDS_results(featureSets, bid, map_event) {
+function queryRtkIdsResults(featureSets, bid, map_event) {
 	"use strict";
 		var	ONCE_FLDS_RTK = ["FACILITY_NAME", "PHYSICAL_ADDRESS", "PHYSICAL_CITY", "PHYSICAL_ZIP", "COMPANY_CONTACT", "CONTACT_PHONE", "OFFICIAL_CONTACT", "OFFICIAL_PHONE", "EMERGENCY_CONTACT", "EMERGENCY_PHONE"],
 			MAIN_RTK = ["CAS_NUMBER", "LOCATION"],
@@ -126,7 +116,7 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 							if (att === 'RTK_SUBSTANCE_NUMBER') {
 								substance_no.push({"SUBSTANCE_NO": featureAttributes[att]});
 							}
-							if (inArray(ONCE_FLDS_RTK, att) && featureAttributes[att] !== null && !inArray(exclude, att)) {
+							if (ONCE_FLDS_RTK.indexOf(att) !== -1 && featureAttributes[att] !== null && exclude.indexOf(att) === -1) {
 								e_tr2 = document.createElement("tr");
 								e_tr2.style.verticalAlign = "top";
 								exclude.push(att);
@@ -134,8 +124,8 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 								e_tr2.innerHTML += '<td class="attrValue">' + featureAttributes[att] + '</td>';
 								e_tbody.appendChild(e_tr2);
 							}
-							if (!inArray(ONCE_FLDS_RTK, att)) {
-								if (inArray(MAIN_RTK, att)) {
+							if (ONCE_FLDS_RTK.indexOf(att) === -1) {
+								if (MAIN_RTK.indexOf(att) !== -1) {
 									record_main.push(featureAttributes[att]);
 								}
 							}
@@ -145,7 +135,7 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 				for (index = 0; index < substance_name.length; index += 1) {
 					e_tr2.style.verticalAlign = "top";
 					e_tbody.appendChild(e_tr2);
-					if (substance_no[index].SUBSTANCE_NO !== null & f_urlExists('http://webmaps.njmeadowlands.gov/municipal/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
+					if (substance_no[index].SUBSTANCE_NO !== null & urlExists('http://webmaps.njmeadowlands.gov/municipal/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf')) {
 						e_tr2.innerHTML = '<td class="attrName"><a href="http://webmaps.njmeadowlands.gov/municipal/ERIS/factsheets/' + substance_no[index].SUBSTANCE_NO + '.pdf" target="_blank"><strong>' + substance_name[index].SUBSTANCE_NAME + '</strong></a>';
 					} else {
 						console.log(substance_name[index].SUBSTANCE_NAME);
@@ -177,7 +167,7 @@ function f_query_RTK_IDS_results(featureSets, bid, map_event) {
 			document.getElementsByClassName("esriMobileNavigationItem right2")[0].style.display = "none";
 		}
 }
-function f_ERIS_selection_exec(map_event) {
+function erisSelectionExec(map_event) {
 	"use strict";
 	document.getElementById("map_container").style.cursor = "progress";
 	require(["esri/tasks/query", "esri/tasks/QueryTask", "esri/tasks/RelationshipQuery"], function (Query, QueryTask, RelationshipQuery) {
@@ -217,7 +207,7 @@ function f_ERIS_selection_exec(map_event) {
 						Q_RTK_IDS.objectIds = [results];
 						Q_RTK_IDS.relationshipId = ERIS_layers.tables.gis_SDE_TBL_CAD_RTK;
 						QT_Q_RTK_IDS.executeRelationshipQuery(Q_RTK_IDS, function (results) {
-							f_query_RTK_IDS_results(results, bid, map_event);
+							queryRtkIdsResults(results, bid, map_event);
 						}, function(error){console.log(error);});
 					}
 				}
@@ -226,23 +216,7 @@ function f_ERIS_selection_exec(map_event) {
 	});
 	document.getElementById("map_container").style.cursor = "default";
 }
-function f_map_click_handler_ERIS(evt_click) {
-	"use strict";
-	switch (tool_selected) {
-	case "parcel":
-		f_parcel_selection_exec(evt_click);
-		break;
-	case "identify":
-		f_map_identify_exec(evt_click);
-		break;
-	case "ERIS_Identify":
-		f_ERIS_selection_exec(evt_click);
-		break;
-	case "pan":
-		break;
-	}
-}
-function f_ERIS_list_update(checkbox) {
+function erisListUpdate(checkbox) {
 	"use strict";
 	var LD_visible = M_meri.getLayer("ERIS_base").visibleLayers;
 	if (checkbox.checked) {
@@ -257,14 +231,14 @@ function f_ERIS_list_update(checkbox) {
 	}
 	M_meri.getLayer("ERIS_base").setVisibleLayers(LD_visible);
 }
-function f_add_ERIS_layer_update(e_chk) {
+function addErisLayerUpdate(e_chk) {
 	e_chk.addEventListener("change", function(e) {
-		f_ERIS_list_update(this);
+		erisListUpdate(this);
 		legendDigit.refresh();
 		e.preventDefault();
 	});
 }
-function f_ERIS_list_build() {
+function erisListBuild() {
 	"use strict";
 	var li = document.createElement("li"),
 		index,
@@ -285,7 +259,7 @@ function f_ERIS_list_build() {
 		e_chk.type = "checkbox";
 		e_chk.className = "ERIS_layer_check ERIS_layer";
 		e_chk.value = layers_json[index].id;
-		f_add_ERIS_layer_update(e_chk);
+		addErisLayerUpdate(e_chk);
 		if (layers_json[index].vis) {
 			e_chk.checked = true;
 			e_li.className = "toc_layer_li li_checked";
@@ -298,14 +272,14 @@ function f_ERIS_list_build() {
 	}
 	dropdown1.appendChild(fragment);
 }
-function f_startup_eris() {
+function startupEris() {
 	"use strict";
 	document.getElementById("useraccount").innerHTML = userName;
 	require(["esri/layers/ArcGISDynamicMapServiceLayer", "dojo/domReady!"], function (ArcGISDynamicMapServiceLayer) {
 		var ERIS_base = new ArcGISDynamicMapServiceLayer(DynamicLayerHost + "/ArcGIS/rest/services/ERIS/ERIS/MapServer", {opacity: 1, id: "ERIS_base"});
 		M_meri.addLayer(ERIS_base);
-		f_ERIS_list_build();
-		f_load_ERIS_tools();
+		erisListBuild();
+		loadErisTools();
 		legendLayers.push({layer: ERIS_base, title: "ERIS Layers"});
 	});
 }
